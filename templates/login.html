@@ -1,36 +1,164 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex align-items-center justify-content-center min-vh-100" style="background-color: #fafafa;">
+<style>
+    /* Estilos del Login Atusum GPS (Liquid Glass / Frosted Glass) */
+    .bg-map {
+        background-color: #4a5d4e;
+        background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop'); /* Imagen map-like placeholder */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .glass-input-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .glass-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        padding: 14px 14px 14px 45px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+    
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: #fff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2);
+    }
+    
+    .glass-input::placeholder {
+        color: #fff;
+        font-weight: 600;
+        opacity: 0.9;
+    }
+    
+    .glass-icon {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #fff;
+        font-size: 18px;
+        z-index: 2;
+    }
+    
+    .glass-icon-right {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        color: #1d1d1f;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 2;
+    }
+    
+    .btn-orange-atusum {
+        background: linear-gradient(135deg, #ff7b00, #f55b00);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        width: 100%;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-orange-atusum:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 102, 0, 0.4);
+    }
+    
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .logo-circle {
+        width: 60px;
+        height: 60px;
+        border: 2px solid rgba(255,255,255,0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.2);
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-map">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-5">
-                <div class="card-custom p-5 fade-in">
-                    <div class="text-center mb-4">
-                        <div class="mb-3">
-                            <i class="bi bi-book" style="font-size: 56px; color: #1d1d1f;"></i>
-                        </div>
-                        <h1 class="mb-2" style="font-size: 28px; color: #1d1d1f; font-weight: 600; letter-spacing: -0.5px;">
-                            Sistema de Biblioteca
-                        </h1>
-                        <p class="text-sm mb-0">Inicia sesión para continuar</p>
+                
+                <!-- Logo Header -->
+                <div class="logo-container fade-in">
+                    <div class="logo-circle">
+                        <i class="bi bi-book-half" style="font-size: 30px;"></i>
                     </div>
+                    <div class="text-start">
+                        <h1 class="mb-0" style="font-size: 28px; font-weight: 700; letter-spacing: 1px;">SISTEMA BIBLIO</h1>
+                        <p class="mb-0" style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">ADMINISTRACIÓN DE LIBROS</p>
+                    </div>
+                </div>
+
+                <!-- Glass Card Login -->
+                <div class="glass-card fade-in">
+                    <div class="text-center mb-4">
+                        <h2 class="mb-1 text-white" style="font-size: 28px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">Bienvenido</h2>
+                        <p class="text-white" style="font-size: 14px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Inicia sesión para continuar</p>
+                    </div>
+                    
                     {% if error %}
-                        <div class="alert alert-danger-custom d-flex align-items-center mb-3" role="alert">
+                        <div class="alert alert-danger d-flex align-items-center mb-3" style="background: rgba(255,59,48,0.9); color: white; border: none; border-radius: 10px;" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             <div>{{ error }}</div>
                         </div>
                     {% endif %}
+                    
                     <form method="POST" action="{{ url_for('login') }}">
-                        <div class="mb-3">
-                            <label for="username" class="form-label-custom">Usuario</label>
-                            <input type="text" class="form-control form-control-custom" id="username" name="username" required autofocus>
+                        <div class="glass-input-group">
+                            <i class="bi bi-person-fill glass-icon"></i>
+                            <input type="text" class="glass-input" id="username" name="username" placeholder="admin" required autofocus>
                         </div>
-                        <div class="mb-4">
-                            <label for="password" class="form-label-custom">Contraseña</label>
-                            <input type="password" class="form-control form-control-custom" id="password" name="password" required>
+                        
+                        <div class="glass-input-group mb-5">
+                            <i class="bi bi-lock-fill glass-icon"></i>
+                            <input type="password" class="glass-input" id="password" name="password" placeholder="••••••••" required>
+                            <i class="bi bi-eye-slash-fill glass-icon-right" id="togglePassword"></i>
                         </div>
-                        <button type="submit" class="btn btn-dark-custom w-100 mb-3">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+                        
+                        <button type="submit" class="btn-orange-atusum">
+                            INGRESAR <i class="bi bi-arrow-right" style="font-size: 20px; stroke-width: 2px;"></i>
                         </button>
                     </form>
                 </div>
@@ -38,4 +166,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        const password = document.getElementById('password');
+        if (password.type === 'password') {
+            password.type = 'text';
+            this.classList.remove('bi-eye-slash-fill');
+            this.classList.add('bi-eye-fill');
+        } else {
+            password.type = 'password';
+            this.classList.remove('bi-eye-fill');
+            this.classList.add('bi-eye-slash-fill');
+        }
+    });
+</script>
 {% endblock %}

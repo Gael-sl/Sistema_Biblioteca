@@ -8,30 +8,72 @@
    ============================================ */
 
 :root {
-    /* Colores principales */
+    /* Colores principales Glassmorphism */
     --color-dark: #1d1d1f;
-    --color-gray-light: #f5f5f7;
+    --color-gray-light: rgba(255, 255, 255, 0.6);
     --color-gray-medium: #6e6e73;
-    --color-gray-border: #d2d2d7;
-    --color-gray-bg: #fafafa;
-    --color-gray-text: #86868b;
-    --color-white: #ffffff;
+    --color-gray-border: rgba(255, 255, 255, 0.4);
+    --color-gray-bg: rgba(240, 248, 255, 0.8);
+    --color-gray-text: #555;
+    --color-white: rgba(255, 255, 255, 0.85);
+
+    /* Acentos Atusum-style */
+    --color-accent-blue: #3b82f6;
+    --color-accent-blue-gradient: linear-gradient(135deg, #60a5fa, #3b82f6);
+    --color-accent-green: #10b981;
+    --color-accent-red: #ef4444;
     
     /* Tipografía */
     --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
     --font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+    
+    /* Variables de Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-blur: blur(12px);
+    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
 }
 
 body {
     font-family: var(--font-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--color-gray-bg);
+    /* Fondo global estilo mapa/blur */
+    background-color: #e6eef4;
+    background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: var(--color-dark);
+}
+
+/* Overlay para que el contenido sea legible sobre el mapa */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(240, 248, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: -1;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
+    font-weight: 700;
+}
+
+/* ============================================
+   CLASES GLOBALES LIQUID GLASS
+   ============================================ */
+
+.glass-container {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
 }
 
 /* ============================================
@@ -39,56 +81,39 @@ h1, h2, h3, h4, h5, h6 {
    ============================================ */
 
 .btn-dark-custom {
-    background-color: var(--color-dark);
-    color: var(--color-white);
+    background: var(--color-accent-blue-gradient);
+    color: #fff;
     border: none;
     border-radius: 12px;
-    padding: 12px 24px;
+    padding: 10px 20px;
     font-size: 15px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .btn-dark-custom:hover {
-    background-color: #000000;
-    color: var(--color-white);
-    transform: translateY(-1px);
-}
-
-.btn-dark-custom:active {
-    transform: translateY(0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    color: #fff;
 }
 
 .btn-light-custom {
-    background-color: var(--color-gray-light);
+    background: rgba(255, 255, 255, 0.7);
     color: var(--color-dark);
-    border: none;
+    border: 1px solid var(--glass-border);
     border-radius: 12px;
-    padding: 12px 24px;
+    padding: 10px 20px;
     font-size: 15px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
 
 .btn-light-custom:hover {
-    background-color: #e8e8ed;
-    color: var(--color-dark);
-}
-
-.btn-danger-custom {
-    background-color: rgba(255, 59, 48, 0.1);
-    color: #ff3b30;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.btn-danger-custom:hover {
-    background-color: rgba(255, 59, 48, 0.2);
-    color: #ff3b30;
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* ============================================
@@ -96,102 +121,135 @@ h1, h2, h3, h4, h5, h6 {
    ============================================ */
 
 .card-custom {
-    border: 1px solid var(--color-gray-border);
-    border-radius: 16px;
-    background: var(--color-white);
-    box-shadow: none;
-    transition: all 0.2s ease;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+    transition: all 0.3s ease;
 }
 
 .card-custom:hover {
-    border-color: var(--color-dark);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-}
-
-.card-menu-item {
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-}
-
-.card-menu-item:hover .card-custom {
-    border-color: var(--color-dark);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 40px rgba(31, 38, 135, 0.1);
+    transform: translateY(-3px);
 }
 
 /* ============================================
    INPUTS Y FORMULARIOS
    ============================================ */
 
-.form-control-custom {
-    border: 1px solid var(--color-gray-border);
+.form-control-custom, .form-select {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 12px;
     padding: 12px 16px;
     font-size: 15px;
-    background-color: var(--color-white);
-    transition: border-color 0.2s ease;
-    font-family: var(--font-text);
+    font-weight: 500;
+    color: #333;
+    transition: all 0.3s ease;
 }
 
-.form-control-custom:focus {
-    border-color: var(--color-dark);
-    box-shadow: none;
+.form-control-custom:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     outline: none;
-    background-color: var(--color-white);
 }
 
 .form-label-custom {
     font-size: 14px;
     color: var(--color-dark);
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 8px;
 }
 
 /* ============================================
-   TABLAS PERSONALIZADAS
+   BARRAS NAV / NAVBAR
+   ============================================ */
+.navbar-glass {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   TABLAS Y LISTAS (Estilo Rutas)
    ============================================ */
 
 .table-custom {
-    border: 1px solid var(--color-gray-border);
-    border-radius: 16px;
-    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0 8px; /* Espacio entre filas */
+    width: 100%;
+    background: transparent;
+    border: none;
 }
 
 .table-custom thead {
-    background-color: var(--color-gray-light);
-    border: none;
+    background: transparent;
 }
 
 .table-custom thead th {
     border: none;
-    border-bottom: 1px solid var(--color-gray-border);
-    padding: 12px 24px;
-    font-size: 13px;
-    color: var(--color-gray-medium);
+    padding: 10px 24px;
+    font-size: 12px;
+    color: var(--color-gray-text);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
-.table-custom tbody {
-    background-color: var(--color-white);
+.table-custom tbody tr {
+    background: linear-gradient(90deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+    border-radius: 12px;
+}
+
+.table-custom tbody tr td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+.table-custom tbody tr td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .table-custom tbody td {
     border: none;
-    border-bottom: 1px solid var(--color-gray-border);
     padding: 16px 24px;
-    font-size: 15px;
+    font-size: 14px;
+    font-weight: 500;
     color: var(--color-dark);
     vertical-align: middle;
 }
 
-.table-custom tbody tr:last-child td {
-    border-bottom: none;
+.table-custom tbody tr:hover {
+    background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
-.table-custom tbody tr:hover {
-    background-color: var(--color-gray-bg);
+/* ============================================
+   MODALES GLASS
+   ============================================ */
+.modal-content {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.1);
+}
+.modal-header {
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+.modal-footer {
+    border-top: 1px solid rgba(255,255,255,0.4);
 }
 
 /* ============================================
@@ -517,4 +575,10 @@ h1, h2, h3, h4, h5, h6 {
     .credential-card {
         max-width: 100% !important;
     }
+}
+
+
+/* Quitar subrayado global de enlaces */
+a {
+    text-decoration: none;
 }

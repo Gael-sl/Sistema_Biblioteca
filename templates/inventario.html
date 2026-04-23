@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
 {% block content %}
-<header class="header-sticky">
+<header class="header-sticky navbar-glass mb-4">
     <div class="container py-3">
         <div class="d-flex align-items-center gap-3">
-            <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+            <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
                 <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
             </a>
             <div>
-                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Inventario de libros</h1>
-                <p class="text-sm mb-0">Gestión del catálogo completo</p>
+                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Inventario de libros</h1>
+                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Gestión del catálogo completo</p>
             </div>
         </div>
     </div>
 </header>
-<main class="container py-4">
-    <div class="mb-4">
+<main class="container mb-5 fade-in">
+    <div class="glass-container p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <p class="mb-0 text-md">Total de libros: <strong>{{ libros|length }}</strong></p>
+                <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Total de libros: <strong style="color: #3b82f6;">{{ libros|length }}</strong></p>
             </div>
             <div class="d-flex gap-2">
-                <select id="columnaBusqueda" class="form-select form-control-custom" style="width: auto; padding-right: 35px;">
+                <select id="columnaBusqueda" class="form-select form-control-custom" style="width: auto; cursor: pointer;">
                     <option value="todas">Buscar en todos</option>
                     <option value="1">Título</option>
                     <option value="2">Autor</option>
                     <option value="3">ISBN</option>
                 </select>
-                <input type="text" id="buscarLibro" class="form-control form-control-custom" placeholder="Buscar libro..." style="width: 250px;">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666;"></i>
+                    <input type="text" id="buscarLibro" class="form-control form-control-custom ps-5" placeholder="Buscar libro..." style="width: 250px;">
+                </div>
                 {% if es_admin() %}
                 <button class="btn btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalAgregarLibro">
                     <i class="bi bi-plus-lg me-2"></i>Agregar libro
@@ -35,8 +38,9 @@
             </div>
         </div>
     </div>
-    <div class="table-custom">
-        <table class="table table-custom mb-0" id="tablaLibros">
+    
+    <div class="table-responsive">
+        <table class="table-custom mb-0" id="tablaLibros">
             <thead>
                 <tr>
                     <th>Código QR</th>
@@ -53,18 +57,29 @@
                 {% for libro in libros %}
                 <tr>
                     <td>
-                        <span class="badge" style="background: rgba(0, 122, 255, 0.15); color: #007aff; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 600; padding: 6px 10px;">
-                            {{ libro.id }}
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
+                            <i class="bi bi-qr-code me-1"></i>{{ libro.id }}
                         </span>
                     </td>
-                    <td><div class="text-md" style="font-weight: 500;">{{ libro.titulo }}</div></td>
-                    <td><span class="text-sm">{{ libro.autor }}</span></td>
-                    <td><span class="text-xs">{{ libro.isbn }}</span></td>
-                    <td class="text-center"><span class="badge-custom">{{ libro.disponibles }}/{{ libro.cantidad }}</span></td>
+                    <td>
+                        <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ libro.titulo }}</div>
+                        {% if libro.genero %}
+                        <span class="badge mt-1" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 11px;">{{ libro.genero }}</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="text-sm" style="font-weight: 600; color: #4b5563;"><i class="bi bi-person me-1"></i>{{ libro.autor }}</span></td>
+                    <td><span class="text-xs" style="color: #6b7280;">{{ libro.isbn }}</span></td>
+                    <td class="text-center">
+                        <span class="badge" style="background: {% if libro.disponibles > 0 %}rgba(16, 185, 129, 0.15){% else %}rgba(239, 68, 68, 0.15){% endif %}; 
+                                                   color: {% if libro.disponibles > 0 %}#059669{% else %}#dc2626{% endif %}; 
+                                                   font-size: 13px; padding: 6px 12px; border-radius: 8px;">
+                            {{ libro.disponibles }} / {{ libro.cantidad }}
+                        </span>
+                    </td>
                     {% if es_admin() %}
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2 align-items-center">
-                            <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" data-bs-target="#modalEditarLibro"
+                            <button class="btn btn-sm btn-light-custom" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarLibro"
                                 data-id="{{ libro.id }}"
                                 data-titulo="{{ libro.titulo }}"
                                 data-autor="{{ libro.autor }}"
@@ -74,11 +89,13 @@
                                 data-costo="{{ libro.costo }}"
                                 data-cantidad="{{ libro.cantidad }}"
                                 data-disponibles="{{ libro.disponibles }}"
-                                <data-activo="{{ '1' if libro.activo else '0' }}" style="height: 32px; display: flex; align-items: center;">
-                                <i class="bi bi-pencil me-1"></i>Editar
+                                data-activo="{{ '1' if libro.activo else '0' }}" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                <i class="bi bi-pencil" style="color: #4b5563;"></i>
                             </button>
-                            <form method="POST" action="{{ url_for('eliminar_libro', libro_id=libro.id) }}" onsubmit="return confirmarEliminacion('¿Dar de baja el libro?');" class="m-0 d-inline-block" style="height: 32px;">
-                                <button type="submit" class="btn btn-sm btn-danger-custom" style="height: 100%; display: flex; align-items: center;"><i class="bi bi-trash me-1"></i>Baja</button>
+                            <form method="POST" action="{{ url_for('eliminar_libro', libro_id=libro.id) }}" onsubmit="return confirmarEliminacion('¿Dar de baja el libro?');" class="m-0 d-inline-block" style="height: 36px;">
+                                <button type="submit" class="btn btn-sm" title="Dar de baja" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #dc2626; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0; transition: all 0.2s;">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -91,55 +108,71 @@
 </main>
 {% if es_admin() %}
 <div class="modal fade" id="modalAgregarLibro" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+            <div class="modal-header border-0 pb-2">
                 <div>
-                    <h5 class="modal-title mb-1">Agregar nuevo libro</h5>
-                    <p class="text-sm mb-0">Completa la información del libro</p>
+                    <h4 class="mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-journal-plus me-2" style="color: #3b82f6;"></i>Agregar nuevo libro</h4>
+                    <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Completa la información del ejemplar para el catálogo</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('agregar_libro') }}">
-                <div class="modal-body">
-                    <div class="row g-2">
+                <div class="modal-body py-3">
+                    <div class="row g-3">
                         <div class="col-md-9">
-                            <label class="form-label-custom mb-1">Título</label>
-                            <input type="text" name="titulo" class="form-control form-control-custom" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Título del libro</label>
+                            <input type="text" name="titulo" class="form-control form-control-custom" placeholder="Ej. El Principito" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label-custom mb-1">Cantidad</label>
-                            <input type="number" name="cantidad" class="form-control form-control-custom" min="1" value="1" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Cantidad</label>
+                            <input type="number" name="cantidad" class="form-control form-control-custom" min="1" value="1" placeholder="0" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1">Autor</label>
-                            <input type="text" name="autor" class="form-control form-control-custom" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Autor</label>
+                            <input type="text" name="autor" class="form-control form-control-custom" placeholder="Nombre del autor" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1">ISBN</label>
-                            <input type="text" name="isbn" class="form-control form-control-custom" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">ISBN</label>
+                            <input type="text" name="isbn" class="form-control form-control-custom" placeholder="000-0-00-000000-0" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1">Género</label>
-                            <input type="text" name="genero" class="form-control form-control-custom" placeholder="Ej: Romance, Ciencia ficción" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Género</label>
+                            <select name="genero" class="form-select form-control-custom" required>
+                                <option value="" disabled selected>Selecciona un género...</option>
+                                <option value="Ciencia ficción">Ciencia ficción</option>
+                                <option value="Fantasía">Fantasía</option>
+                                <option value="Romance">Romance</option>
+                                <option value="Misterio">Misterio / Thriller</option>
+                                <option value="Terror">Terror</option>
+                                <option value="Aventura">Aventura</option>
+                                <option value="Histórico">Histórico</option>
+                                <option value="Biografía">Biografía</option>
+                                <option value="Ensayo">Ensayo</option>
+                                <option value="Académico">Académico / Texto</option>
+                                <option value="Poesía">Poesía</option>
+                                <option value="Otro">Otro</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1">Costo (Garantía: 20%)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" name="costo" class="form-control form-control-custom" min="0" step="0.01" value="0" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Costo de Reposición (+20%)</label>
+                            <div class="position-relative">
+                                <i class="bi bi-currency-dollar position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666; font-size: 16px; z-index: 2;"></i>
+                                <input type="number" name="costo" class="form-control form-control-custom ps-4" min="0" step="0.01" value="0.00" required>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label-custom mb-1">Tags (separados por comas para búsqueda)</label>
-                            <input type="text" name="tags" class="form-control form-control-custom" placeholder="Ej: aventura,juvenil,fantasia">
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Etiquetas de Búsqueda (Tags)</label>
+                            <input type="text" name="tags" class="form-control form-control-custom" placeholder="Ej. infantil, magia, clasico (Separadas por comas)">
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer pt-3 pb-2 mt-1 border-top-0">
-                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark-custom flex-fill">
-                        <i class="bi bi-check-lg me-2"></i>Guardar libro
+                <div class="modal-footer border-0 pt-2 pb-3 d-flex gap-2">
+                    <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn flex-fill m-0 py-2 text-white" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+                        <i class="bi bi-save me-2"></i>Guardar Libro
                     </button>
                 </div>
             </form>
@@ -148,62 +181,70 @@
 </div>
 
 <div class="modal fade" id="modalEditarLibro" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+            <div class="modal-header border-0 pb-2">
                 <div>
-                    <h5 class="modal-title mb-1">Editar libro</h5>
-                    <p class="text-sm mb-0">Actualiza la información del ejemplar</p>
+                    <h4 class="mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-pencil-square me-2" style="color: #f59e0b;"></i>Editar libro</h4>
+                    <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Actualiza la información del ejemplar existente</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditarLibro">
-                <div class="modal-body">
-                    <div class="row g-2">
+                <div class="modal-body py-3">
+                    <div class="row g-3">
                         <div class="col-md-9">
-                            <label class="form-label-custom mb-1">Título</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Título del libro</label>
                             <input type="text" name="titulo" id="edit_titulo" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label-custom mb-1">Total</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Total Inicial</label>
                             <input type="number" name="cantidad" id="edit_cantidad" class="form-control form-control-custom" min="1" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1">Autor</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Autor</label>
                             <input type="text" name="autor" id="edit_autor" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1">ISBN</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">ISBN</label>
                             <input type="text" name="isbn" id="edit_isbn" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label-custom mb-1">Género</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Género</label>
                             <input type="text" name="genero" id="edit_genero" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label-custom mb-1">Costo</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" name="costo" id="edit_costo" class="form-control form-control-custom" min="0" step="0.01" required>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Costo ($)</label>
+                            <div class="position-relative">
+                                <i class="bi bi-currency-dollar position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666; font-size: 16px; z-index: 2;"></i>
+                                <input type="number" name="costo" id="edit_costo" class="form-control form-control-custom ps-4" min="0" step="0.01" required>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label-custom mb-1">Disp. actual</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Disp. Actual</label>
                             <input type="number" name="disponibles" id="edit_disponibles" class="form-control form-control-custom" min="0" required>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label-custom mb-1">Tags (separados por comas)</label>
+                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Etiquetas de Búsqueda (Tags)</label>
                             <input type="text" name="tags" id="edit_tags" class="form-control form-control-custom">
                         </div>
-                        <div class="col-md-12 form-check ms-2 mt-1">
-                            <input class="form-check-input" type="checkbox" id="edit_activo" name="activo" value="1">
-                            <label class="form-check-label text-sm" for="edit_activo">Libro activo en catálogo</label>
+                        <div class="col-md-12 mt-3">
+                            <div class="card p-3 border-0" style="background: rgba(16, 185, 129, 0.1); border-radius: 12px;">
+                                <div class="form-check form-switch d-flex align-items-center mb-0 gap-2">
+                                    <input class="form-check-input mt-0" type="checkbox" id="edit_activo" name="activo" value="1" style="width: 40px; height: 20px; cursor: pointer;">
+                                    <label class="form-check-label mb-0" for="edit_activo" style="font-weight: 600; color: #059669; font-size: 15px; cursor: pointer; margin-left: 10px;">El libro está Activo en el catálogo</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer pt-3 pb-2 mt-1 border-top-0">
-                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark-custom flex-fill"><i class="bi bi-check-lg me-2"></i>Guardar cambios</button>
+                <div class="modal-footer border-0 pt-2 pb-3 d-flex gap-2">
+                    <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn flex-fill m-0 py-2 text-white" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
+                        <i class="bi bi-save me-2"></i>Actualizar Libro
+                    </button>
                 </div>
             </form>
         </div>

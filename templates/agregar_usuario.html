@@ -75,7 +75,7 @@
 
 <header class="header-sticky">
     <div class="container py-3 d-flex align-items-center gap-3">
-        <a href="{{ url_for('listar_usuarios_biblioteca') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+        <a href="{{ url_for('listar_usuarios_biblioteca') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
             <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
         </a>
         <div>
@@ -147,7 +147,7 @@
             <div class="card-custom p-4">
                 <h3 class="mb-3" style="font-size: 18px; font-weight: 600; color: #1d1d1f;">Vista Previa (sin guardar)</h3>
                 
-                <!-- Placeholder inicial -->
+                <!-- Placeholder Inicial -->
                 <div id="placeholderPreview" class="text-center py-5">
                     <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" 
                          style="width: 80px; height: 80px; background: #f5f5f7;">
@@ -252,7 +252,7 @@ document.getElementById('btnPreview').addEventListener('click', function() {
     const carrera = document.getElementById('carrera').value.trim();
     
     if (!nombre || !correo) {
-        alert('Por favor complete al menos el nombre y correo electrónico');
+        showAlert('Por favor complete al menos el nombre y correo electrónico', 'Aviso', 'warning');
         return;
     }
     
@@ -338,16 +338,17 @@ document.getElementById('btnConfirmar').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Usuario registrado exitosamente. Se ha enviado la credencial al correo.');
-            window.location.href = '{{ url_for("listar_usuarios_biblioteca") }}';
+            showAlert('Usuario registrado exitosamente. Se ha enviado la credencial al correo.', 'Éxito', 'success', () => {
+                window.location.href = '{{ url_for("listar_usuarios_biblioteca") }}';
+            });
         } else {
-            alert('Error: ' + data.message);
+            showAlert('Error: ' + data.message, 'Error', 'error');
             this.disabled = false;
             this.innerHTML = '<i class="bi bi-check-lg me-2"></i>Confirmar y Guardar';
         }
     })
     .catch(error => {
-        alert('Error al guardar: ' + error);
+        showAlert('Error al guardar: ' + error, 'Error', 'error');
         this.disabled = false;
         this.innerHTML = '<i class="bi bi-check-lg me-2"></i>Confirmar y Guardar';
     });

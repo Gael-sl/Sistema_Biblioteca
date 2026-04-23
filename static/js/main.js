@@ -1,5 +1,90 @@
+function showAlert(message, title = 'Aviso', type = 'info', onConfirm = null) {
+    const modalEl = document.getElementById('glassAlertModal');
+    if (!modalEl) return;
+    const modal = new bootstrap.Modal(modalEl);
+    
+    document.getElementById('glassAlertTitle').textContent = title;
+    document.getElementById('glassAlertMessage').textContent = message;
+    
+    const iconContainer = document.getElementById('glassAlertIcon');
+    const iconInner = document.getElementById('glassAlertIconInner');
+    const btnConfirm = document.getElementById('glassAlertBtnConfirm');
+    const btnCancel = document.getElementById('glassAlertBtnCancel');
+    
+    btnCancel.classList.add('d-none');
+    btnConfirm.textContent = 'Entendido';
+    
+    if (type === 'success') {
+        iconContainer.style.background = 'rgba(16, 185, 129, 0.1)';
+        iconInner.className = 'bi bi-check-circle text-success';
+        btnConfirm.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        btnConfirm.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
+    } else if (type === 'error') {
+        iconContainer.style.background = 'rgba(239, 68, 68, 0.1)';
+        iconInner.className = 'bi bi-x-circle text-danger';
+        btnConfirm.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        btnConfirm.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.3)';
+    } else if (type === 'warning') {
+        iconContainer.style.background = 'rgba(245, 158, 11, 0.1)';
+        iconInner.className = 'bi bi-exclamation-circle text-warning';
+        btnConfirm.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        btnConfirm.style.boxShadow = '0 4px 15px rgba(245, 158, 11, 0.3)';
+    } else {
+        iconContainer.style.background = 'rgba(59, 130, 246, 0.1)';
+        iconInner.className = 'bi bi-info-circle text-primary';
+        btnConfirm.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        btnConfirm.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+    }
+    
+    // Eliminar listeners previos
+    const newBtnConfirm = btnConfirm.cloneNode(true);
+    btnConfirm.parentNode.replaceChild(newBtnConfirm, btnConfirm);
+    
+    newBtnConfirm.addEventListener('click', () => {
+        modal.hide();
+        if (onConfirm) onConfirm();
+    });
+    
+    modal.show();
+}
+
+function showConfirm(message, title = 'Confirmar', onConfirm) {
+    const modalEl = document.getElementById('glassAlertModal');
+    if (!modalEl) return;
+    const modal = new bootstrap.Modal(modalEl);
+    
+    document.getElementById('glassAlertTitle').textContent = title;
+    document.getElementById('glassAlertMessage').textContent = message;
+    
+    const iconContainer = document.getElementById('glassAlertIcon');
+    const iconInner = document.getElementById('glassAlertIconInner');
+    const btnConfirm = document.getElementById('glassAlertBtnConfirm');
+    const btnCancel = document.getElementById('glassAlertBtnCancel');
+    
+    btnCancel.classList.remove('d-none');
+    btnConfirm.textContent = 'Confirmar';
+    
+    iconContainer.style.background = 'rgba(245, 158, 11, 0.1)';
+    iconInner.className = 'bi bi-question-circle text-warning';
+    
+    btnConfirm.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+    btnConfirm.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+    
+    // Eliminar listeners previos
+    const newBtnConfirm = btnConfirm.cloneNode(true);
+    btnConfirm.parentNode.replaceChild(newBtnConfirm, btnConfirm);
+    
+    newBtnConfirm.addEventListener('click', () => {
+        modal.hide();
+        if (onConfirm) onConfirm();
+    });
+    
+    modal.show();
+}
+
 function confirmarEliminacion(mensaje) {
-    return confirm(mensaje || '¿Estás seguro de realizar esta acción?');
+    // Deprecated for direct calls, returning false stops form submission
+    return false; // Will need custom event handling for forms
 }
 function validarFormulario(formId) {
     const form = document.getElementById(formId);

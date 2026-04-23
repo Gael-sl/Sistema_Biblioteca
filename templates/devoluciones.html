@@ -1,31 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
-<header class="header-sticky">
+<header class="header-sticky navbar-glass mb-4">
     <div class="container py-3">
         <div class="d-flex align-items-center gap-3">
-            <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+            <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
                 <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
             </a>
             <div>
-                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Devoluciones</h1>
-                <p class="text-sm mb-0">Procesa devoluciones y calcula multas</p>
+                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Devoluciones</h1>
+                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Procesa devoluciones y calcula multas</p>
             </div>
         </div>
     </div>
 </header>
-<main class="container py-4">
-    <div class="mb-4">
-        <p class="mb-0 text-md">Préstamos activos: <strong>{{ prestamos|length }}</strong></p>
+<main class="container py-2 mb-5 fade-in">
+    <div class="glass-container p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Préstamos activos: <strong style="color: #3b82f6;">{{ prestamos|length }}</strong></p>
+        </div>
     </div>
     {% if prestamos|length == 0 %}
-    <div class="text-center py-5">
-        <i class="bi bi-inbox" style="font-size: 64px; color: #d2d2d7;"></i>
-        <h3 class="mt-3" style="font-size: 19px; color: #6e6e73;">No hay préstamos activos</h3>
-        <p class="text-sm">Todos los libros han sido devueltos</p>
+    <div class="text-center py-5 glass-container" style="border-style: dashed;">
+        <i class="bi bi-inbox" style="font-size: 64px; color: #a1a1aa;"></i>
+        <h3 class="mt-3" style="font-size: 20px; font-weight: 700; color: #1f2937;">No hay préstamos activos</h3>
+        <p class="text-sm text-muted">Todos los libros han sido devueltos</p>
     </div>
     {% else %}
-    <div class="table-custom">
-        <table class="table table-custom mb-0">
+    <div class="table-responsive">
+        <table class="table-custom mb-0">
             <thead>
                 <tr>
                     <th>Usuario</th>
@@ -43,30 +45,32 @@
                     {% set vencido = dias_retraso > 0 %}
                 <tr>
                     <td>
-                        <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
-                        <div class="text-xs">ID: {{ usuario.id }}</div>
+                        <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ usuario.nombre }}</div>
+                        <div class="text-xs" style="color: #6b7280; font-family: monospace;">ID: {{ usuario.id }}</div>
                     </td>
                     <td>
-                        <div class="text-md" style="font-weight: 500;">{{ libro.titulo }}</div>
-                        <div class="text-sm">{{ libro.autor }}</div>
+                        <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ libro.titulo }}</div>
+                        <div class="text-sm" style="color: #4b5563;"><i class="bi bi-person me-1"></i>{{ libro.autor }}</div>
                     </td>
                     <td class="text-center">
-                        <div class="text-md">{{ fecha_limite.strftime('%d/%m/%Y') }}</div>
+                        <div class="text-md" style="font-weight: 600; color: #374151;">{{ fecha_limite.strftime('%d/%m/%Y') }}</div>
                         {% if vencido %}
-                        <div class="text-xs" style="color: #ff3b30;">{{ dias_retraso }} día{{ 's' if dias_retraso > 1 else '' }} de retraso</div>
+                        <div class="text-xs mt-1" style="color: #dc2626; font-weight: 600;">
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ dias_retraso }} día{{ 's' if dias_retraso > 1 else '' }} de retraso
+                        </div>
                         {% endif %}
                     </td>
                     <td class="text-center">
                         {% if vencido %}
-                            <span class="badge-status-vencido">Vencido</span>
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #dc2626; font-size: 12px; padding: 6px 12px; border-radius: 8px;">Vencido</span>
                         {% else %}
-                            <span class="badge-status-activo">Activo</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 12px; padding: 6px 12px; border-radius: 8px;">Activo</span>
                         {% endif %}
                     </td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalDevolucion"
+                        <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1d1d1f, #434345); border-radius: 12px; font-weight: 600; padding: 8px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" data-bs-toggle="modal" data-bs-target="#modalDevolucion"
                                 onclick="prepararDevolucion({{ prestamo.id }}, '{{ usuario.id }}', '{{ usuario.nombre }}', '{{ libro.id }}', '{{ libro.titulo }}', '{{ prestamo.fecha_devolucion_esperada }}', {{ dias_retraso }}, {{ config['multa_retraso'] }}, {{ libro.costo or 0 }})">
-                            <i class="bi bi-box-arrow-in-left me-1"></i>Procesar devolución
+                            <i class="bi bi-box-arrow-in-left me-1"></i>Procesar
                         </button>
                     </td>
                 </tr>
@@ -77,78 +81,84 @@
     {% endif %}
 </main>
 <div class="modal fade" id="modalDevolucion" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
             <form method="POST" action="{{ url_for('procesar_devolucion') }}">
-                <div class="modal-header">
+                <div class="modal-header border-0 pb-2">
                     <div>
-                        <h5 class="modal-title mb-1">Procesar devolución</h5>
-                        <p class="text-sm mb-0">Evalúa el estado del libro y calcula multas</p>
+                        <h4 class="modal-title mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-box-arrow-in-left me-2" style="color: #10b981;"></i>Procesar devolución</h4>
+                        <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Evalúa el estado del libro y revisa las garantías o multas</p>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body py-3">
                     <input type="hidden" name="prestamo_id" id="prestamo_id">
                     <input type="hidden" name="usuario_id" id="usuario_id">
                     <input type="hidden" name="libro_costo" id="libro_costo">
-                    <div class="card-custom p-3 mb-4" style="background: #f5f5f7;">
-                        <div class="row">
+                    <div class="card p-4 border-0 mb-4" style="background: rgba(0,0,0,0.03); border-radius: 16px;">
+                        <div class="row g-3">
                             <div class="col-md-6 mb-2">
-                                <div class="text-xs text-uppercase mb-1" style="color: #86868b;">Libro</div>
-                                <div class="text-md" style="font-weight: 500;" id="libro_titulo"></div>
+                                <div class="text-xs text-uppercase mb-1" style="color: #86868b; font-weight: 700; letter-spacing: 0.5px;">Libro</div>
+                                <div class="text-md" style="font-weight: 700; color: #1d1d1f;" id="libro_titulo"></div>
                             </div>
                             <div class="col-md-6 mb-2">
-                                <div class="text-xs text-uppercase mb-1" style="color: #86868b;">Usuario</div>
-                                <div class="text-md" style="font-weight: 500;" id="usuario_nombre"></div>
+                                <div class="text-xs text-uppercase mb-1" style="color: #86868b; font-weight: 700; letter-spacing: 0.5px;">Usuario</div>
+                                <div class="text-md" style="font-weight: 700; color: #1d1d1f;" id="usuario_nombre"></div>
                             </div>
                             <div class="col-md-6">
-                                <div class="text-xs text-uppercase mb-1" style="color: #86868b;">Fecha límite</div>
-                                <div class="text-sm" id="fecha_limite"></div>
+                                <div class="text-xs text-uppercase mb-1" style="color: #86868b; font-weight: 700; letter-spacing: 0.5px;">Fecha límite</div>
+                                <div class="text-sm fw-bold text-dark" id="fecha_limite"></div>
                             </div>
                             <div class="col-md-6">
-                                <div class="text-xs text-uppercase mb-1" style="color: #86868b;">Días de retraso</div>
-                                <div class="text-sm" id="dias_retraso"></div>
+                                <div class="text-xs text-uppercase mb-1" style="color: #86868b; font-weight: 700; letter-spacing: 0.5px;">Días de retraso</div>
+                                <div class="text-sm fw-bold text-danger" id="dias_retraso"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-info-custom mb-4" id="garantia_info">
+                    <div class="alert mb-4 border-0" id="garantia_info" style="background: rgba(59, 130, 246, 0.08); border-radius: 16px;">
                         <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-shield-check" style="font-size: 2rem; color: #007aff;"></i>
+                            <i class="bi bi-shield-check" style="font-size: 2.2rem; color: #3b82f6;"></i>
                             <div>
-                                <div class="text-sm mb-1" style="font-weight: 600;">Garantía depositada por el usuario</div>
-                                <div style="font-size: 20px; font-weight: 700; color: #007aff;" id="garantia_usuario">$0.00</div>
-                                <div class="text-xs mt-1">Esta cantidad se devolverá descontando multas (si aplican)</div>
+                                <div class="text-sm mb-1" style="font-weight: 700; color: #1e3a8a;">Garantía depositada por el usuario</div>
+                                <div style="font-size: 22px; font-weight: 800; color: #2563eb;" id="garantia_usuario">$0.00</div>
+                                <div class="text-xs mt-1" style="color: #3b82f6;">Esta cantidad se regresará íntegra siempre que no existan daños o multas por retraso.</div>
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label-custom">Estado del libro</label>
-                        <select name="estado_libro" id="estado_libro" class="form-control form-control-custom" onchange="calcularMulta()" required>
-                            <option value="sin_dano">Sin daños</option>
+                    <div class="mb-4">
+                        <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Estado del libro al devolver</label>
+                        <select name="estado_libro" id="estado_libro" class="form-select form-control-custom" style="height: 48px; border-radius: 12px; font-weight: 500;" onchange="calcularMulta()" required>
+                            <option value="sin_dano">Perfecto / Sin daños (0% multa)</option>
                             <option value="leve">Daño leve (páginas dobladas, marcas leves)</option>
-                            <option value="moderado">Daño moderado (páginas rotas, manchas)</option>
-                            <option value="grave">Daño grave (pérdida o destrucción)</option>
+                            <option value="moderado">Daño moderado (páginas rotas, manchas fluidos)</option>
+                            <option value="grave">Daño grave (pérdida, destrucción total)</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label-custom">Observaciones (opcional)</label>
-                        <textarea name="observaciones" class="form-control form-control-custom" rows="3" placeholder="Describe el estado del libro si es necesario"></textarea>
+                    <div class="mb-4">
+                        <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Observaciones Adicionales (opcional)</label>
+                        <textarea name="observaciones" class="form-control form-control-custom" rows="2" style="border-radius: 12px; resize: none;" placeholder="Escribe alguna nota sobre el estado de la devolución..."></textarea>
                     </div>
-                    <div class="card-custom p-4" style="background: linear-gradient(135deg, #fff 0%, #f5f5f7 100%);">
+                    <div class="card p-4 border-0 mb-2" style="background: rgba(239, 68, 68, 0.05); border-radius: 16px;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="text-sm mb-1">Multa total a pagar</div>
-                                <div style="font-size: 32px; font-weight: 600; color: #1d1d1f;" id="multa_total">$0</div>
-                                <div class="text-xs" id="detalle_multa"></div>
+                                <div class="text-sm mb-1 fw-bold text-danger text-uppercase" style="letter-spacing: 1px;">Multa Total Estimada</div>
+                                <div style="font-size: 32px; font-weight: 800; color: #dc2626; letter-spacing: -1px;" id="multa_total">$0.00</div>
+                                <div class="text-xs text-muted fw-bold" id="detalle_multa"></div>
                             </div>
-                            <i class="bi bi-currency-dollar" style="font-size: 48px; color: #d2d2d7;"></i>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: rgba(239, 68, 68, 0.1);">
+                                <i class="bi bi-cash-coin" style="font-size: 30px; color: #dc2626;"></i>
+                            </div>
                         </div>
                     </div>
                     <input type="hidden" name="multa_monto" id="multa_monto" value="0">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark-custom flex-fill"><i class="bi bi-check-lg me-2"></i>Confirmar devolución</button>
+                <div class="modal-footer border-0 pt-1 pb-3 d-flex gap-2">
+                    <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn text-white flex-fill m-0 py-2" style="background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                        <i class="bi bi-check-circle-fill me-2"></i>Confirmar Devolución
+                    </button>
                 </div>
             </form>
         </div>
