@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3 d-flex align-items-center gap-3">
+        <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+            <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+        </a>
+        <div>
+            <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Usuarios de la biblioteca</h1>
+            <p class="text-sm mb-0">Altas, ediciones y bajas</p>
+        </div>
+    </div>
+</header>
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+        <div>
+            <p class="mb-0 text-md">Total de usuarios: <strong>{{ usuarios|length }}</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <input type="text" id="buscarUsuario" class="form-control form-control-custom" placeholder="Buscar usuario..." style="width: 250px;">
+            <button class="btn btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario"><i class="bi bi-plus-lg me-2"></i>Registrar usuario</button>
+        </div>
+    </div>
+    <div class="table-custom">
+        <table class="table table-custom mb-0" id="tablaUsuarios">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Facultad / Carrera</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td><span class="badge" style="background: rgba(0, 122, 255, 0.15); color: #007aff; font-size: 12px;">{{ usuario.id }}</span></td>
+                    <td>
+                        <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
+                        <div class="text-sm text-muted">Registrado: {{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</div>
+                    </td>
+                    <td>
+                        <div class="text-sm"><i class="bi bi-envelope me-1"></i>{{ usuario.correo or '—' }}</div>
+                        <div class="text-sm"><i class="bi bi-phone me-1"></i>{{ usuario.telefono or '—' }}</div>
+                    </td>
+                    <td>
+                        <div class="text-sm">{{ usuario.facultad or '—' }}</div>
+                        <div class="text-xs text-muted">{{ usuario.carrera or '' }}</div>
+                    </td>
+                    <td class="text-center">
+                        {% if usuario.activo %}
+                            <span class="badge-status-activo">Activo</span>
+                        {% else %}
+                            <span class="badge-status-vencido">Baja</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
+                                data-id="{{ usuario.id }}" data-nombre="{{ usuario.nombre }}" data-correo="{{ usuario.correo }}"
+                                data-telefono="{{ usuario.telefono }}" data-facultad="{{ usuario.facultad }}" data-carrera="{{ usuario.carrera }}"
+                                data-activo="{{ '1' if usuario.activo else '0' }}">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </button>
+                            <form method="POST" action="{{ url_for('eliminar_usuario_biblioteca', usuario_id=usuario.id) }}" onsubmit="return confirmarEliminacion('¿Dar de baja al usuario?');">
+                                <button type="submit" class="btn btn-sm btn-danger-custom"><i class="bi bi-trash me-1"></i>Baja</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div class="modal fade" id="modalNuevoUsuario" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Registrar usuario</h5>
+                    <p class="text-sm mb-0">Asigna un ID único para escaneo</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('usuarios_biblioteca_view') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label-custom">ID (para QR)</label>
+                            <input type="text" name="id" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label-custom">Nombre completo</label>
+                            <input type="text" name="nombre" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Correo</label>
+                            <input type="email" name="correo" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Teléfono</label>
+                            <input type="text" name="telefono" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Facultad</label>
+                            <input type="text" name="facultad" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Carrera</label>
+                            <input type="text" name="carrera" class="form-control form-control-custom">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill"><i class="bi bi-check-lg me-2"></i>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Editar usuario</h5>
+                    <p class="text-sm mb-0">Actualiza la información</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditarUsuario">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Nombre completo</label>
+                            <input type="text" name="nombre" id="edit_nombre" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Correo</label>
+                            <input type="email" name="correo" id="edit_correo" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Teléfono</label>
+                            <input type="text" name="telefono" id="edit_telefono" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Facultad</label>
+                            <input type="text" name="facultad" id="edit_facultad" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Carrera</label>
+                            <input type="text" name="carrera" id="edit_carrera" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-12 form-check">
+                            <input class="form-check-input" type="checkbox" id="edit_activo" name="activo" value="1">
+                            <label class="form-check-label" for="edit_activo">Usuario activo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill"><i class="bi bi-check-lg me-2"></i>Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    buscarEnTabla('buscarUsuario', 'tablaUsuarios');
+    const modalEditarUsuario = document.getElementById('modalEditarUsuario');
+    if (modalEditarUsuario) {
+        modalEditarUsuario.addEventListener('show.bs.modal', event => {
+            const btn = event.relatedTarget;
+            const usuarioId = btn.getAttribute('data-id');
+            document.getElementById('formEditarUsuario').action = `/usuarios-biblioteca/${usuarioId}/editar`;
+            document.getElementById('edit_nombre').value = btn.getAttribute('data-nombre');
+            document.getElementById('edit_correo').value = btn.getAttribute('data-correo');
+            document.getElementById('edit_telefono').value = btn.getAttribute('data-telefono');
+            document.getElementById('edit_facultad').value = btn.getAttribute('data-facultad');
+            document.getElementById('edit_carrera').value = btn.getAttribute('data-carrera');
+            document.getElementById('edit_activo').checked = btn.getAttribute('data-activo') === '1';
+        });
+    }
+</script>
+{% endblock %}

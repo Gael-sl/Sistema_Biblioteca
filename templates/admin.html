@@ -1,0 +1,724 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">
+                    Panel de Administración
+                </h1>
+                <p class="text-sm mb-0">Estadísticas y control del sistema</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container py-4">
+    <!-- Acciones Rápidas -->
+    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Acciones rápidas</h2>
+    <div class="row g-3 mb-5">
+        <div class="col-md-4">
+            <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
+                    data-bs-toggle="modal" data-bs-target="#modalUsuarios" style="cursor: pointer;">
+                <div class="d-flex gap-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background-color: #f5f5f7; border-radius: 10px;">
+                        <i class="bi bi-people" style="font-size: 20px; color: #1d1d1f;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                            Gestionar usuarios
+                        </h3>
+                        <p class="text-sm mb-0">Ver y editar usuarios registrados</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
+                    data-bs-toggle="modal" data-bs-target="#modalConfiguracion" style="cursor: pointer;">
+                <div class="d-flex gap-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background-color: #f5f5f7; border-radius: 10px;">
+                        <i class="bi bi-gear" style="font-size: 20px; color: #1d1d1f;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                            Configuración del sistema
+                        </h3>
+                        <p class="text-sm mb-0">Ajustes y parámetros generales</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
+                    data-bs-toggle="modal" data-bs-target="#modalAlertas" style="cursor: pointer;">
+                <div class="d-flex gap-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background-color: #f5f5f7; border-radius: 10px;">
+                        <i class="bi bi-exclamation-circle" style="font-size: 20px; color: #1d1d1f;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                            Alertas y notificaciones
+                        </h3>
+                        <p class="text-sm mb-0">Ver pendientes importantes</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ url_for('admin_recomendaciones') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
+                <div class="d-flex gap-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px;">
+                        <i class="bi bi-stars" style="font-size: 20px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                            Sistema de Recomendaciones
+                        </h3>
+                        <p class="text-sm mb-0">Algoritmo: Content-Based + SAW</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
+                    data-bs-toggle="modal" data-bs-target="#modalUsuariosSistema" style="cursor: pointer;">
+                <div class="d-flex gap-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border-radius: 10px;">
+                        <i class="bi bi-person-badge" style="font-size: 20px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                            Usuarios del Sistema
+                        </h3>
+                        <p class="text-sm mb-0">Gestionar admins y bibliotecarios</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Estadísticas Generales</h2>
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
+                        <i class="bi bi-book" style="font-size: 24px; color: #1d1d1f;"></i>
+                    </div>
+                </div>
+                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                    {{ stats.total_libros }}
+                </p>
+                <p class="text-sm mb-0">Total de libros</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
+                        <i class="bi bi-people" style="font-size: 24px; color: #1d1d1f;"></i>
+                    </div>
+                </div>
+                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                    {{ stats.usuarios_biblioteca }}
+                </p>
+                <p class="text-sm mb-0">Usuarios activos</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
+                        <i class="bi bi-graph-up" style="font-size: 24px; color: #1d1d1f;"></i>
+                    </div>
+                </div>
+                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                    {{ stats.prestamos_activos }}
+                </p>
+                <p class="text-sm mb-0">Préstamos activos</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
+                        <i class="bi bi-clock-history" style="font-size: 24px; color: #1d1d1f;"></i>
+                    </div>
+                </div>
+                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                    {{ stats.devoluciones_hoy }}
+                </p>
+                <p class="text-sm mb-0">Devoluciones hoy</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficas Interactivas -->
+    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Estadísticas y Análisis</h2>
+    <div class="row g-4 mb-5">
+        <!-- Libros Más Rentados -->
+        <div class="col-lg-6">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-trophy" style="font-size: 20px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Top 10 Libros Más Rentados</h3>
+                        <p class="text-sm mb-0">Popularidad por número de préstamos</p>
+                    </div>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="chartLibrosTop"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuarios Que Más Rentan -->
+        <div class="col-lg-6">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #34c759 0%, #28a745 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-star" style="font-size: 20px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Usuarios Top</h3>
+                        <p class="text-sm mb-0">Lectores más activos del sistema</p>
+                    </div>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="chartUsuariosTop"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Préstamos por Día -->
+        <div class="col-lg-8">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-graph-up-arrow" style="font-size: 20px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Tendencia de Préstamos</h3>
+                        <p class="text-sm mb-0">Última semana</p>
+                    </div>
+                </div>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="chartTendencia"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Devoluciones Pendientes -->
+        <div class="col-lg-4">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #ff3b30 0%, #d62828 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 20px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Devoluciones Retrasadas</h3>
+                        <p class="text-sm mb-0">Préstamos vencidos</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="text-align: center;">
+                    <div style="font-size: 68px; font-weight: 700; color: #ff3b30;">
+                        {{ devoluciones_pendientes }}
+                    </div>
+                    <div style="font-size: 14px; color: #6b6b6f; font-weight: 500;">
+                        Préstamos con retraso
+                    </div>
+                </div>
+                {% if devoluciones_pendientes > 0 %}
+                <div class="alert alert-danger-custom mt-3 mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <small>Requiere atención inmediata</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimas Recomendaciones -->
+    <div class="card-custom p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="mb-1">Últimas recomendaciones</h5>
+                <p class="text-sm mb-0">Historial de envíos recientes</p>
+            </div>
+        </div>
+        <div class="table-custom">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Libros recomendados</th>
+                        <th class="text-center">Email enviado</th>
+                        <th class="text-center">Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in ultimas_rec %}
+                    <tr>
+                        <td><span class="text-md" style="font-weight: 500;">{{ rec.usuario.nombre }}</span></td>
+                        <td><span class="badge-custom">{{ rec.count }} libros</span></td>
+                        <td class="text-center">
+                            {% if rec.email_enviado %}
+                                <span class="badge-status-activo">Sí</span>
+                            {% else %}
+                                <span class="badge-status-vencido">No</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ rec.fecha_creacion.strftime('%d/%m/%Y %H:%M') if rec.fecha_creacion else '' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center text-sm">No hay recomendaciones recientes</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- MODAL: Gestión de Usuarios Biblioteca -->
+<div class="modal fade" id="modalUsuarios" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Gestión de Usuarios Biblioteca</h5>
+                    <p class="text-sm mb-0">Lista completa de usuarios registrados</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-custom">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Facultad</th>
+                                <th>Carrera</th>
+                                <th class="text-center">Registro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios_biblioteca %}
+                            <tr>
+                                <td><span class="badge" style="background: rgba(0, 122, 255, 0.15); color: #007aff;">{{ usuario.id }}</span></td>
+                                <td>
+                                    <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
+                                    <div class="text-sm">{{ usuario.correo or '—' }}</div>
+                                </td>
+                                <td><span class="text-sm">{{ usuario.facultad or '—' }}</span></td>
+                                <td><span class="text-sm">{{ usuario.carrera or '—' }}</span></td>
+                                <td class="text-center">
+                                    <span class="text-xs">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Configuración -->
+<div class="modal fade" id="modalConfiguracion" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('guardar_configuracion') }}">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title mb-1">Configuración del Sistema</h5>
+                        <p class="text-sm mb-0">Ajusta los parámetros generales</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Préstamos -->
+                    <div class="card-custom p-4 mb-3" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="d-flex align-items-center justify-content-center" 
+                                 style="width: 44px; height: 44px; background-color: #1d1d1f; border-radius: 12px;">
+                                <i class="bi bi-calendar" style="font-size: 20px; color: white;"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">
+                                    Políticas de préstamos
+                                </h4>
+                                <p class="text-xs mb-0">Duración y límites</p>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="card-custom p-3" style="background: white;">
+                                    <label class="form-label-custom mb-2">Días de préstamo</label>
+                                    <p class="text-xs mb-2">Duración predeterminada</p>
+                                    <div class="input-group">
+                                        <input type="number" name="dias_prestamo" 
+                                               class="form-control form-control-custom text-center" 
+                                               value="{{ config.get('dias_prestamo', 7) }}"
+                                               min="1" max="90" required style="font-size: 17px;">
+                                        <span class="input-group-text bg-transparent border-start-0">días</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-custom p-3" style="background: white;">
+                                    <label class="form-label-custom mb-2">Límite de libros</label>
+                                    <p class="text-xs mb-2">Máximo por usuario</p>
+                                    <div class="input-group">
+                                        <input type="number" name="limite_libros" 
+                                               class="form-control form-control-custom text-center" 
+                                               value="{{ config.get('limite_libros', 3) }}"
+                                               min="1" max="10" required style="font-size: 17px;">
+                                        <span class="input-group-text bg-transparent border-start-0">libros</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Multas -->
+                    <div class="card-custom p-4 mb-3" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="d-flex align-items-center justify-content-center" 
+                                 style="width: 44px; height: 44px; background-color: #1d1d1f; border-radius: 12px;">
+                                <i class="bi bi-currency-dollar" style="font-size: 20px; color: white;"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">
+                                    Sistema de multas
+                                </h4>
+                                <p class="text-xs mb-0">Tarifas por retrasos y daños</p>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            {% set multas = [
+                                {'clave': 'multa_retraso', 'label': 'Retraso por día', 'desc': 'Cargo diario después de la fecha límite'},
+                                {'clave': 'multa_leve', 'label': 'Daño leve', 'desc': 'Páginas dobladas, marcas menores'},
+                                {'clave': 'multa_moderado', 'label': 'Daño moderado', 'desc': 'Páginas rotas, manchas visibles'},
+                                {'clave': 'multa_grave', 'label': 'Daño grave', 'desc': 'Pérdida total o destrucción del libro'}
+                            ] %}
+                            {% for multa in multas %}
+                            <div class="card-custom p-3 d-flex flex-row justify-content-between align-items-center" 
+                                 style="background: white;">
+                                <div class="flex-fill">
+                                    <div class="text-md" style="font-weight: 500;">{{ multa.label }}</div>
+                                    <p class="text-xs mb-0">{{ multa.desc }}</p>
+                                </div>
+                                <div class="input-group" style="width: 140px;">
+                                    <span class="input-group-text bg-transparent" style="font-size: 17px;">$</span>
+                                    <input type="number" name="{{ multa.clave }}" 
+                                           class="form-control form-control-custom text-center" 
+                                           value="{{ config.get(multa.clave, '0') }}"
+                                           min="0" step="0.01" required style="font-size: 17px;">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill">
+                        <i class="bi bi-check-lg me-2"></i>Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Alertas -->
+<div class="modal fade" id="modalAlertas" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Alertas y Notificaciones</h5>
+                    <p class="text-sm mb-0">Situaciones que requieren atención</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Préstamos con Retraso -->
+                <div class="mb-4">
+                    <h6 class="mb-3" style="font-weight: 600; color: #1d1d1f;">
+                        <i class="bi bi-clock-fill text-danger me-2"></i>Préstamos con retraso
+                    </h6>
+                    {% if alertas_retraso %}
+                    <div class="table-custom">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Libro</th>
+                                    <th class="text-center">Días de retraso</th>
+                                    <th class="text-center">Fecha esperada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prestamo, usuario_nombre, libro_titulo, dias_retraso in alertas_retraso %}
+                                <tr>
+                                    <td><span class="text-md" style="font-weight: 500;">{{ usuario_nombre }}</span></td>
+                                    <td><span class="text-sm">{{ libro_titulo }}</span></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">{{ dias_retraso }} días</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-xs">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success-custom">
+                        <i class="bi bi-check-circle me-2"></i>No hay préstamos con retraso
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Usuarios con Multas -->
+                <div class="mb-4">
+                    <h6 class="mb-3" style="font-weight: 600; color: #1d1d1f;">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Usuarios con multas pendientes
+                    </h6>
+                    {% if usuarios_con_multas %}
+                    <div class="table-custom">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th class="text-end">Total multas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario_nombre, total_multas in usuarios_con_multas %}
+                                <tr>
+                                    <td><span class="text-md" style="font-weight: 500;">{{ usuario_nombre }}</span></td>
+                                    <td class="text-end">
+                                        <span class="badge bg-warning text-dark">${{ "%.2f"|format(total_multas) }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success-custom">
+                        <i class="bi bi-check-circle me-2"></i>No hay multas pendientes
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Inventario Bajo -->
+                <div>
+                    <h6 class="mb-3" style="font-weight: 600; color: #1d1d1f;">
+                        <i class="bi bi-box-seam text-info me-2"></i>Libros con inventario bajo
+                    </h6>
+                    {% if libros_inventario_bajo %}
+                    <div class="table-custom">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th class="text-center">Disponibles</th>
+                                    <th class="text-center">Cantidad total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for libro in libros_inventario_bajo %}
+                                <tr>
+                                    <td><span class="text-md" style="font-weight: 500;">{{ libro.titulo }}</span></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">{{ libro.disponibles }}</span>
+                                    </td>
+                                    <td class="text-center">{{ libro.cantidad }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success-custom">
+                        <i class="bi bi-check-circle me-2"></i>Todos los libros tienen inventario suficiente
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Usuarios del Sistema -->
+<div class="modal fade" id="modalUsuariosSistema" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Usuarios del Sistema</h5>
+                    <p class="text-sm mb-0">Gestionar administradores y bibliotecarios</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuarioSistema">
+                        <i class="bi bi-plus-lg me-2"></i>Nuevo usuario
+                    </button>
+                </div>
+                <div class="table-custom">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th class="text-center">Rol</th>
+                                <th class="text-center">Creado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios_sistema %}
+                            <tr>
+                                <td><div class="text-md" style="font-weight: 500;">{{ usuario.username }}</div></td>
+                                <td class="text-center">
+                                    <span class="badge-custom">{{ usuario.role }}</span>
+                                </td>
+                                <td class="text-center">{{ usuario.created_at.strftime('%d/%m/%Y') if usuario.created_at else '' }}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" 
+                                                data-bs-target="#modalEditarUsuarioSistema"
+                                                data-id="{{ usuario.id }}" data-username="{{ usuario.username }}" 
+                                                data-role="{{ usuario.role }}">
+                                            <i class="bi bi-pencil me-1"></i>Editar
+                                        </button>
+                                        <form method="POST" action="{{ url_for('eliminar_usuario_sistema', user_id=usuario.id) }}" 
+                                              onsubmit="return confirm('¿Eliminar usuario del sistema?');" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger-custom">
+                                                <i class="bi bi-trash me-1"></i>Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Nuevo Usuario Sistema -->
+<div class="modal fade" id="modalNuevoUsuarioSistema" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Nuevo Usuario del Sistema</h5>
+                    <p class="text-sm mb-0">Crear admin o bibliotecario</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('crear_usuario_sistema') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Nombre de usuario</label>
+                        <input type="text" name="username" class="form-control form-control-custom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Contraseña</label>
+                        <input type="password" name="password" class="form-control form-control-custom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Rol</label>
+                        <select name="role" class="form-select form-control-custom" required>
+                            <option value="bibliotecario">Bibliotecario</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill">
+                        <i class="bi bi-check-lg me-2"></i>Crear usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Editar Usuario Sistema -->
+<div class="modal fade" id="modalEditarUsuarioSistema" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Editar Usuario del Sistema</h5>
+                    <p class="text-sm mb-0">Modificar datos o rol</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditarUsuarioSistema">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Nombre de usuario</label>
+                        <input type="text" name="username" id="edit_sys_username" class="form-control form-control-custom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Nueva contraseña (opcional)</label>
+                        <input type="password" name="password" class="form-control form-control-custom" 
+                               placeholder="Dejar en blanco para no cambiar">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Rol</label>
+                        <select name="role" id="edit_sys_role" class="form-select form-control-custom" required>
+                            <option value="bibliotecario">Bibliotecario</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill">
+                        <i class="bi bi-check-lg me-2"></i>Actualizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Datos para los gráficos en formato JSON -->
+<script id="chart-data" type="application/json">
+{{ chart_data|tojson }}
+</script>
+
+<!-- Librerías externas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/admin-charts.js') }}"></script>
+{% endblock %}

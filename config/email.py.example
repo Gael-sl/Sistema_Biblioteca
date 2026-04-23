@@ -1,0 +1,10 @@
+# config/email.py.example
+# Renombra este archivo a email.py y configura tus credenciales SMTP
+
+SMTP_CONFIG = {
+    "HOST": "smtp.gmail.com",
+    "PORT": 587,
+    "USER": "tu_correo@gmail.com",
+    "PASSWORD": "tu_password_de_aplicacion",
+    "SENDER": "tu_correo@gmail.com"
+}

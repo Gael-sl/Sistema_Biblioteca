@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3 d-flex align-items-center gap-3">
+        <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+            <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+        </a>
+        <div>
+            <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">
+                Registro de Usuario
+            </h1>
+            <p class="text-sm mb-0">Crear credencial para nuevo usuario</p>
+        </div>
+    </div>
+</header>
+
+<main class="container py-4">
+    <div class="row g-4">
+        <!-- Columna Formulario -->
+       <div class="col-lg-6">
+            <div class="card-custom p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" 
+                         style="width: 2.5rem; height: 2.5rem; background: #f5f5f7;">
+                        <i class="bi bi-person-plus" style="font-size: 1.25rem; color: #1d1d1f;"></i>
+                    </div>
+                    <h2 class="mb-0" style="font-size: 19px; font-weight: 600;">Datos del Usuario</h2>
+                </div>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label-custom">ID (para QR)</label>
+                        <input type="text" name="id" class="form-control form-control-custom" 
+                               placeholder="Ej: USR001" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Nombre Completo</label>
+                        <input type="text" name="nombre" class="form-control form-control-custom" 
+                               placeholder="Ej: Juan Pérez García" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Correo Electrónico</label>
+                        <input type="email" name="correo" class="form-control form-control-custom" 
+                               placeholder="usuario@universidad.edu">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control form-control-custom" 
+                               placeholder="555-1234">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Facultad</label>
+                        <input type="text" name="facultad" class="form-control form-control-custom" 
+                               placeholder="Ej: Ingeniería">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Carrera</label>
+                        <input type="text" name="carrera" class="form-control form-control-custom" 
+                               placeholder="Ej: Ing. en Sistemas Computacionales">
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill">Cancelar</a>
+                        <button type="submit" class="btn btn-dark-custom flex-fill">
+                            <i class="bi bi-check-lg me-2"></i>Guardar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Columna Preview Credencial -->
+        <div class="col-lg-6">
+            <div class="card-custom p-4 mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0" style="font-size: 19px; font-weight: 600;">Vista Previa</h2>
+                </div>
+                <div class="card-custom text-center" style="min-height: 500px; padding: 4rem 2rem;">
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 5rem; height: 5rem; background: #f5f5f7;">
+                            <i class="bi bi-person-badge" style="font-size: 2.5rem; color: #d2d2d7;"></i>
+                        </div>
+                        <h3 class="mb-2" style="font-size: 19px; color: #1d1d1f; font-weight: 600;">
+                            Vista previa de credencial
+                        </h3>
+                        <p class="text-sm mb-0" style="max-width: 300px;">
+                            Complete el formulario para generar y visualizar la credencial del usuario
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Usuarios -->
+    <div class="mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+            <div>
+                <h2 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Usuarios registrados</h2>
+                <p class="text-sm mb-0">Total de usuarios: <strong>{{ usuarios|length }}</strong></p>
+            </div>
+            <div>
+                <input type="text" id="buscarUsuario" class="form-control form-control-custom" 
+                       placeholder="Buscar usuario..." style="width: 250px;">
+            </div>
+        </div>
+        <div class="table-custom">
+            <table class="table table-custom mb-0" id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Contacto</th>
+                        <th>Facultad / Carrera</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td><span class="badge" style="background: rgba(0, 122, 255, 0.15); color: #007aff; font-size: 12px;">{{ usuario.id }}</span></td>
+                        <td>
+                            <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
+                            <div class="text-sm text-muted">Registrado: {{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</div>
+                        </td>
+                        <td>
+                            <div class="text-sm"><i class="bi bi-envelope me-1"></i>{{ usuario.correo or '—' }}</div>
+                            <div class="text-sm"><i class="bi bi-phone me-1"></i>{{ usuario.telefono or '—' }}</div>
+                        </td>
+                        <td>
+                            <div class="text-sm">{{ usuario.facultad or '—' }}</div>
+                            <div class="text-xs text-muted">{{ usuario.carrera or '' }}</div>
+                        </td>
+                        <td class="text-center">
+                            {% if usuario.activo %}
+                                <span class="badge-status-activo">Activo</span>
+                            {% else %}
+                                <span class="badge-status-vencido">Baja</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
+                                    data-id="{{ usuario.id }}" data-nombre="{{ usuario.nombre }}" data-correo="{{ usuario.correo }}"
+                                    data-telefono="{{ usuario.telefono }}" data-facultad="{{ usuario.facultad }}" data-carrera="{{ usuario.carrera }}"
+                                    data-activo="{{ '1' if usuario.activo else '0' }}">
+                                    <i class="bi bi-pencil me-1"></i>Editar
+                                </button>
+                                <form method="POST" action="{{ url_for('eliminar_usuario_biblioteca', usuario_id=usuario.id) }}" onsubmit="return confirm('¿Dar de baja al usuario?');">
+                                    <button type="submit" class="btn btn-sm btn-danger-custom"><i class="bi bi-trash me-1"></i>Baja</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- MODAL: Editar Usuario -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Editar usuario</h5>
+                    <p class="text-sm mb-0">Actualiza la información</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditarUsuario">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Nombre completo</label>
+                            <input type="text" name="nombre" id="edit_nombre" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Correo</label>
+                            <input type="email" name="correo" id="edit_correo" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Teléfono</label>
+                            <input type="text" name="telefono" id="edit_telefono" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Facultad</label>
+                            <input type="text" name="facultad" id="edit_facultad" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Carrera</label>
+                            <input type="text" name="carrera" id="edit_carrera" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Estado</label>
+                            <select name="activo" id="edit_activo" class="form-select form-control-custom">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill">
+                        <i class="bi bi-check-lg me-2"></i>Actualizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Búsqueda en tabla
+document.getElementById('buscarUsuario')?.addEventListener('keyup', function(e) {
+    const value = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#tablaUsuarios tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(value) ? '' : 'none';
+    });
+});
+
+// Modal edit usuario
+document.getElementById('modalEditarUsuario').addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const id = button.getAttribute('data-id');
+    document.getElementById('edit_nombre').value = button.getAttribute('data-nombre');
+    document.getElementById('edit_correo').value = button.getAttribute('data-correo') || '';
+    document.getElementById('edit_telefono').value = button.getAttribute('data-telefono') || '';
+    document.getElementById('edit_facultad').value = button.getAttribute('data-facultad') || '';
+    document.getElementById('edit_carrera').value = button.getAttribute('data-carrera') || '';
+    document.getElementById('edit_activo').value = button.getAttribute('data-activo') || '1';
+    document.getElementById('formEditarUsuario').action = `/usuarios-biblioteca/${id}/editar`;
+});
+</script>
+{% endblock %}

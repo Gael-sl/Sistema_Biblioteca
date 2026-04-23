@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3 d-flex align-items-center gap-3">
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+            <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+        </a>
+        <div>
+            <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Recomendaciones de libros</h1>
+            <p class="text-sm mb-0">Genera sugerencias y envía por correo</p>
+        </div>
+    </div>
+</header>
+<main class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card-custom p-4">
+                <h5 class="mb-2">Generar para un usuario</h5>
+                <p class="text-sm">Usa el historial de préstamos y popularidad</p>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Selecciona usuario</label>
+                        <select name="usuario_id" class="form-control form-control-custom" required>
+                            <option value="">-- Elegir --</option>
+                            {% for usuario in usuarios %}
+                                <option value="{{ usuario.id }}" {% if seleccionado and seleccionado.id == usuario.id %}selected{% endif %}>{{ usuario.nombre }} ({{ usuario.id }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="enviarCorreo" name="enviar_correo">
+                        <label class="form-check-label" for="enviarCorreo">Enviar por correo si el usuario tiene email</label>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-light-custom flex-fill">Cancelar</a>
+                        <button type="submit" class="btn btn-dark-custom flex-fill"><i class="bi bi-magic me-2"></i>Generar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card-custom p-4 h-100">
+                <h5 class="mb-2">Últimas recomendaciones</h5>
+                <ul class="list-group list-group-flush">
+                    {% for rec in ultimas %}
+                    <li class="list-group-item" style="border:none; padding-left:0; padding-right:0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-md" style="font-weight: 600;">{{ rec.usuario.nombre }}</div>
+                                <div class="text-xs text-muted">{{ rec.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</div>
+                            </div>
+                            <span class="badge" style="background: rgba(52, 199, 89, 0.15); color: #34c759;">{{ rec.count }} libros</span>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item">Sin datos</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% if recomendaciones and seleccionado %}
+    <div class="card-custom p-4 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="mb-1">Sugerencias para {{ seleccionado.nombre }}</h5>
+                <p class="text-sm mb-0">Mostrando hasta 5 títulos</p>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Género</th>
+                        <th class="text-end">Afinidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in recomendaciones %}
+                    <tr>
+                        <td>{{ rec.titulo }}</td>
+                        <td>{{ rec.autor }}</td>
+                        <td>{{ rec.genero }}</td>
+                        <td class="text-end"><span class="badge-custom">{{ rec.score }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

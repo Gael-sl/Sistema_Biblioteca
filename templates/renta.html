@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Renta de Libros</h1>
+                <p class="text-sm mb-0">Préstamo de ejemplares</p>
+            </div>
+        </div>
+    </div>
+</header>
+<main class="container py-4">
+    {% if error %}
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    {% if show_ticket and prestamo %}
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card-custom p-4 mb-3">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 4rem; height: 4rem; background: rgba(52, 199, 89, 0.1);">
+                        <i class="bi bi-check-circle-fill" style="font-size: 2rem; color: #34c759;"></i>
+                    </div>
+                    <h2 class="mb-1" style="font-size: 22px; font-weight: 700; color: #1d1d1f;">Préstamo Registrado</h2>
+                    <p class="text-sm mb-0">Ticket #{{ '%06d'|format(prestamo.id) }}</p>
+                </div>
+                <div id="ticket" class="ticket-card border rounded-4 overflow-hidden mx-auto shadow-sm" style="max-width: 450px; background: white;">
+                    <div class="p-4 text-white" style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <i class="bi bi-book" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h3 class="mb-0" style="font-size: 17px; font-weight: 700;">Ticket de Préstamo</h3>
+                                <p class="mb-0" style="font-size: 12px; opacity: 0.8;">Sistema de Biblioteca</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4 pb-3" style="border-bottom: 2px dashed #e5e5e7;">
+                            <p class="text-uppercase mb-2" style="font-size: 11px; letter-spacing: 1.5px; color: #86868b; font-weight: 600;">Libro Prestado</p>
+                            <h4 class="mb-1" style="font-size: 18px; font-weight: 700; color: #1d1d1f;">{{ libro.titulo }}</h4>
+                            <p class="mb-1" style="font-size: 14px; color: #6e6e73;">{{ libro.autor }}</p>
+                            <p class="mb-0" style="font-size: 12px; color: #86868b;">ISBN: {{ libro.isbn }}</p>
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <p class="text-uppercase mb-1" style="font-size: 10px; letter-spacing: 1px; color: #86868b; font-weight: 600;">Fecha de Préstamo</p>
+                                <p class="mb-0" style="font-size: 16px; font-weight: 700; color: #1d1d1f;">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-uppercase mb-1" style="font-size: 10px; letter-spacing: 1px; color: #86868b; font-weight: 600;">Fecha Límite</p>
+                                <p class="mb-0" style="font-size: 16px; font-weight: 700; color: #ff3b30;">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4 p-3 rounded-3" style="background: #f5f5f7;">
+                            <p class="text-uppercase mb-2" style="font-size: 10px; letter-spacing: 1px; color: #86868b; font-weight: 600;">Usuario</p>
+                            <p class="mb-1" style="font-size: 15px; font-weight: 600; color: #1d1d1f;">{{ usuario.nombre }}</p>
+                            <p class="mb-0" style="font-size: 13px; color: #6e6e73;">ID: {{ usuario.id }}</p>
+                        </div>
+                        {% set garantia = (libro.costo or 0) * 0.20 %}
+                        <div class="mb-4 p-4 rounded-3" style="background: rgba(255, 149, 0, 0.05); border: 1.5px solid rgba(255, 149, 0, 0.2);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="flex-shrink-0">
+                                    <div style="width: 48px; height: 48px; background: rgba(255, 149, 0, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-shield-check" style="font-size: 24px; color: #ff9500;"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-fill">
+                                    <p class="text-uppercase mb-2" style="font-size: 12px; letter-spacing: 0.5px; color: #86868b; font-weight: 600;">Garantía Requerida</p>
+                                    <p class="mb-2" style="font-size: 28px; font-weight: 600; color: #ff9500;">${{ '%.2f'|format(garantia) }}</p>
+                                    <p class="mb-0" style="font-size: 14px; color: #1d1d1f; line-height: 1.6;">Debe dejar el 20% del valor del libro (${{ '%.2f'|format(libro.costo or 0) }}) como garantía.
+                                        <span style="color: #34c759; font-weight: 500;">Este dinero se devolverá al entregar el libro en buen estado.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning-custom mb-0">
+                            <div class="d-flex gap-2">
+                                <i class="bi bi-exclamation-triangle flex-shrink-0" style="font-size: 1.25rem;"></i>
+                                <div>
+                                    <p class="mb-1" style="font-size: 13px; font-weight: 600;">Instrucciones importantes:</p>
+                                    <ul class="mb-0 ps-3" style="font-size: 12px;">
+                                        <li>Devuelve el libro antes de la fecha límite</li>
+                                        <li>Presenta tu credencial al devolver</li>
+                                        <li>La garantía se devuelve si el libro está en buen estado</li>
+                                        <li>Daños o retraso: Se descuentan de tu garantía</li>
+                                        <li>Multa por retraso: ${{ config['multa_retraso'] }} por día</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 text-center" style="background: #fafafa; border-top: 1px solid #e5e5e7;">
+                        <p class="mb-0" style="font-size: 11px; color: #86868b;">Generado el {{ datetime.utcnow().strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button onclick="imprimirElemento('ticket')" class="btn btn-light-custom flex-fill">
+                        <i class="bi bi-printer me-2"></i>Imprimir Ticket
+                    </button>
+                    <a href="{{ url_for('renta') }}" class="btn btn-dark-custom flex-fill">
+                        <i class="bi bi-plus-lg me-2"></i>Nuevo Préstamo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <ul class="nav nav-tabs-custom mb-4" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-escanear-qr" type="button">
+                        <i class="bi bi-qr-code me-2"></i>Escanear QR
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-ver-catalogo" type="button">
+                        <i class="bi bi-book me-2"></i>Ver Catálogo
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="tab-escanear-qr">
+                    <div class="card-custom p-4">
+                        <form method="POST">
+                            <div class="text-center mb-4">
+                                <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 5rem; height: 5rem; background: #f5f5f7; border-radius: 20px;">
+                                    <i class="bi bi-qr-code-scan" style="font-size: 2.5rem; color: #1d1d1f;"></i>
+                                </div>
+                                <h3 class="mb-2" style="font-size: 19px; font-weight: 600; color: #1d1d1f;">Escanea el código QR del usuario</h3>
+                                <p class="text-sm">El ID se completará automáticamente</p>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Código QR del usuario</label>
+                                    <input type="text" name="usuario_id" id="usuario_id_qr" class="form-control form-control-custom" placeholder="Escanea QR o ingresa ID" required autofocus>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Código QR del libro</label>
+                                    <input type="text" name="libro_id" id="libro_id_qr" class="form-control form-control-custom" placeholder="Escanea QR del libro (Ej: QR0001)" required>
+                                    <input type="hidden" id="libro_id_hidden" name="libro_id_real" value="">
+                                </div>
+                            </div>
+                            <div class="alert alert-info-custom mb-4">
+                                <div class="d-flex gap-2">
+                                    <i class="bi bi-info-circle flex-shrink-0"></i>
+                                    <div>
+                                        <strong>Días de préstamo:</strong> {{ config['dias_prestamo'] }} días |
+                                        <strong>Límite:</strong> {{ config['limite_libros'] }} libros por usuario
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill">Cancelar</a>
+                                <button type="submit" name="confirmar_prestamo" value="1" class="btn btn-dark-custom flex-fill">
+                                    <i class="bi bi-check-lg me-2"></i>Confirmar Préstamo
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab-ver-catalogo">
+                    <div class="card-custom p-4">
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label class="form-label-custom">ID del Usuario</label>
+                                <input type="text" name="usuario_id" class="form-control form-control-custom" placeholder="Ingresa el ID del usuario" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-custom">Buscar libro</label>
+                                <input type="text" id="buscarLibro" class="form-control form-control-custom" placeholder="Buscar por título o autor...">
+                            </div>
+                            <div class="table-custom mb-4">
+                                <table class="table table-custom mb-0" id="tablaLibros">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;"></th>
+                                            <th>Título</th>
+                                            <th>Autor</th>
+                                            <th class="text-center">Disponibles</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for libro in libros %}
+                                        <tr>
+                                            <td class="text-center"><input type="radio" name="libro_id" value="{{ libro.id }}" class="form-check-input" required></td>
+                                            <td><div class="text-md" style="font-weight: 500;">{{ libro.titulo }}</div></td>
+                                            <td><span class="text-sm">{{ libro.autor }}</span></td>
+                                            <td class="text-center"><span class="badge-custom">{{ libro.disponibles }}</span></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill">Cancelar</a>
+                                <button type="submit" name="confirmar_prestamo" value="1" class="btn btn-dark-custom flex-fill">
+                                    <i class="bi bi-check-lg me-2"></i>Confirmar Préstamo
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+{% block scripts %}
+<script>
+    buscarEnTabla('buscarLibro', 'tablaLibros');
+</script>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Sistema de Biblioteca</h1>
+                <p class="text-sm mb-0">
+                    Bienvenido, {{ g.user.username }}
+                    <span class="badge badge-custom ms-2">{{ 'Administrador' if g.user.role == 'admin' else 'Bibliotecario' }}</span>
+                </p>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn btn-light-custom" onclick="return confirm('¿Cerrar sesión?');">
+                <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+            </a>
+        </div>
+    </div>
+</header>
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="mb-4">
+                <h2 class="mb-2" style="font-size: 28px; color: #1d1d1f; font-weight: 600;">¿Qué deseas hacer?</h2>
+                <p class="text-sm">Selecciona una opción del menú</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <a href="{{ url_for('inventario') }}" class="card-menu-item">
+                        <div class="card-custom p-4">
+                            <div class="d-flex gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #f5f5f7; border-radius: 14px; flex-shrink: 0;">
+                                    <i class="bi bi-book" style="font-size: 24px; color: #1d1d1f;"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h3 class="mb-1" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">Inventario de libros</h3>
+                                    <p class="text-sm mb-0">Consulta y gestiona el catálogo completo</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-chevron-right" style="font-size: 20px; color: #6e6e73;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ url_for('listar_usuarios_biblioteca') }}" class="card-menu-item">
+                        <div class="card-custom p-4">
+                            <div class="d-flex gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #f5f5f7; border-radius: 14px; flex-shrink: 0;">
+                                    <i class="bi bi-person-plus" style="font-size: 24px; color: #1d1d1f;"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h3 class="mb-1" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">Usuarios biblioteca</h3>
+                                    <p class="text-sm mb-0">Alta, edición y baja de usuarios</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-chevron-right" style="font-size: 20px; color: #6e6e73;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ url_for('renta') }}" class="card-menu-item">
+                        <div class="card-custom p-4">
+                            <div class="d-flex gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #f5f5f7; border-radius: 14px; flex-shrink: 0;">
+                                    <i class="bi bi-box-arrow-right" style="font-size: 24px; color: #1d1d1f;"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h3 class="mb-1" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">Renta de libros</h3>
+                                    <p class="text-sm mb-0">Registra préstamos con escaneo QR</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-chevron-right" style="font-size: 20px; color: #6e6e73;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ url_for('devoluciones') }}" class="card-menu-item">
+                        <div class="card-custom p-4">
+                            <div class="d-flex gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #f5f5f7; border-radius: 14px; flex-shrink: 0;">
+                                    <i class="bi bi-box-arrow-in-left" style="font-size: 24px; color: #1d1d1f;"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h3 class="mb-1" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">Devoluciones</h3>
+                                    <p class="text-sm mb-0">Procesa devoluciones y calcula multas</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-chevron-right" style="font-size: 20px; color: #6e6e73;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% if g.user.role == 'admin' %}
+                <div class="col-md-12">
+                    <a href="{{ url_for('admin_panel') }}" class="card-menu-item">
+                        <div class="card-custom p-4" style="background: linear-gradient(135deg, #1d1d1f 0%, #424245 100%);">
+                            <div class="d-flex gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: rgba(255,255,255,0.15); border-radius: 14px; flex-shrink: 0;">
+                                    <i class="bi bi-speedometer2" style="font-size: 24px; color: white;"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h3 class="mb-1" style="font-size: 17px; color: white; font-weight: 600;">Panel de administración</h3>
+                                    <p class="mb-0" style="font-size: 14px; color: rgba(255,255,255,0.7);">Estadísticas, usuarios y recomendaciones</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-chevron-right" style="font-size: 20px; color: rgba(255,255,255,0.5);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

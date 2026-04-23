@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky">
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('menu') }}" class="btn btn-link p-2 text-decoration-none" style="color: #1d1d1f;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">Inventario de libros</h1>
+                <p class="text-sm mb-0">Gestión del catálogo completo</p>
+            </div>
+        </div>
+    </div>
+</header>
+<main class="container py-4">
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <p class="mb-0 text-md">Total de libros: <strong>{{ libros|length }}</strong></p>
+            </div>
+            <div class="d-flex gap-2">
+                <select id="columnaBusqueda" class="form-select form-control-custom" style="width: auto; padding-right: 35px;">
+                    <option value="todas">Buscar en todos</option>
+                    <option value="1">Título</option>
+                    <option value="2">Autor</option>
+                    <option value="3">ISBN</option>
+                </select>
+                <input type="text" id="buscarLibro" class="form-control form-control-custom" placeholder="Buscar libro..." style="width: 250px;">
+                {% if es_admin() %}
+                <button class="btn btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalAgregarLibro">
+                    <i class="bi bi-plus-lg me-2"></i>Agregar libro
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="table-custom">
+        <table class="table table-custom mb-0" id="tablaLibros">
+            <thead>
+                <tr>
+                    <th>Código QR</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>ISBN</th>
+                    <th class="text-center">Disponibles</th>
+                    {% if es_admin() %}
+                        <th class="text-end">Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for libro in libros %}
+                <tr>
+                    <td>
+                        <span class="badge" style="background: rgba(0, 122, 255, 0.15); color: #007aff; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 600; padding: 6px 10px;">
+                            {{ libro.id }}
+                        </span>
+                    </td>
+                    <td><div class="text-md" style="font-weight: 500;">{{ libro.titulo }}</div></td>
+                    <td><span class="text-sm">{{ libro.autor }}</span></td>
+                    <td><span class="text-xs">{{ libro.isbn }}</span></td>
+                    <td class="text-center"><span class="badge-custom">{{ libro.disponibles }}/{{ libro.cantidad }}</span></td>
+                    {% if es_admin() %}
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2 align-items-center">
+                            <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" data-bs-target="#modalEditarLibro"
+                                data-id="{{ libro.id }}"
+                                data-titulo="{{ libro.titulo }}"
+                                data-autor="{{ libro.autor }}"
+                                data-isbn="{{ libro.isbn }}"
+                                data-genero="{{ libro.genero }}"
+                                data-tags="{{ libro.tags }}"
+                                data-costo="{{ libro.costo }}"
+                                data-cantidad="{{ libro.cantidad }}"
+                                data-disponibles="{{ libro.disponibles }}"
+                                <data-activo="{{ '1' if libro.activo else '0' }}" style="height: 32px; display: flex; align-items: center;">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </button>
+                            <form method="POST" action="{{ url_for('eliminar_libro', libro_id=libro.id) }}" onsubmit="return confirmarEliminacion('¿Dar de baja el libro?');" class="m-0 d-inline-block" style="height: 32px;">
+                                <button type="submit" class="btn btn-sm btn-danger-custom" style="height: 100%; display: flex; align-items: center;"><i class="bi bi-trash me-1"></i>Baja</button>
+                            </form>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% if es_admin() %}
+<div class="modal fade" id="modalAgregarLibro" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Agregar nuevo libro</h5>
+                    <p class="text-sm mb-0">Completa la información del libro</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('agregar_libro') }}">
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-md-9">
+                            <label class="form-label-custom mb-1">Título</label>
+                            <input type="text" name="titulo" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label-custom mb-1">Cantidad</label>
+                            <input type="number" name="cantidad" class="form-control form-control-custom" min="1" value="1" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom mb-1">Autor</label>
+                            <input type="text" name="autor" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom mb-1">ISBN</label>
+                            <input type="text" name="isbn" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom mb-1">Género</label>
+                            <input type="text" name="genero" class="form-control form-control-custom" placeholder="Ej: Romance, Ciencia ficción" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom mb-1">Costo (Garantía: 20%)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="costo" class="form-control form-control-custom" min="0" step="0.01" value="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label-custom mb-1">Tags (separados por comas para búsqueda)</label>
+                            <input type="text" name="tags" class="form-control form-control-custom" placeholder="Ej: aventura,juvenil,fantasia">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer pt-3 pb-2 mt-1 border-top-0">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill">
+                        <i class="bi bi-check-lg me-2"></i>Guardar libro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarLibro" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Editar libro</h5>
+                    <p class="text-sm mb-0">Actualiza la información del ejemplar</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditarLibro">
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-md-9">
+                            <label class="form-label-custom mb-1">Título</label>
+                            <input type="text" name="titulo" id="edit_titulo" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label-custom mb-1">Total</label>
+                            <input type="number" name="cantidad" id="edit_cantidad" class="form-control form-control-custom" min="1" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom mb-1">Autor</label>
+                            <input type="text" name="autor" id="edit_autor" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom mb-1">ISBN</label>
+                            <input type="text" name="isbn" id="edit_isbn" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-custom mb-1">Género</label>
+                            <input type="text" name="genero" id="edit_genero" class="form-control form-control-custom" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-custom mb-1">Costo</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="costo" id="edit_costo" class="form-control form-control-custom" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label-custom mb-1">Disp. actual</label>
+                            <input type="number" name="disponibles" id="edit_disponibles" class="form-control form-control-custom" min="0" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label-custom mb-1">Tags (separados por comas)</label>
+                            <input type="text" name="tags" id="edit_tags" class="form-control form-control-custom">
+                        </div>
+                        <div class="col-md-12 form-check ms-2 mt-1">
+                            <input class="form-check-input" type="checkbox" id="edit_activo" name="activo" value="1">
+                            <label class="form-check-label text-sm" for="edit_activo">Libro activo en catálogo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer pt-3 pb-2 mt-1 border-top-0">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-custom flex-fill"><i class="bi bi-check-lg me-2"></i>Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+    buscarEnTabla('buscarLibro', 'tablaLibros', 'columnaBusqueda');
+    const modalEditar = document.getElementById('modalEditarLibro');
+    if (modalEditar) {
+        modalEditar.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const libroId = button.getAttribute('data-id');
+            document.getElementById('formEditarLibro').action = `/libros/${libroId}/editar`;
+            document.getElementById('edit_titulo').value = button.getAttribute('data-titulo');
+            document.getElementById('edit_autor').value = button.getAttribute('data-autor');
+            document.getElementById('edit_isbn').value = button.getAttribute('data-isbn');
+            document.getElementById('edit_genero').value = button.getAttribute('data-genero');
+            document.getElementById('edit_tags').value = button.getAttribute('data-tags');
+            document.getElementById('edit_costo').value = button.getAttribute('data-costo');
+            document.getElementById('edit_cantidad').value = button.getAttribute('data-cantidad');
+            document.getElementById('edit_disponibles').value = button.getAttribute('data-disponibles');
+            const activo = button.getAttribute('data-activo') === '1';
+            document.getElementById('edit_activo').checked = activo;
+        });
+    }
+</script>
+{% endblock %}
