@@ -14,11 +14,37 @@
     </div>
 </header>
 <main class="container py-2 mb-5 fade-in">
-    <div class="glass-container p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <div>
-            <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Préstamos activos: <strong style="color: #3b82f6;">{{ prestamos|length }}</strong></p>
+
+    {# ── Barra de control (2.3) ──────────────────────────────────────────── #}
+    <div class="glass-container p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <p class="mb-0 text-md" style="font-weight: 600; color: #333;">
+            Préstamos activos: <strong style="color: #3b82f6;" id="contadorVisible">{{ prestamos|length }}</strong>
+        </p>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            {# Filtros de estado #}
+            <div class="d-flex gap-1" style="background: rgba(0,0,0,0.04); border-radius: 10px; padding: 4px;">
+                <button class="btn btn-sm filtro-btn active" data-filtro="todos"
+                    style="border-radius: 8px; font-weight: 600; font-size: 12px; padding: 5px 12px; border: none; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                    Todos
+                </button>
+                <button class="btn btn-sm filtro-btn" data-filtro="activo"
+                    style="border-radius: 8px; font-weight: 600; font-size: 12px; padding: 5px 12px; border: none; background: transparent; color: #059669;">
+                    <i class="bi bi-check-circle me-1"></i>En tiempo
+                </button>
+                <button class="btn btn-sm filtro-btn" data-filtro="vencido"
+                    style="border-radius: 8px; font-weight: 600; font-size: 12px; padding: 5px 12px; border: none; background: transparent; color: #dc2626;">
+                    <i class="bi bi-exclamation-circle me-1"></i>Vencidos
+                </button>
+            </div>
+            {# Búsqueda por usuario o libro #}
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #888; font-size: 14px; z-index: 2;"></i>
+                <input type="text" id="buscarDevolucion" class="form-control form-control-custom ps-5"
+                    placeholder="Buscar usuario o libro..." style="width: 240px; height: 38px; font-size: 13px; border-radius: 10px;" autofocus>
+            </div>
         </div>
     </div>
+
     {% if prestamos|length == 0 %}
     <div class="text-center py-5 glass-container" style="border-style: dashed;">
         <i class="bi bi-inbox" style="font-size: 64px; color: #a1a1aa;"></i>
@@ -26,8 +52,13 @@
         <p class="text-sm text-muted">Todos los libros han sido devueltos</p>
     </div>
     {% else %}
-    <div class="table-responsive">
-        <table class="table-custom mb-0">
+    <div id="sinResultados" style="display:none;" class="text-center py-5 glass-container">
+        <i class="bi bi-search" style="font-size: 48px; color: #a1a1aa;"></i>
+        <h3 class="mt-3" style="font-size: 18px; font-weight: 600; color: #6b7280;">Sin coincidencias</h3>
+        <p class="text-sm text-muted">Prueba con otro término o cambia el filtro</p>
+    </div>
+    <div class="table-responsive" id="tablaWrapper">
+        <table class="table-custom mb-0" id="tablaDevolucion">
             <thead>
                 <tr>
                     <th>Usuario</th>
@@ -40,10 +71,10 @@
             <tbody>
                 {% for prestamo, libro, usuario in prestamos %}
                     {% set fecha_limite = prestamo.fecha_devolucion_esperada %}
-                    {% set hoy = datetime.utcnow().date() %}
+                    {% set hoy = datetime.now(timezone.utc).date() %}
                     {% set dias_retraso = ((hoy - fecha_limite).days if hoy > fecha_limite else 0) %}
                     {% set vencido = dias_retraso > 0 %}
-                <tr>
+                <tr data-estado="{{ 'vencido' if vencido else 'activo' }}" data-search="{{ usuario.nombre|lower }} {{ usuario.id|lower }} {{ libro.titulo|lower }} {{ libro.id|lower }}">
                     <td>
                         <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ usuario.nombre }}</div>
                         <div class="text-xs" style="color: #6b7280; font-family: monospace;">ID: {{ usuario.id }}</div>
@@ -68,10 +99,28 @@
                         {% endif %}
                     </td>
                     <td class="text-end">
-                        <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1d1d1f, #434345); border-radius: 12px; font-weight: 600; padding: 8px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" data-bs-toggle="modal" data-bs-target="#modalDevolucion"
-                                onclick="prepararDevolucion({{ prestamo.id }}, '{{ usuario.id }}', '{{ usuario.nombre }}', '{{ libro.id }}', '{{ libro.titulo }}', '{{ prestamo.fecha_devolucion_esperada }}', {{ dias_retraso }}, {{ config['multa_retraso'] }}, {{ libro.costo or 0 }})">
-                            <i class="bi bi-box-arrow-in-left me-1"></i>Procesar
-                        </button>
+                        <div class="d-flex justify-content-end gap-2">
+                            <form action="{{ url_for('renovar_prestamo', prestamo_id=prestamo.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-light-custom" title="Renovar" style="border-radius: 12px; font-weight: 600; padding: 8px 12px;">
+                                    <i class="bi bi-calendar-plus me-1" style="color: #3b82f6;"></i>Renovar
+                                </button>
+                            </form>
+                            <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1d1d1f, #434345); border-radius: 12px; font-weight: 600; padding: 8px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
+                                    data-bs-toggle="modal" data-bs-target="#modalDevolucion"
+                                    data-prestamo-id="{{ prestamo.id }}"
+                                    data-usuario-id="{{ usuario.id }}"
+                                    data-usuario-nombre="{{ usuario.nombre }}"
+                                    data-libro-id="{{ libro.id }}"
+                                    data-libro-titulo="{{ libro.titulo }}"
+                                    data-fecha-limite="{{ prestamo.fecha_devolucion_esperada }}"
+                                    data-dias-retraso="{{ dias_retraso }}"
+                                    data-multa-dia="{{ config['multa_retraso'] }}"
+                                    data-libro-costo="{{ libro.costo or 0 }}"
+                                    onclick="prepararDevolucion(this)">
+                                <i class="bi bi-box-arrow-in-left me-1"></i>Procesar
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -80,10 +129,13 @@
     </div>
     {% endif %}
 </main>
+
+{# ── Modal Devolución ──────────────────────────────────────────────────── #}
 <div class="modal fade" id="modalDevolucion" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
-            <form method="POST" action="{{ url_for('procesar_devolucion') }}">
+            <form method="POST" action="{{ url_for('procesar_devolucion') }}" id="formDevolucion">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-header border-0 pb-2">
                     <div>
                         <h4 class="modal-title mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-box-arrow-in-left me-2" style="color: #10b981;"></i>Procesar devolución</h4>
@@ -156,41 +208,71 @@
                     <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn text-white flex-fill m-0 py-2" style="background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
-                        <i class="bi bi-check-circle-fill me-2"></i>Confirmar Devolución
+                    {# 2.5 — Botón con spinner anti-doble-click #}
+                    <button type="submit" id="btnConfirmarDevolucion" class="btn text-white flex-fill m-0 py-2" style="background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                        <span id="btnDevolucionText"><i class="bi bi-check-circle-fill me-2"></i>Confirmar Devolución</span>
+                        <span id="btnDevolucionSpinner" style="display:none;">
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>Procesando...
+                        </span>
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<div id="config-data" 
+     data-multa-retraso="{{ config['multa_retraso'] }}"
+     data-multa-leve="{{ config['multa_leve'] }}"
+     data-multa-moderado="{{ config['multa_moderado'] }}"
+     data-multa-grave="{{ config['multa_grave'] }}"
+     style="display: none;">
+</div>
 {% endblock %}
 {% block scripts %}
 <script>
+    const configEl = document.getElementById('config-data');
     let diasRetrasoActual = 0;
-    let multaRetraso = Number({{ config['multa_retraso'] }});
+    let multaRetraso = Number(configEl.getAttribute('data-multa-retraso'));
     const multas = {
-        'leve': Number({{ config['multa_leve'] }}),
-        'moderado': Number({{ config['multa_moderado'] }}),
-        'grave': Number({{ config['multa_grave'] }})
+        'leve': Number(configEl.getAttribute('data-multa-leve')),
+        'moderado': Number(configEl.getAttribute('data-multa-moderado')),
+        'grave': Number(configEl.getAttribute('data-multa-grave'))
     };
 
-    function prepararDevolucion(prestamoId, usuarioId, usuarioNombre, libroId, libroTitulo, fechaLimite, diasRetraso, multaDia, libroCosto) {
+    function prepararDevolucion(btn) {
+        const prestamoId = btn.getAttribute('data-prestamo-id');
+        const usuarioId = btn.getAttribute('data-usuario-id');
+        const usuarioNombre = btn.getAttribute('data-usuario-nombre');
+        const libroId = btn.getAttribute('data-libro-id');
+        const libroTitulo = btn.getAttribute('data-libro-titulo');
+        const fechaLimite = btn.getAttribute('data-fecha-limite');
+        const diasRetraso = Number(btn.getAttribute('data-dias-retraso'));
+        const multaDia = Number(btn.getAttribute('data-multa-dia'));
+        const libroCosto = Number(btn.getAttribute('data-libro-costo'));
+
         diasRetrasoActual = diasRetraso;
         multaRetraso = multaDia;
         document.getElementById('prestamo_id').value = prestamoId;
         document.getElementById('usuario_id').value = usuarioId;
         document.getElementById('libro_titulo').textContent = libroTitulo;
         document.getElementById('usuario_nombre').textContent = usuarioNombre;
-        document.getElementById('fecha_limite').textContent = new Date(fechaLimite).toLocaleDateString('es-MX');
+        document.getElementById('fecha_limite').textContent = new Date(fechaLimite + 'T12:00:00').toLocaleDateString('es-MX');
         document.getElementById('dias_retraso').textContent = diasRetraso > 0 ? diasRetraso + ' días' : 'Sin retraso';
         document.getElementById('libro_costo').value = libroCosto;
+        document.getElementById('estado_libro').value = 'sin_dano';
+
+        // Reset spinner
+        document.getElementById('btnDevolucionText').style.display = '';
+        document.getElementById('btnDevolucionSpinner').style.display = 'none';
+        document.getElementById('btnConfirmarDevolucion').disabled = false;
+
         fetch(`{{ url_for('api_usuario_garantia') }}?id=${encodeURIComponent(usuarioId)}&libro_id=${encodeURIComponent(libroId)}`)
             .then(resp => resp.json())
             .then(data => {
                 if (data.success) {
                     document.getElementById('garantia_usuario').textContent = '$' + parseFloat(data.garantia).toFixed(2);
                     document.getElementById('libro_costo').value = data.libro_costo;
+                    calcularMulta();
                 }
             })
             .catch(() => {});
@@ -207,30 +289,109 @@
             detalle.push(`Retraso (${diasRetrasoActual} días × $${multaRetraso})`);
         }
         if (estadoLibro !== 'sin_dano') {
-            const multaDano = multas[estadoLibro];
+            let multaDano = multas[estadoLibro];
+            if (estadoLibro === 'grave') {
+                const libroCosto = Number(document.getElementById('libro_costo').value) || 0;
+                multaDano += libroCosto;
+                detalle.push(`Daño grave ($${multas['grave'].toFixed(2)} + Costo de libro $${libroCosto.toFixed(2)})`);
+            } else {
+                detalle.push(`Daño ${estadoLibro} ($${multaDano})`);
+            }
             multaTotal += multaDano;
-            detalle.push(`Daño ${estadoLibro} ($${multaDano})`);
         }
         document.getElementById('multa_total').textContent = '$' + multaTotal.toFixed(2);
         document.getElementById('multa_monto').value = multaTotal;
         document.getElementById('detalle_multa').textContent = detalle.length ? detalle.join(' + ') : 'Sin multas';
+
         const garantiaTexto = document.getElementById('garantia_usuario').textContent.replace('$', '').replace(',', '');
         const garantiaUsuario = parseFloat(garantiaTexto) || 0;
         const montoDevolver = Math.max(0, garantiaUsuario - multaTotal);
-        let resumenHTML = `<div style="margin-top:15px; padding:15px; background:rgba(76,175,80,0.1); border-left:4px solid #4CAF50; border-radius:8px;">
-            <strong style="color:#2E7D32;">Resumen de devolución:</strong><br>
-            <span style="font-size:14px;">Garantía depositada: <strong>$${garantiaUsuario.toFixed(2)}</strong></span><br>
-            <span style="font-size:14px;">Multas a descontar: <strong style="color:#d32f2f;">-$${multaTotal.toFixed(2)}</strong></span><br>
-            <hr style="margin:10px 0; border-color:rgba(46,125,50,0.3);">
-            <span style="font-size:16px; color:#2E7D32;"><strong>Monto a devolver: $${montoDevolver.toFixed(2)}</strong></span>
-        </div>`;
+
         let resumenDiv = document.getElementById('resumen_devolucion');
         if (!resumenDiv) {
             resumenDiv = document.createElement('div');
             resumenDiv.id = 'resumen_devolucion';
             document.getElementById('detalle_multa').parentElement.parentElement.appendChild(resumenDiv);
         }
-        resumenDiv.innerHTML = resumenHTML;
+        resumenDiv.innerHTML = `
+            <div style="margin-top:15px; padding:14px; background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); border-radius:12px;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span style="font-size:13px; color:#374151; font-weight:600;">Garantía depositada</span>
+                    <strong style="color:#1d1d1f;">$${garantiaUsuario.toFixed(2)}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span style="font-size:13px; color:#374151; font-weight:600;">Multas a descontar</span>
+                    <strong style="color:#dc2626;">-$${multaTotal.toFixed(2)}</strong>
+                </div>
+                <hr style="margin:8px 0; border-color:rgba(16,185,129,0.2);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="font-size:14px; color:#059669; font-weight:700;">Monto a devolver</span>
+                    <strong style="font-size:18px; color:#059669;">$${montoDevolver.toFixed(2)}</strong>
+                </div>
+            </div>`;
+    }
+
+    // 2.5 — Spinner anti-doble-click
+    document.getElementById('formDevolucion').addEventListener('submit', function() {
+        const btn = document.getElementById('btnConfirmarDevolucion');
+        btn.disabled = true;
+        document.getElementById('btnDevolucionText').style.display = 'none';
+        document.getElementById('btnDevolucionSpinner').style.display = '';
+    });
+
+    // 2.3 — Filtros y búsqueda en la tabla de devoluciones
+    let filtroActivo = 'todos';
+
+    function aplicarFiltros() {
+        const q = (document.getElementById('buscarDevolucion')?.value || '').toLowerCase().trim();
+        const filas = document.querySelectorAll('#tablaDevolucion tbody tr');
+        let visibles = 0;
+        filas.forEach(fila => {
+            const estado = fila.dataset.estado;
+            const texto = fila.dataset.search || '';
+            const passEstado = filtroActivo === 'todos' || estado === filtroActivo;
+            const passBusqueda = !q || texto.includes(q);
+            const mostrar = passEstado && passBusqueda;
+            fila.style.display = mostrar ? '' : 'none';
+            if (mostrar) visibles++;
+        });
+        const contador = document.getElementById('contadorVisible');
+        if (contador) contador.textContent = visibles;
+        const sinRes = document.getElementById('sinResultados');
+        const tabla = document.getElementById('tablaWrapper');
+        if (sinRes && tabla) {
+            sinRes.style.display = visibles === 0 ? '' : 'none';
+            tabla.style.display = visibles === 0 ? 'none' : '';
+        }
+    }
+
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            filtroActivo = this.dataset.filtro;
+            document.querySelectorAll('.filtro-btn').forEach(b => {
+                b.style.background = 'transparent';
+                b.style.boxShadow = 'none';
+            });
+            this.style.background = 'white';
+            this.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+            aplicarFiltros();
+        });
+    });
+
+    const searchInput = document.getElementById('buscarDevolucion');
+    if (searchInput) {
+        searchInput.addEventListener('input', aplicarFiltros);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                aplicarFiltros();
+                const filasVisibles = document.querySelectorAll('#tablaDevolucion tbody tr:not([style*="display: none"])');
+                if (filasVisibles.length === 1) {
+                    const btnProcesar = filasVisibles[0].querySelector('button[data-bs-target="#modalDevolucion"]');
+                    if (btnProcesar) btnProcesar.click();
+                }
+            }
+        });
     }
 </script>
 {% endblock %}

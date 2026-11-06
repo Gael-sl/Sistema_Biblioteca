@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky navbar-glass mb-4">
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Log de Auditoría</h1>
+                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Registro histórico de todas las acciones del sistema</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container py-2 mb-5 fade-in">
+    <div class="glass-container p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Últimas acciones registradas: <strong style="color: #3b82f6;">{{ logs|length }}</strong></p>
+            </div>
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666;"></i>
+                <input type="text" id="buscarLog" class="form-control form-control-custom ps-5" placeholder="Filtrar logs..." style="width: 280px;">
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-custom mb-0" id="tablaLogs">
+            <thead>
+                <tr>
+                    <th class="ps-4">Fecha y Hora</th>
+                    <th>Usuario (Admin)</th>
+                    <th>Acción</th>
+                    <th>Detalle</th>
+                    <th class="text-end pe-4">Dirección IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log, admin in logs %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="text-sm fw-bold" style="color: #1d1d1f;">{{ log.fecha.strftime('%d/%m/%Y') }}</div>
+                        <div class="text-xs text-muted">{{ log.fecha.strftime('%H:%M:%S') }}</div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(59, 130, 246, 0.1); color: #2563eb;">
+                                <i class="bi bi-person-badge"></i>
+                            </div>
+                            <div class="text-sm fw-semibold">{{ admin.username if admin else 'Sistema' }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        {% set color = 'primary' %}
+                        {% if 'Baja' in log.accion or 'Eliminar' in log.accion %}{% set color = 'danger' %}
+                        {% elif 'Pago' in log.accion or 'Devolución' in log.accion %}{% set color = 'success' %}
+                        {% elif 'Login' in log.accion %}{% set color = 'info' %}
+                        {% elif 'Editar' in log.accion %}{% set color = 'warning' %}
+                        {% endif %}
+                        <span class="badge bg-{{ color }}-subtle text-{{ color }}" style="border-radius: 8px; font-weight: 700; padding: 6px 12px;">
+                            {{ log.accion }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="text-sm" style="max-width: 400px; white-space: normal; line-height: 1.4;">{{ log.detalle }}</div>
+                    </td>
+                    <td class="text-end pe-4">
+                        <code class="text-xs" style="color: #6b7280; background: rgba(0,0,0,0.03); padding: 2px 6px; border-radius: 4px;">{{ log.ip }}</code>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    buscarEnTabla('buscarLog', 'tablaLogs');
+    paginarTabla('tablaLogs', 15);
+</script>
+{% endblock %}

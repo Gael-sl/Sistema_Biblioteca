@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky navbar-glass mb-4">
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Reservas Activas</h1>
+                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Gestión de libros apartados por los usuarios</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container py-2 mb-5 fade-in">
+    <div class="glass-container p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Total de reservas: <strong style="color: #3b82f6;">{{ reservas|length }}</strong></p>
+            </div>
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666;"></i>
+                <input type="text" id="buscarReserva" class="form-control form-control-custom ps-5" placeholder="Filtrar por usuario o libro..." style="width: 280px;">
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-custom mb-0" id="tablaReservas">
+            <thead>
+                <tr>
+                    <th class="ps-4">Usuario</th>
+                    <th>Libro</th>
+                    <th class="text-center">Fecha Reserva</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-end pe-4">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva, usuario, libro in reservas %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="text-sm fw-bold" style="color: #1d1d1f;">{{ usuario.nombre }}</div>
+                        <div class="text-xs text-muted">ID: {{ usuario.id }}</div>
+                    </td>
+                    <td>
+                        <div class="text-sm fw-bold" style="color: #1d1d1f;">{{ libro.titulo }}</div>
+                        <div class="text-xs text-muted">ID: {{ libro.id }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="text-sm">{{ reserva.fecha_reserva.strftime('%d/%m/%Y') }}</div>
+                        <div class="text-xs text-muted">{{ reserva.fecha_reserva.strftime('%H:%M') }}</div>
+                    </td>
+                    <td class="text-center">
+                        {% if reserva.estado == 'pendiente' %}
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #d97706; border-radius: 8px;">Pendiente</span>
+                        {% elif reserva.estado == 'activa' %}
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 8px;">Lista para recolección</span>
+                        {% elif reserva.estado == 'completada' %}
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-radius: 8px;">Completada</span>
+                        {% else %}
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #dc2626; border-radius: 8px;">Cancelada</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-4">
+                        {% if reserva.estado in ['pendiente', 'activa'] %}
+                            <form action="{{ url_for('cancelar_reserva', reserva_id=reserva.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm" title="Cancelar reserva" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #dc2626; border-radius: 12px;">
+                                    Cancelar
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <i class="bi bi-journal-bookmark-fill" style="font-size: 40px; color: #a1a1aa;"></i>
+                        <p class="mt-2 text-muted">No hay reservas registradas.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    buscarEnTabla('buscarReserva', 'tablaReservas');
+    paginarTabla('tablaReservas', 10);
+</script>
+{% endblock %}

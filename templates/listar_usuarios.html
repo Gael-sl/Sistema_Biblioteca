@@ -65,21 +65,25 @@
                         <span class="text-xs">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</span>
                     </td>
                     <td class="text-center">
-                        {% if usuario.activo %}
-                            <span class="badge-status-activo">Activo</span>
-                        {% else %}
+                        {% if not usuario.activo %}
                             <span class="badge-status-vencido">Baja</span>
+                        {% elif usuario.estado == 'suspendido' %}
+                            <span class="badge-status-vencido">Suspendido</span>
+                        {% else %}
+                            <span class="badge-status-activo">Activo</span>
                         {% endif %}
                     </td>
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2 align-items-center">
+                            <a href="{{ url_for('historial_usuario', usuario_id=usuario.id) }}" class="btn btn-sm btn-light-custom text-decoration-none" title="Ver historial y multas" style="height: 32px; display: flex; align-items: center;"><i class="bi bi-clock-history me-1"></i>Historial</a>
                             <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
                                 data-id="{{ usuario.id }}" data-nombre="{{ usuario.nombre }}" data-correo="{{ usuario.correo }}"
                                 data-telefono="{{ usuario.telefono }}" data-facultad="{{ usuario.facultad }}" data-carrera="{{ usuario.carrera }}"
-                                data-activo="{{ '1' if usuario.activo else '0' }}" style="height: 32px; display: flex; align-items: center;">
+                                data-activo="{{ '1' if usuario.activo else '0' }}" data-estado="{{ usuario.estado }}" style="height: 32px; display: flex; align-items: center;">
                                 <i class="bi bi-pencil me-1"></i>Editar
                             </button>
                             <form method="POST" action="{{ url_for('eliminar_usuario_biblioteca', usuario_id=usuario.id) }}" onsubmit="event.preventDefault(); const form = this; showConfirm('¿Dar de baja al usuario?', 'Confirmar Baja', () => form.submit());" class="m-0 d-inline-block" style="height: 32px;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-danger-custom" style="height: 100%; display: flex; align-items: center;"><i class="bi bi-trash me-1"></i>Baja</button>
                             </form>
                         </div>
@@ -115,6 +119,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditarUsuario">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -138,10 +143,17 @@
                             <input type="text" name="carrera" id="edit_carrera" class="form-control form-control-custom">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom">Estado</label>
+                            <label class="form-label-custom">Estado Cuenta</label>
                             <select name="activo" id="edit_activo" class="form-select form-control-custom">
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Estado Administrativo</label>
+                            <select name="estado" id="edit_estado" class="form-select form-control-custom">
+                                <option value="activo">Activo (Sin sanciones)</option>
+                                <option value="suspendido">Suspendido (Con sanciones)</option>
                             </select>
                         </div>
                     </div>
@@ -178,6 +190,7 @@ document.getElementById('modalEditarUsuario').addEventListener('show.bs.modal', 
     document.getElementById('edit_facultad').value = button.getAttribute('data-facultad') || '';
     document.getElementById('edit_carrera').value = button.getAttribute('data-carrera') || '';
     document.getElementById('edit_activo').value = button.getAttribute('data-activo') || '1';
+    document.getElementById('edit_estado').value = button.getAttribute('data-estado') || 'activo';
     document.getElementById('formEditarUsuario').action = `/usuarios-biblioteca/${id}/editar`;
 });
 </script>

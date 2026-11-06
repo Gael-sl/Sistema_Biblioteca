@@ -1,4 +1,6 @@
 import json
+import math
+import re
 from collections import Counter
 
 class SistemaRecomendacion:
@@ -42,7 +44,7 @@ class SistemaRecomendacion:
                 
         return score
 
-    def generar_recomendaciones(self, limite=5):
+    def generar_recomendaciones(self, limite=3):
         if not self.prestamos_usuario:
             return []
 
@@ -79,8 +81,8 @@ class SistemaRecomendacion:
             disp = float(l.disponibles or 0)
             matrix.append([sim, pop, disp])
 
-        # SAW: normalizar con máximos y aplicar pesos (similitud 0.7, popularidad 0.1, disponibilidad 0.2)
-        pesos = {"sim": 0.7, "pop": 0.1, "disp": 0.2}
+        # SAW: normalizar con máximos y aplicar pesos (similitud 0.5, popularidad 0.3, disponibilidad 0.2)
+        pesos = {"sim": 0.5, "pop": 0.3, "disp": 0.2}
         max_sim = max((row[0] for row in matrix), default=0) or 1
         max_pop = max((row[1] for row in matrix), default=0) or 1
         max_disp = max((row[2] for row in matrix), default=0) or 1
@@ -88,25 +90,109 @@ class SistemaRecomendacion:
         scores = []
         for idx, libro in enumerate(candidatos):
             sim_norm = matrix[idx][0] / max_sim
-            pop_norm = matrix[idx][1] / max_pop
-            disp_norm = matrix[idx][2] / max_disp
+            pop_norm = math.sqrt(matrix[idx][1]) / math.sqrt(max_pop)
+            disp_norm = math.sqrt(matrix[idx][2]) / math.sqrt(max_disp)
             score = round(
                 (sim_norm * pesos["sim"]) + (pop_norm * pesos["pop"]) + (disp_norm * pesos["disp"]),
                 4,
             )
             scores.append((libro, round(score * 100, 2)))
 
+        # Ajuste de porcentaje por autor + genero para evitar saltos bruscos
+        grupo_promedio = {}
+        grupo_count = {}
+        for libro, sc in scores:
+            autor_key = (libro.autor or "").strip().lower()
+            genero_key = (libro.genero or "").strip().lower()
+            key = (autor_key, genero_key)
+            grupo_promedio[key] = grupo_promedio.get(key, 0.0) + sc
+            grupo_count[key] = grupo_count.get(key, 0) + 1
+
+        for key in list(grupo_promedio.keys()):
+            if grupo_count[key]:
+                grupo_promedio[key] = round(grupo_promedio[key] / grupo_count[key], 2)
+
+        scores_ajustados = []
+        for libro, sc in scores:
+            autor_key = (libro.autor or "").strip().lower()
+            genero_key = (libro.genero or "").strip().lower()
+            key = (autor_key, genero_key)
+            promedio = grupo_promedio.get(key, sc)
+            sc_ajustado = round((sc * 0.6) + (promedio * 0.4), 2)
+            scores_ajustados.append((libro, sc_ajustado))
+
+        # Agrupar ediciones similares (mismo titulo base + autor)
+        def _titulo_base(titulo):
+            base = (titulo or "").strip().lower()
+            base = re.sub(r"\(.*?\)", "", base)
+            base = re.sub(r"\s+-\s+.*$", "", base)
+            base = re.sub(r"\s+", " ", base)
+            return base.strip()
+
+        agrupados = {}
+        for libro, sc in scores_ajustados:
+            base = _titulo_base(libro.titulo)
+            autor_key = (libro.autor or "").strip().lower()
+            key = (base, autor_key)
+            if key not in agrupados or sc > agrupados[key][1]:
+                agrupados[key] = (libro, sc)
+
+        scores = list(agrupados.values())
+
         scores.sort(key=lambda x: x[1], reverse=True)
-        top = scores[:limite]
+        
+        # Lógica de Diversificación (2 del género más popular + 1 nuevo género)
+        genero_principal = None
+        if perfil['generos']:
+            top_genero = perfil['generos'].most_common(1)[0]
+            if top_genero[1] >= 2:
+                genero_principal = top_genero[0]
 
         resultado = []
+        if genero_principal and limite >= 3:
+            mismo_genero = []
+            distinto_genero = []
+            
+            for l, sc in scores:
+                gen_libro = (l.genero or "").strip().lower()
+                if gen_libro == genero_principal and len(mismo_genero) < 2:
+                    mismo_genero.append((l, sc))
+                elif gen_libro != genero_principal and len(distinto_genero) < 1:
+                    distinto_genero.append((l, sc))
+            
+            if len(mismo_genero) == 2 and len(distinto_genero) >= 1:
+                # 2 del mismo género
+                for l, sc in mismo_genero:
+                    resultado.append({
+                        "libro_id": l.id,
+                        "titulo": l.titulo,
+                        "autor": l.autor,
+                        "genero": l.genero,
+                        "score": sc,
+                        "razon": f"Coincide con tu gusto principal por el género {l.genero}"
+                    })
+                # 1 diferente para ampliar gustos
+                for l, sc in distinto_genero:
+                    resultado.append({
+                        "libro_id": l.id,
+                        "titulo": l.titulo,
+                        "autor": l.autor,
+                        "genero": l.genero,
+                        "score": sc,
+                        "razon": "Para ampliar tus gustos, una excelente opción de un género distinto"
+                    })
+                return resultado
+                
+        # Fallback si no cumple reglas de diversificación (ej. menos de 2 rentas de un género)
+        top = scores[:limite]
         for l, sc in top:
             resultado.append({
                 "libro_id": l.id,
                 "titulo": l.titulo,
                 "autor": l.autor,
                 "genero": l.genero,
-                "score": sc
+                "score": sc,
+                "razon": "Te lo recomendamos basado en tus préstamos recientes"
             })
 
         return resultado

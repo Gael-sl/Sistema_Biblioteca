@@ -74,69 +74,96 @@
 </style>
 
 <header class="header-sticky">
-    <div class="container py-3 d-flex align-items-center gap-3">
-        <a href="{{ url_for('listar_usuarios_biblioteca') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
-            <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
-        </a>
-        <div>
-            <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">
-                Registro de Usuario
-            </h1>
-            <p class="text-sm mb-0" style="color: #6c757d;">Crear credencial para nuevo usuario</p>
+    <div class="container py-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 20px; color: #1d1d1f; font-weight: 600;">
+                    Registro de Usuario
+                </h1>
+                <p class="text-sm mb-0" style="color: #6c757d;">Crear credencial para nuevo usuario</p>
+            </div>
         </div>
+        <a href="{{ url_for('usuarios.listar_usuarios_biblioteca') }}" class="btn btn-outline-secondary" style="border-radius: 10px; font-weight: 600;">
+            <i class="bi bi-people me-2"></i>Usuarios Registrados
+        </a>
     </div>
 </header>
 
-<main class="container py-4">
+<main class="container py-2 pb-4">
     <div class="row g-4">
         <!-- Columna Formulario -->
         <div class="col-lg-5">
-            <div class="card-custom p-4">
-                <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="card-custom p-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
                     <div class="d-flex align-items-center justify-content-center rounded-circle" 
-                         style="width: 2.5rem; height: 2.5rem; background: #f5f5f7;">
-                        <i class="bi bi-person-plus" style="font-size: 1.25rem; color: #1d1d1f;"></i>
+                         style="width: 2.2rem; height: 2.2rem; background: #f5f5f7;">
+                        <i class="bi bi-person-plus" style="font-size: 1.1rem; color: #1d1d1f;"></i>
                     </div>
-                    <h2 class="mb-0" style="font-size: 18px; font-weight: 600;">Datos del Usuario</h2>
+                    <h2 class="mb-0" style="font-size: 16px; font-weight: 600;">Datos del Usuario</h2>
                 </div>
                 <form id="formUsuario">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: 600; font-size: 14px; color: #1d1d1f;">Nombre Completo</label>
+                    <div class="mb-2">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Nombre Completo</label>
                         <input type="text" id="nombre" class="form-control" 
-                               style="border-radius: 10px; padding: 12px; border: 1px solid #e0e0e0;"
+                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
                                placeholder="">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: 600; font-size: 14px; color: #1d1d1f;">Correo Electrónico</label>
+                    <div class="mb-2">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Correo Electrónico</label>
                         <input type="email" id="correo" class="form-control" 
-                               style="border-radius: 10px; padding: 12px; border: 1px solid #e0e0e0;"
+                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
+                               placeholder="">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Tipo de Usuario</label>
+                        <select id="tipo_usuario" class="form-select" style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;">
+                            <option value="interno" selected>Interno (Alumno)</option>
+                            <option value="externo">Externo</option>
+                        </select>
+                    </div>
+                    <div class="mb-2" id="grupoCuenta">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">No. de Cuenta</label>
+                        <input type="text" id="numero_cuenta" class="form-control" 
+                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;" inputmode="numeric" placeholder="Ej: 1234567-8">
+                        <div style="font-size: 11px; color: #6c757d; margin-top: 3px;">Solo números, con guion opcional antes del último dígito.</div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Facultad</label>
+                        <input type="text" id="facultad" class="form-control" 
+                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
                                placeholder="">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" style="font-weight: 600; font-size: 14px; color: #1d1d1f;">Facultad</label>
-                        <input type="text" id="facultad" class="form-control" 
-                               style="border-radius: 10px; padding: 12px; border: 1px solid #e0e0e0;"
-                               placeholder="">
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label" style="font-weight: 600; font-size: 14px; color: #1d1d1f;">Carrera</label>
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Carrera</label>
                         <input type="text" id="carrera" class="form-control" 
-                               style="border-radius: 10px; padding: 12px; border: 1px solid #e0e0e0;"
+                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
                                placeholder="">
                     </div>
-                    <div class="d-grid gap-2">
-                        <button type="button" id="btnPreview" class="btn btn-dark" 
-                                style="border-radius: 10px; padding: 12px; font-weight: 600; background: #111827; border: none;">
+                    <div class="d-flex flex-column gap-2">
+                        <button type="button" id="btnPreview" class="btn btn-dark w-100" 
+                                style="border-radius: 8px; padding: 10px; font-weight: 600; background: #111827; border: none;">
                             <i class="bi bi-eye me-2"></i>Ver Vista Previa
                         </button>
-                        <button type="button" id="btnEditar" class="btn btn-outline-secondary" 
-                                style="border-radius: 10px; padding: 12px; font-weight: 500; display: none;">
-                            <i class="bi bi-pencil me-2"></i>Corregir Datos
-                        </button>
-                        <button type="button" id="btnConfirmar" class="btn btn-dark" 
-                                style="border-radius: 10px; padding: 12px; font-weight: 600; display: none; background: #111827; border: none;">
-                            <i class="bi bi-check-lg me-2"></i>Confirmar y Guardar
-                        </button>
+                        
+                        <div id="actionButtons" style="display: none;">
+                            <button type="button" id="btnConfirmar" class="btn btn-dark w-100 mb-2" 
+                                    style="border-radius: 8px; padding: 10px; font-weight: 600; background: #111827; border: none;">
+                                <i class="bi bi-check-lg me-2"></i>Confirmar y Guardar
+                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" id="btnEditar" class="btn btn-outline-secondary flex-fill" 
+                                        style="border-radius: 8px; padding: 8px; font-weight: 500; font-size: 13px;">
+                                    <i class="bi bi-pencil me-1"></i>Corregir
+                                </button>
+                                <a href="{{ url_for('menu') }}" id="btnCancelar" class="btn btn-light-custom flex-fill" 
+                                        style="border-radius: 8px; padding: 8px; font-weight: 500; font-size: 13px;">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -185,7 +212,7 @@
                     </div>
                     
                     <div class="credential-body">
-                        <div class="student-badge">ESTUDIANTE</div>
+                        <div class="student-badge" id="previewTipoUsuario">No. cuenta: -</div>
                         <div class="row">
                             <div class="col-7">
                                 <div class="student-name" id="previewNombre">-</div>
@@ -236,6 +263,21 @@
 <script>
 let qrcodeInstance = null;
 let generatedId = null;
+const cuentaRegex = /^\d+(-\d)?$/;
+
+function toggleCuentaField() {
+    const tipo = document.getElementById('tipo_usuario').value;
+    const grupo = document.getElementById('grupoCuenta');
+    if (tipo === 'externo') {
+        grupo.style.display = 'none';
+        document.getElementById('numero_cuenta').value = '';
+    } else {
+        grupo.style.display = 'block';
+    }
+}
+
+document.getElementById('tipo_usuario').addEventListener('change', toggleCuentaField);
+toggleCuentaField();
 
 // Generar ID único
 function generateUniqueId() {
@@ -248,12 +290,25 @@ function generateUniqueId() {
 document.getElementById('btnPreview').addEventListener('click', function() {
     const nombre = document.getElementById('nombre').value.trim();
     const correo = document.getElementById('correo').value.trim();
+    const tipoUsuario = document.getElementById('tipo_usuario').value;
+    const numeroCuenta = document.getElementById('numero_cuenta').value.trim();
     const facultad = document.getElementById('facultad').value.trim();
     const carrera = document.getElementById('carrera').value.trim();
     
     if (!nombre || !correo) {
         showAlert('Por favor complete al menos el nombre y correo electrónico', 'Aviso', 'warning');
         return;
+    }
+
+    if (tipoUsuario === 'interno') {
+        if (!numeroCuenta) {
+            showAlert('Ingresa el número de cuenta para usuarios internos', 'Aviso', 'warning');
+            return;
+        }
+        if (!cuentaRegex.test(numeroCuenta)) {
+            showAlert('El número de cuenta solo permite números y un guion antes del último dígito', 'Aviso', 'warning');
+            return;
+        }
     }
     
     // Generar ID si no existe
@@ -267,6 +322,9 @@ document.getElementById('btnPreview').addEventListener('click', function() {
     document.getElementById('previewFacultad').textContent = facultad || 'No especificado';
     document.getElementById('previewCarrera').textContent = carrera || 'No especificado';
     document.getElementById('previewId').textContent = generatedId;
+    document.getElementById('previewTipoUsuario').textContent = tipoUsuario === 'externo'
+        ? 'Usuario externo'
+        : `No. cuenta: ${numeroCuenta}`;
     
     // Fecha actual
     const hoy = new Date();
@@ -292,11 +350,10 @@ document.getElementById('btnPreview').addEventListener('click', function() {
     
     // Cambiar botones
     this.style.display = 'none';
-    document.getElementById('btnEditar').style.display = 'block';
-    document.getElementById('btnConfirmar').style.display = 'block';
+    document.getElementById('actionButtons').style.display = 'block';
     
     // Deshabilitar formulario
-    document.querySelectorAll('#formUsuario input').forEach(input => input.disabled = true);
+    document.querySelectorAll('#formUsuario input, #formUsuario select').forEach(input => input.disabled = true);
 });
 
 // Botón Corregir Datos
@@ -308,11 +365,11 @@ document.getElementById('btnEditar').addEventListener('click', function() {
     
     // Cambiar botones
     document.getElementById('btnPreview').style.display = 'block';
-    this.style.display = 'none';
-    document.getElementById('btnConfirmar').style.display = 'none';
+    document.getElementById('actionButtons').style.display = 'none';
     
     // Habilitar formulario
-    document.querySelectorAll('#formUsuario input').forEach(input => input.disabled = false);
+    document.querySelectorAll('#formUsuario input, #formUsuario select').forEach(input => input.disabled = false);
+    toggleCuentaField();
 });
 
 // Botón Confirmar y Guardar
@@ -321,6 +378,8 @@ document.getElementById('btnConfirmar').addEventListener('click', function() {
         id: generatedId,
         nombre: document.getElementById('nombre').value.trim(),
         correo: document.getElementById('correo').value.trim(),
+        tipo_usuario: document.getElementById('tipo_usuario').value,
+        numero_cuenta: document.getElementById('numero_cuenta').value.trim(),
         facultad: document.getElementById('facultad').value.trim(),
         carrera: document.getElementById('carrera').value.trim()
     };
@@ -331,7 +390,8 @@ document.getElementById('btnConfirmar').addEventListener('click', function() {
     fetch('{{ url_for("crear_usuario_biblioteca") }}', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify(formData)
     })

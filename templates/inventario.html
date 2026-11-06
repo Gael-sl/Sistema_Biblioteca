@@ -25,16 +25,24 @@
                     <option value="1">Título</option>
                     <option value="2">Autor</option>
                     <option value="3">ISBN</option>
+                    <option value="qr">ID o QR</option>
                 </select>
                 <div class="position-relative">
                     <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666;"></i>
                     <input type="text" id="buscarLibro" class="form-control form-control-custom ps-5" placeholder="Buscar libro..." style="width: 250px;">
                 </div>
-                {% if es_admin() %}
-                <button class="btn btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalAgregarLibro">
-                    <i class="bi bi-plus-lg me-2"></i>Agregar libro
-                </button>
-                {% endif %}
+                <div class="d-flex gap-2">
+            {% if session.get('ultimos_ids_agregados') %}
+            <a href="{{ url_for('imprimir_qrs') }}" class="btn btn-light-custom d-flex align-items-center gap-2" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.2);">
+                <i class="bi bi-qr-code"></i> Imprimir Lote Reciente
+            </a>
+            {% endif %}
+            {% if es_admin() %}
+            <button class="btn btn-dark-custom d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalAgregarLibro">
+                <i class="bi bi-plus-lg"></i> Agregar Libro
+            </button>
+            {% endif %}
+        </div>
             </div>
         </div>
     </div>
@@ -43,7 +51,7 @@
         <table class="table-custom mb-0" id="tablaLibros">
             <thead>
                 <tr>
-                    <th>Código QR</th>
+                    <th>Identificador / Ejemplares</th>
                     <th>Título</th>
                     <th>Autor</th>
                     <th>ISBN</th>
@@ -55,48 +63,104 @@
             </thead>
             <tbody>
                 {% for libro in libros %}
-                <tr>
+                <tr data-ids="{{ libro.ids|join(',')|lower }}" data-titulo="{{ libro.titulo|lower }}" data-autor="{{ libro.autor|lower }}" data-isbn="{{ libro.isbn|lower }}" data-ejemplares="{{ libro.ejemplares|tojson|forceescape }}">
                     <td>
                         <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
-                            <i class="bi bi-qr-code me-1"></i>{{ libro.id }}
+                            {% if libro.ejemplares|length > 1 %}
+                                <i class="bi bi-collection me-1"></i>{{ libro.ejemplares|length }} Ejemplares
+                            {% else %}
+                                <i class="bi bi-qr-code me-1"></i>{{ libro.id }}
+                            {% endif %}
                         </span>
                     </td>
                     <td>
-                        <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ libro.titulo }}</div>
+                        <div class="text-md" style="font-weight: 700; color: #1f2937;">
+                            <span class="libro-titulo">{{ libro.titulo }}</span>
+                            {% if reservas_map and reservas_map.get(libro.id, 0) > 0 %}
+                            <span class="badge ms-2" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 11px;">
+                                <i class="bi bi-bookmark-fill me-1"></i>{{ reservas_map.get(libro.id) }} Reservas
+                            </span>
+                            {% endif %}
+                        </div>
                         {% if libro.genero %}
                         <span class="badge mt-1" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 11px;">{{ libro.genero }}</span>
+                        {% endif %}
+                        {% if libro.danados > 0 %}
+                        <span class="badge mt-1" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 11px;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ libro.danados }} Dañado{{ 's' if libro.danados > 1 else '' }}
+                        </span>
+                        {% endif %}
+                        {% if libro.bajas > 0 %}
+                        <span class="badge mt-1" style="background: rgba(239, 68, 68, 0.15); color: #dc2626; font-size: 11px;">
+                            <i class="bi bi-trash-fill me-1"></i>{{ libro.bajas }} Baja{{ 's' if libro.bajas > 1 else '' }}
+                        </span>
+                        {% endif %}
+                        {% if libro.ejemplares|length == 1 and libro.ejemplares[0].detalle_estado %}
+                        <div class="text-xs mt-1" style="color: #d97706; font-weight: 600;">
+                            <i class="bi bi-tag-fill me-1"></i>Observación: {{ libro.ejemplares[0].detalle_estado }}
+                        </div>
                         {% endif %}
                     </td>
                     <td><span class="text-sm" style="font-weight: 600; color: #4b5563;"><i class="bi bi-person me-1"></i>{{ libro.autor }}</span></td>
                     <td><span class="text-xs" style="color: #6b7280;">{{ libro.isbn }}</span></td>
                     <td class="text-center">
-                        <span class="badge" style="background: {% if libro.disponibles > 0 %}rgba(16, 185, 129, 0.15){% else %}rgba(239, 68, 68, 0.15){% endif %}; 
-                                                   color: {% if libro.disponibles > 0 %}#059669{% else %}#dc2626{% endif %}; 
-                                                   font-size: 13px; padding: 6px 12px; border-radius: 8px;">
+                        <span class="badge" 
+                              {% if libro.disponibles > 0 %}
+                              style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 13px; padding: 6px 12px; border-radius: 8px;"
+                              {% else %}
+                              style="background: rgba(239, 68, 68, 0.15); color: #dc2626; font-size: 13px; padding: 6px 12px; border-radius: 8px;"
+                              {% endif %}>
                             {{ libro.disponibles }} / {{ libro.cantidad }}
                         </span>
                     </td>
                     {% if es_admin() %}
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2 align-items-center">
-                            <button class="btn btn-sm btn-light-custom" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarLibro"
-                                data-id="{{ libro.id }}"
-                                data-titulo="{{ libro.titulo }}"
-                                data-autor="{{ libro.autor }}"
-                                data-isbn="{{ libro.isbn }}"
-                                data-genero="{{ libro.genero }}"
-                                data-tags="{{ libro.tags }}"
-                                data-costo="{{ libro.costo }}"
-                                data-cantidad="{{ libro.cantidad }}"
-                                data-disponibles="{{ libro.disponibles }}"
-                                data-activo="{{ '1' if libro.activo else '0' }}" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
-                                <i class="bi bi-pencil" style="color: #4b5563;"></i>
+                            <a href="{{ url_for('libros.imprimir_qrs') }}?{% for eid in libro.ids %}ids={{eid}}{% if not loop.last %}&{% endif %}{% endfor %}" class="btn btn-sm btn-light-custom" title="Imprimir QRs" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                <i class="bi bi-printer" style="color: #1d1d1f;"></i>
+                            </a>
+                            {% if libro.disponibles < libro.cantidad and libro.ejemplares|length == 1 %}
+                            <button class="btn btn-sm btn-light-custom" title="¿Quién lo tiene?" onclick="verPoseedor('{{ libro.id }}', '{{ libro.titulo }}')" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                <i class="bi bi-person-search" style="color: #f59e0b;"></i>
                             </button>
-                            <form method="POST" action="{{ url_for('eliminar_libro', libro_id=libro.id) }}" onsubmit="return confirmarEliminacion('¿Dar de baja el libro?');" class="m-0 d-inline-block" style="height: 36px;">
-                                <button type="submit" class="btn btn-sm" title="Dar de baja" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #dc2626; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0; transition: all 0.2s;">
-                                    <i class="bi bi-trash"></i>
+                            {% endif %}
+                            {% if libro.ejemplares|length > 1 %}
+                            <button class="btn btn-sm btn-light-custom" title="Ver Ejemplares" onclick='abrirModalEjemplares({{ libro.ejemplares|tojson|forceescape }})' style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                <i class="bi bi-list-nested" style="color: #4b5563;"></i>
+                            </button>
+                            {% else %}
+                                {% if libro.ejemplares[0].estado == 'dañado' %}
+                                <form method="POST" action="{{ url_for('libros.resolver_dano_libro', libro_id=libro.id) }}" class="m-0 d-inline-block" style="height: 36px;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm d-flex align-items-center gap-1 text-white" title="Resolver Daño" style="background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; height: 100%; padding: 0 12px; font-weight: 600; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
+                                        <i class="bi bi-check-circle-fill"></i> Resolver Daño
+                                    </button>
+                                </form>
+                                {% endif %}
+                                {% if libro.ejemplares[0].estado != 'dado_de_baja' %}
+                                <button class="btn btn-sm btn-light-custom" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarLibro"
+                                    data-id="{{ libro.id }}"
+                                    data-titulo="{{ libro.titulo }}"
+                                    data-autor="{{ libro.autor }}"
+                                    data-isbn="{{ libro.isbn }}"
+                                    data-genero="{{ libro.genero }}"
+                                    data-tags="{{ libro.tags }}"
+                                    data-costo="{{ libro.costo }}"
+                                    data-cantidad="{{ libro.cantidad }}"
+                                    data-disponibles="{{ libro.disponibles }}"
+                                    data-activo="{{ '1' if libro.activo else '0' }}" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                    <i class="bi bi-pencil" style="color: #4b5563;"></i>
                                 </button>
-                            </form>
+                                    {% if libro.ejemplares[0].estado != 'prestado' %}
+                                    <form method="POST" action="{{ url_for('libros.eliminar_libro', libro_id=libro.id) }}" onsubmit="event.preventDefault(); const form = this; showConfirm('¿Dar de baja el libro?', 'Confirmar Baja', () => form.submit());" class="m-0 d-inline-block" style="height: 36px;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm" title="Dar de baja" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #dc2626; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0; transition: all 0.2s;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </td>
                     {% endif %}
@@ -119,6 +183,7 @@
             </div>
             <form method="POST" action="{{ url_for('agregar_libro') }}">
                 <div class="modal-body py-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="row g-3">
                         <div class="col-md-9">
                             <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Título del libro</label>
@@ -185,13 +250,14 @@
         <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
             <div class="modal-header border-0 pb-2">
                 <div>
-                    <h4 class="mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-pencil-square me-2" style="color: #f59e0b;"></i>Editar libro</h4>
+                    <h4 class="mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-pencil-square me-2" style="color: #3b82f6;"></i>Editar libro</h4>
                     <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Actualiza la información del ejemplar existente</p>
                 </div>
                 <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditarLibro">
                 <div class="modal-body py-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="row g-3">
                         <div class="col-md-9">
                             <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Título del libro</label>
@@ -229,10 +295,10 @@
                             <input type="text" name="tags" id="edit_tags" class="form-control form-control-custom">
                         </div>
                         <div class="col-md-12 mt-3">
-                            <div class="card p-3 border-0" style="background: rgba(16, 185, 129, 0.1); border-radius: 12px;">
+                            <div class="card p-3 border-0" style="background: rgba(59, 130, 246, 0.1); border-radius: 12px;">
                                 <div class="form-check form-switch d-flex align-items-center mb-0 gap-2">
                                     <input class="form-check-input mt-0" type="checkbox" id="edit_activo" name="activo" value="1" style="width: 40px; height: 20px; cursor: pointer;">
-                                    <label class="form-check-label mb-0" for="edit_activo" style="font-weight: 600; color: #059669; font-size: 15px; cursor: pointer; margin-left: 10px;">El libro está Activo en el catálogo</label>
+                                    <label class="form-check-label mb-0" for="edit_activo" style="font-weight: 600; color: #2563eb; font-size: 15px; cursor: pointer; margin-left: 10px;">El libro está Activo en el catálogo</label>
                                 </div>
                             </div>
                         </div>
@@ -242,7 +308,7 @@
                     <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn flex-fill m-0 py-2 text-white" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
+                    <button type="submit" class="btn flex-fill m-0 py-2 text-white" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
                         <i class="bi bi-save me-2"></i>Actualizar Libro
                     </button>
                 </div>
@@ -250,11 +316,243 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Ejemplares -->
+<div class="modal fade" id="modalVerEjemplares" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+            <div class="modal-header border-0 pb-2">
+                <div>
+                    <h4 class="modal-title mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">Copias Individuales (Ejemplares)</h4>
+                    <p class="text-sm mb-0 text-muted" id="modalEjemplaresTitulo"></p>
+                </div>
+                <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-3">
+                <div class="table-responsive">
+                    <table class="table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Código QR</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaEjemplaresTbody">
+                            <!-- JS inyecta filas aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-1 pb-3">
+                <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endif %}
+
+
+<!-- MODAL: Ver Poseedor (3.3) -->
+<div class="modal fade" id="modalVerPoseedor" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="tituloLibroPoseedor" style="color: #1d1d1f;">-</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-muted mb-3">Usuarios que tienen este libro actualmente:</p>
+                <div id="listaPoseedores" class="d-flex flex-column gap-2">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light-custom w-100" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 {% block scripts %}
 <script>
-    buscarEnTabla('buscarLibro', 'tablaLibros', 'columnaBusqueda');
+    setupInventarioSearch();
+    paginarTabla('tablaLibros', 8); // 2.4 — Paginación
+    agruparEjemplares(); // 3.4 — Agrupación visual
+
+    const modalVerPoseedor = new bootstrap.Modal(document.getElementById('modalVerPoseedor'));
+
+    function setupInventarioSearch() {
+        const input = document.getElementById('buscarLibro');
+        const select = document.getElementById('columnaBusqueda');
+        const tabla = document.getElementById('tablaLibros');
+        if (!input || !tabla || !select) return;
+
+        let ultimoQRAbierto = '';
+        function filtrar() {
+            const term = input.value.toLowerCase().trim();
+            const col = select.value;
+            const filas = Array.from(tabla.querySelectorAll('tbody tr'));
+
+            filas.forEach(fila => {
+                if (fila.dataset.agrupado === "true") return;
+
+                const ids = (fila.getAttribute('data-ids') || '').toLowerCase();
+                const titulo = (fila.getAttribute('data-titulo') || '').toLowerCase();
+                const autor = (fila.getAttribute('data-autor') || '').toLowerCase();
+                const isbn = (fila.getAttribute('data-isbn') || '').toLowerCase();
+
+                let match = false;
+                if (col === 'todas') {
+                    match = ids.includes(term) || titulo.includes(term) || autor.includes(term) || isbn.includes(term);
+                } else if (col === 'qr') {
+                    match = ids.includes(term);
+                } else if (col === '1') {
+                    match = titulo.includes(term);
+                } else if (col === '2') {
+                    match = autor.includes(term);
+                } else if (col === '3') {
+                    match = isbn.includes(term);
+                }
+
+                if (match) {
+                    fila.classList.remove('filtro-oculto');
+                } else {
+                    fila.classList.add('filtro-oculto');
+                    fila.style.display = 'none';
+                }
+            });
+
+            // Auto-open modal when QR filter has an exact ID match in a grouped row
+            if (term !== ultimoQRAbierto && ultimoQRAbierto && !term.startsWith(ultimoQRAbierto)) ultimoQRAbierto = '';
+            if (col === 'qr' && term.length >= 3 && term !== ultimoQRAbierto) {
+                for (const fila of filas) {
+                    if (fila.dataset.agrupado === "true") continue;
+                    const ids = (fila.getAttribute('data-ids') || '').toLowerCase().split(',');
+                    const exactMatch = ids.find(id => id.trim() === term);
+                    if (exactMatch && ids.length > 1) {
+                        // This is a grouped row — auto-open the modal with highlight
+                        try {
+                            const ejemplares = JSON.parse(fila.getAttribute('data-ejemplares') || '[]');
+                            if (ejemplares.length > 1) {
+                                ultimoQRAbierto = term;
+                                abrirModalEjemplares(ejemplares, term);
+                                break;
+                            }
+                        } catch(e) { /* ignore parse errors */ }
+                    }
+                }
+            }
+
+            if (tabla.dataset.paginacionActiva === 'true') {
+                tabla.dataset.paginaActual = '1';
+                window.actualizarPaginacion('tablaLibros');
+            } else {
+                filas.forEach(f => {
+                    if (f.dataset.agrupado !== "true" && !f.classList.contains('filtro-oculto')) {
+                        f.style.display = '';
+                    }
+                });
+            }
+        }
+
+        input.addEventListener('keyup', filtrar);
+        select.addEventListener('change', filtrar);
+    }
+
+    function agruparEjemplares() {
+        const table = document.getElementById('tablaLibros');
+        if (!table) return;
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        const groups = {};
+
+        rows.forEach(row => {
+            const titleEl = row.cells[1].querySelector('.libro-titulo');
+            const title = titleEl ? titleEl.textContent.trim() : row.cells[1].textContent.trim();
+            const author = row.cells[2].textContent.trim();
+            const key = `${title}-${author}`;
+            
+            if (!groups[key]) {
+                groups[key] = {
+                    master: row,
+                    ids: [row.cells[0].textContent.trim()],
+                    count: 1,
+                    disponibles: parseInt(row.cells[4].textContent.trim().split('/')[0]) || 0
+                };
+            } else {
+                groups[key].ids.push(row.cells[0].textContent.trim());
+                groups[key].count++;
+                groups[key].disponibles += parseInt(row.cells[4].textContent.trim().split('/')[0]) || 0;
+                row.classList.add('d-none'); // Ocultar duplicado
+                row.dataset.agrupado = "true";
+            }
+        });
+
+        // Actualizar filas maestras
+        Object.values(groups).forEach(g => {
+            if (g.count > 1) {
+                const master = g.master;
+                // Mostrar ID como rango o lista
+                master.cells[0].innerHTML = `<div class="text-xs text-primary fw-bold" style="cursor:pointer" onclick="toggleDetalleIDs(this)">
+                    ${g.count} ejemplares <i class="bi bi-chevron-down ms-1"></i>
+                    <div class="detalle-ids d-none mt-1 p-2 rounded-3 bg-light text-dark shadow-sm">
+                        ${g.ids.join(', ')}
+                    </div>
+                </div>`;
+                // Actualizar contador disponibles / total
+                master.cells[4].innerHTML = `<span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 8px;">${g.disponibles} / ${g.count}</span>`;
+            }
+        });
+    }
+
+    function toggleDetalleIDs(el) {
+        const detalle = el.querySelector('.detalle-ids');
+        detalle.classList.toggle('d-none');
+        el.querySelector('i').classList.toggle('bi-chevron-down');
+        el.querySelector('i').classList.toggle('bi-chevron-up');
+    }
+
+    async function verPoseedor(libroId, titulo) {
+        document.getElementById('tituloLibroPoseedor').textContent = titulo;
+        const lista = document.getElementById('listaPoseedores');
+        lista.innerHTML = '<div class="text-center py-3"><span class="spinner-border spinner-border-sm text-primary"></span></div>';
+        modalVerPoseedor.show();
+
+        try {
+            const resp = await fetch(`/api/libros/${encodeURIComponent(libroId)}/prestamo-actual`);
+            const data = await resp.json();
+            lista.innerHTML = '';
+            
+            if (data.prestamos.length === 0) {
+                lista.innerHTML = '<div class="alert alert-info">No hay préstamos activos registrados.</div>';
+                return;
+            }
+
+            data.prestamos.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'p-3 rounded-4 d-flex justify-content-between align-items-center';
+                item.style.background = 'rgba(0,0,0,0.03)';
+                item.innerHTML = `
+                    <div>
+                        <div class="fw-bold" style="color: #1d1d1f;">${escapeHtml(p.usuario_nombre)}</div>
+                        <div class="text-xs text-muted">ID: ${escapeHtml(p.usuario_id)}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-xs fw-bold ${p.vencido ? 'text-danger' : 'text-success'}">Vence: ${p.fecha_esperada}</div>
+                        <a href="/usuarios-biblioteca/${encodeURIComponent(p.usuario_id)}/historial" class="text-xs fw-bold text-primary text-decoration-none">Ver Historial</a>
+                    </div>
+                `;
+                lista.appendChild(item);
+            });
+        } catch (e) {
+            lista.innerHTML = '<div class="alert alert-danger">Error al consultar datos.</div>';
+        }
+    }
+
     const modalEditar = document.getElementById('modalEditarLibro');
     if (modalEditar) {
         modalEditar.addEventListener('show.bs.modal', event => {
@@ -272,6 +570,139 @@
             const activo = button.getAttribute('data-activo') === '1';
             document.getElementById('edit_activo').checked = activo;
         });
+    }
+
+    // 2.5 — Spinner en botones
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function() {
+            const btn = this.querySelector('button[type="submit"]');
+            if (btn && !btn.classList.contains('btn-close')) {
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${originalText.includes('Guardar') ? 'Guardando...' : 'Procesando...'}`;
+            }
+        });
+    });
+
+    function abrirModalEjemplares(ejemplares, highlightId) {
+        if (!ejemplares || ejemplares.length === 0) return;
+        highlightId = (highlightId || '').toLowerCase().trim();
+        
+        document.getElementById('modalEjemplaresTitulo').textContent = ejemplares[0].titulo + ' - ' + (ejemplares[0].autor || 'Desconocido');
+        const tbody = document.getElementById('listaEjemplaresTbody');
+        tbody.innerHTML = '';
+        
+        ejemplares.forEach(ej => {
+            const tr = document.createElement('tr');
+            const isHighlighted = highlightId && ej.id.toLowerCase() === highlightId;
+            if (isHighlighted) {
+                tr.style.background = 'rgba(59, 130, 246, 0.1)';
+                tr.style.borderLeft = '4px solid #3b82f6';
+                tr.id = 'ejemplar-highlight';
+            }
+            
+            let estadoHtml = '';
+            if (ej.estado === 'disponible') {
+                estadoHtml = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 13px; padding: 6px 12px; border-radius: 8px;">Disponible</span>`;
+            } else if (ej.estado === 'prestado') {
+                estadoHtml = `<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; font-size: 13px; padding: 6px 12px; border-radius: 8px;">Prestado</span>`;
+            } else if (ej.estado === 'dañado') {
+                estadoHtml = `
+                    <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 13px; padding: 6px 12px; border-radius: 8px; display: inline-block; margin-bottom: 4px;">Dañado</span>
+                    ${ej.detalle_estado ? `<div class="text-xs fw-bold text-warning" style="margin-top: 2px;"><i class="bi bi-tag-fill me-1"></i>${escapeHtml(ej.detalle_estado)}</div>` : ''}
+                `;
+            } else if (ej.estado === 'dado_de_baja') {
+                estadoHtml = `
+                    <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #dc2626; font-size: 13px; padding: 6px 12px; border-radius: 8px; display: inline-block; margin-bottom: 4px;">Baja</span>
+                    ${ej.detalle_estado ? `<div class="text-xs fw-bold text-danger" style="margin-top: 2px;"><i class="bi bi-trash-fill me-1"></i>${escapeHtml(ej.detalle_estado)}</div>` : ''}
+                `;
+            } else {
+                estadoHtml = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 13px; padding: 6px 12px; border-radius: 8px;">Disponible</span>`;
+            }
+            
+            const editBtn = `
+                <button class="btn btn-sm btn-light-custom" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarLibro"
+                    data-id="${escapeHtml(ej.id)}"
+                    data-titulo="${escapeHtml(ej.titulo)}"
+                    data-autor="${escapeHtml(ej.autor)}"
+                    data-isbn="${escapeHtml(ej.isbn)}"
+                    data-genero="${escapeHtml(ej.genero)}"
+                    data-tags="${escapeHtml(ej.tags)}"
+                    data-costo="${ej.costo}"
+                    data-cantidad="${ej.cantidad}"
+                    data-disponibles="${ej.disponibles}"
+                    data-activo="${ej.activo ? '1' : '0'}"
+                    style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                    <i class="bi bi-pencil" style="color: #4b5563;"></i>
+                </button>
+            `;
+            
+            const delBtn = `
+                <form method="POST" action="/libros/${ej.id}/eliminar" onsubmit="event.preventDefault(); const form = this; showConfirm('¿Dar de baja el libro?', 'Confirmar Baja', () => form.submit());" class="m-0 d-inline-block" style="height: 36px;">
+                    <input type="hidden" name="csrf_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+                    <button type="submit" class="btn btn-sm" title="Dar de baja" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #dc2626; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0; transition: all 0.2s;">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            `;
+
+            const resolverBtn = `
+                <form method="POST" action="/libros/${ej.id}/resolver-dano" class="m-0 d-inline-block" style="height: 36px;">
+                    <input type="hidden" name="csrf_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+                    <button type="submit" class="btn btn-sm d-flex align-items-center gap-1 text-white" title="Resolver Daño" style="background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; height: 100%; padding: 0 12px; font-weight: 600; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
+                        <i class="bi bi-check-circle-fill"></i> Resolver
+                    </button>
+                </form>
+            `;
+
+            let actionsHtml = `
+                <a href="/admin/libros/imprimir-qr?ids=${ej.id}" class="btn btn-sm btn-light-custom" title="Imprimir QR" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                    <i class="bi bi-printer" style="color: #1d1d1f;"></i>
+                </a>
+            `;
+
+            if (ej.estado !== 'dado_de_baja') {
+                actionsHtml += editBtn;
+                if (ej.estado !== 'prestado') {
+                    actionsHtml += delBtn;
+                }
+            }
+
+            if (ej.estado === 'dañado') {
+                actionsHtml += resolverBtn;
+            }
+            
+            tr.innerHTML = `
+                <td>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
+                        <i class="bi bi-qr-code me-1"></i>${escapeHtml(ej.id)}
+                    </span>
+                    ${isHighlighted ? '<span class="badge ms-2" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; font-size: 11px; padding: 4px 8px; border-radius: 8px;">🎯 Ejemplar buscado</span>' : ''}
+                </td>
+                <td class="text-center">
+                    ${estadoHtml}
+                </td>
+                <td class="text-end">
+                    <div class="d-flex justify-content-end gap-2 align-items-center">
+                        ${actionsHtml}
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        const modalEl = document.getElementById('modalVerEjemplares');
+        const modalObj = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modalObj.show();
+
+        // Auto-scroll to highlighted exemplar after modal renders
+        if (highlightId) {
+            modalEl.addEventListener('shown.bs.modal', function scrollToHighlight() {
+                const hl = document.getElementById('ejemplar-highlight');
+                if (hl) hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                modalEl.removeEventListener('shown.bs.modal', scrollToHighlight);
+            });
+        }
     }
 </script>
 {% endblock %}

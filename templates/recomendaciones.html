@@ -18,6 +18,7 @@
                 <h5 class="mb-2">Generar para un usuario</h5>
                 <p class="text-sm">Usa el historial de préstamos y popularidad</p>
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label class="form-label-custom">Selecciona usuario</label>
                         <select name="usuario_id" class="form-control form-control-custom" required>
@@ -65,7 +66,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h5 class="mb-1">Sugerencias para {{ seleccionado.nombre }}</h5>
-                <p class="text-sm mb-0">Mostrando hasta 5 títulos</p>
+                <p class="text-sm mb-0">Mostrando 3 títulos</p>
             </div>
         </div>
         <div class="table-responsive">
@@ -92,5 +93,51 @@
         </div>
     </div>
     {% endif %}
+
+    <div class="card-custom p-4 mt-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 38px; height: 38px; background: #f5f5f7;">
+                <i class="bi bi-lightbulb" style="font-size: 18px; color: #1d1d1f;"></i>
+            </div>
+            <div>
+                <h5 class="mb-1">Algoritmo de Recomendaciones</h5>
+                <p class="text-sm mb-0">Sistema hibrido: Content-Based Filtering + SAW</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div style="border: 1px solid #eef0f4; border-radius: 12px; padding: 16px; background: #fff;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-file-earmark-text" style="color: #2563eb;"></i>
+                        <strong style="font-size: 14px;">Analisis de Contenido</strong>
+                    </div>
+                    <div class="text-sm" style="color: #6c757d;">Perfil de usuario basado en historial: generos, autores y etiquetas tematicas.</div>
+                    <ul class="mb-0 mt-2" style="padding-left: 18px; color: #6c757d; font-size: 13px;">
+                        <li>Genero (40%)</li>
+                        <li>Autor (30%)</li>
+                        <li>Tags (30%)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div style="border: 1px solid #eef0f4; border-radius: 12px; padding: 16px; background: #fff;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-bar-chart-line" style="color: #22c55e;"></i>
+                        <strong style="font-size: 14px;">Ranking SAW</strong>
+                    </div>
+                    <div class="text-sm" style="color: #6c757d;">Metodo multicriterio que pondera similitud, popularidad y disponibilidad.</div>
+                    <ul class="mb-0 mt-2" style="padding-left: 18px; color: #6c757d; font-size: 13px;">
+                        <li>Similitud (50%)</li>
+                        <li>Popularidad (30%)</li>
+                        <li>Disponibilidad (20%)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3" style="background: #f0f8ff; border: 1px solid #dbeafe; border-radius: 12px; padding: 12px 14px;">
+            <div class="text-sm" style="color: #2563eb; font-weight: 600;">Proceso automatico</div>
+            <div class="text-sm" style="color: #6b7280;">Las recomendaciones se generan tras cada renta y se envian por email con 3 libros mas compatibles.</div>
+        </div>
+    </div>
 </main>
 {% endblock %}

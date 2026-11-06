@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Público - Biblioteca</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1d1d1f;
+        }
+        .header-glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .glass-container {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px 12px 45px;
+            width: 100%;
+            max-width: 500px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            background: #fff;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 18px;
+        }
+        .book-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-available {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+        .status-unavailable {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header-glass py-3 mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <i class="bi bi-book text-white" style="font-size: 20px;"></i>
+            </div>
+            <div>
+                <h1 class="mb-0" style="font-size: 22px; font-weight: 700; color: #1d1d1f;">Catálogo Digital</h1>
+                <p class="text-sm mb-0 text-muted" style="font-size: 13px;">Biblioteca Universitaria</p>
+            </div>
+        </div>
+        <a href="{{ url_for('login') }}" class="btn btn-dark" style="border-radius: 12px; font-weight: 600; padding: 10px 20px;">Acceso Personal</a>
+    </div>
+</header>
+
+<main class="container mb-5">
+    <!-- Buscador -->
+    <div class="glass-container text-center py-5 mb-5">
+        <h2 class="fw-bold mb-3">¿Qué quieres leer hoy?</h2>
+        <p class="text-muted mb-4">Busca entre nuestro acervo por título, autor o género.</p>
+        <div class="position-relative d-inline-block w-100" style="max-width: 500px;">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-box" placeholder="Ej. El Quijote, Gabriel García Márquez...">
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="row g-4" id="booksContainer">
+        {% for libro in libros %}
+        <div class="col-md-6 col-lg-4 book-item" data-title="{{ libro.titulo | lower }}" data-author="{{ libro.autor | lower }}" data-genre="{{ libro.genero | lower }}">
+            <div class="book-card d-flex flex-column">
+                <div class="mb-2">
+                    <span class="badge bg-light text-dark border mb-2">{{ libro.genero or 'General' }}</span>
+                </div>
+                <h3 class="h5 fw-bold mb-1 text-truncate" title="{{ libro.titulo }}">{{ libro.titulo }}</h3>
+                <p class="text-muted mb-3"><i class="bi bi-person-fill me-1"></i>{{ libro.autor or 'Desconocido' }}</p>
+                
+                <div class="mt-auto d-flex justify-content-between align-items-end border-top pt-3">
+                    <div>
+                        <div class="text-xs text-muted mb-1">ISBN: {{ libro.isbn or 'N/A' }}</div>
+                        {% if libro.disponibles > 0 %}
+                            <span class="status-badge status-available"><i class="bi bi-check-circle-fill me-1"></i>Disponible ({{ libro.disponibles }})</span>
+                        {% else %}
+                            <span class="status-badge status-unavailable"><i class="bi bi-x-circle-fill me-1"></i>No disponible</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-inbox fs-1 text-muted"></i>
+            <p class="mt-3 text-muted">El catálogo está vacío en este momento.</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div id="noResults" class="text-center py-5 d-none">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <p class="mt-3 text-muted fs-5">No encontramos libros que coincidan con tu búsqueda.</p>
+    </div>
+</main>
+
+<script>
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.book-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const title = item.getAttribute('data-title');
+            const author = item.getAttribute('data-author');
+            const genre = item.getAttribute('data-genre');
+
+            if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const noResultsMsg = document.getElementById('noResults');
+        if (visibleCount === 0 && items.length > 0) {
+            noResultsMsg.classList.remove('d-none');
+        } else {
+            noResultsMsg.classList.add('d-none');
+        }
+    });
+</script>
+
+</body>
+</html>

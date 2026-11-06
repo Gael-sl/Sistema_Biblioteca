@@ -104,6 +104,79 @@
                 </div>
             </button>
         </div>
+        <!-- Logs de Auditoría (3.6) -->
+        <div class="col-md-12">
+            <a href="{{ url_for('admin_logs') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: rgba(59, 130, 246, 0.1); border-radius: 10px;">
+                        <i class="bi bi-journal-text" style="font-size: 20px; color: #2563eb;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                            Log de Auditoría
+                        </h3>
+                        <p class="text-sm mb-0">Ver historial completo de acciones y movimientos del sistema</p>
+                    </div>
+                    <div class="ms-auto">
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Reportes -->
+    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Reportes y Exportación</h2>
+    <div class="row g-3 mb-5">
+        <div class="col-md-4">
+            <a href="{{ url_for('exportar_prestamos') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                        <i class="bi bi-file-earmark-spreadsheet" style="font-size: 20px; color: #059669;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                            Exportar Préstamos
+                        </h3>
+                        <p class="text-sm mb-0">Descargar historial completo en Excel</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('exportar_multas') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: rgba(245, 158, 11, 0.1); border-radius: 10px;">
+                        <i class="bi bi-cash-coin" style="font-size: 20px; color: #d97706;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                            Exportar Multas
+                        </h3>
+                        <p class="text-sm mb-0">Listado de cobros y deudas en Excel</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('exportar_inventario') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: rgba(59, 130, 246, 0.1); border-radius: 10px;">
+                        <i class="bi bi-box-seam" style="font-size: 20px; color: #2563eb;"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                            Exportar Inventario
+                        </h3>
+                        <p class="text-sm mb-0">Descargar catálogo completo en Excel</p>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 
     <!-- Estadísticas -->
@@ -347,6 +420,7 @@
         <div class="modal-content">
             <form method="POST" action="{{ url_for('guardar_configuracion') }}">
                 <div class="modal-header">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div>
                         <h5 class="modal-title mb-1">Configuración del Sistema</h5>
                         <p class="text-sm mb-0">Ajusta los parámetros generales</p>
@@ -393,6 +467,20 @@
                                                min="1" max="10" required style="font-size: 17px;">
                                         <span class="input-group-text bg-transparent border-start-0">libros</span>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card-custom p-3" style="background: white;">
+                                    <label class="form-label-custom mb-1"><i class="bi bi-globe-americas me-1"></i>Zona horaria de la biblioteca</label>
+                                    <p class="text-xs mb-2">Se usa para calcular fechas de salida, vencimiento y retrasos aunque el servidor esté en otro país</p>
+                                    {% set zh = config.get('zona_horaria', '-7') %}
+                                    <select name="zona_horaria" class="form-select form-control-custom" style="font-size: 15px;">
+                                        <option value="-7" {% if zh == '-7' %}selected{% endif %}>UTC-7 — Pacífico México (Sinaloa, Sonora, BCS)</option>
+                                        <option value="-8" {% if zh == '-8' %}selected{% endif %}>UTC-8 — Noroeste (Baja California / Tijuana)</option>
+                                        <option value="-6" {% if zh == '-6' %}selected{% endif %}>UTC-6 — Centro de México (CDMX, Guadalajara, Monterrey)</option>
+                                        <option value="-5" {% if zh == '-5' %}selected{% endif %}>UTC-5 — Sureste (Quintana Roo / Cancún)</option>
+                                        <option value="0" {% if zh == '0' %}selected{% endif %}>UTC+0 — Tiempo Universal Coordinado</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -616,6 +704,7 @@
                                         </button>
                                         <form method="POST" action="{{ url_for('eliminar_usuario_sistema', user_id=usuario.id) }}" 
                                               onsubmit="event.preventDefault(); const form = this; showConfirm('¿Eliminar usuario del sistema?', 'Eliminar Usuario', () => form.submit());" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                             <button type="submit" class="btn btn-sm btn-danger-custom">
                                                 <i class="bi bi-trash me-1"></i>Eliminar
                                             </button>
@@ -645,6 +734,7 @@
             </div>
             <form method="POST" action="{{ url_for('crear_usuario_sistema') }}">
                 <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label class="form-label-custom">Nombre de usuario</label>
                         <input type="text" name="username" class="form-control form-control-custom" required>
@@ -685,6 +775,7 @@
             </div>
             <form method="POST" id="formEditarUsuarioSistema">
                 <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label class="form-label-custom">Nombre de usuario</label>
                         <input type="text" name="username" id="edit_sys_username" class="form-control form-control-custom" required>

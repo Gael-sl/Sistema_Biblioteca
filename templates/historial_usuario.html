@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="header-sticky navbar-glass mb-4">
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('listar_usuarios_biblioteca') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
+                <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
+            </a>
+            <div>
+                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Historial de Usuario</h1>
+                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Registro completo de actividad</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container py-2 mb-5 fade-in">
+    <!-- Información del Usuario -->
+    <div class="glass-container p-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <i class="bi bi-person-fill" style="font-size: 32px; color: #2563eb;"></i>
+                </div>
+            </div>
+            <div class="col">
+                <h2 class="mb-1" style="font-size: 24px; font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">{{ usuario.nombre }}</h2>
+                <div class="d-flex gap-3 flex-wrap">
+                    <span class="text-sm fw-semibold" style="color: #6b7280;"><i class="bi bi-card-text me-1"></i>ID: {{ usuario.id }}</span>
+                    <span class="text-sm fw-semibold" style="color: #6b7280;"><i class="bi bi-building me-1"></i>{{ usuario.facultad }}</span>
+                    <span class="text-sm fw-semibold" style="color: #6b7280;"><i class="bi bi-mortarboard me-1"></i>{{ usuario.carrera }}</span>
+                </div>
+            </div>
+            <div class="col-md-auto mt-3 mt-md-0">
+                <div class="d-flex gap-2">
+                    <div class="text-center px-3 py-2 rounded-4" style="background: rgba(0,0,0,0.03);">
+                        <div class="text-xs text-uppercase fw-bold" style="color: #86868b; letter-spacing: 0.5px;">Préstamos</div>
+                        <div class="text-xl fw-bold" style="color: #1d1d1f;">{{ prestamos|length }}</div>
+                    </div>
+                    {% set multas_pendientes = 0 %}
+                    {% for p_id, multas in multas_map.items() %}
+                        {% for m in multas %}{% if not m.pagado %}{% set multas_pendientes = multas_pendientes + 1 %}{% endif %}{% endfor %}
+                    {% endfor %}
+                    {% if multas_pendientes > 0 %}
+                    <div class="text-center px-3 py-2 rounded-4" style="background: rgba(239, 68, 68, 0.08);">
+                        <div class="text-xs text-uppercase fw-bold" style="color: #dc2626; letter-spacing: 0.5px;">Multas Pend.</div>
+                        <div class="text-xl fw-bold" style="color: #dc2626;">{{ multas_pendientes }}</div>
+                    </div>
+                    {% else %}
+                    <div class="text-center px-3 py-2 rounded-4" style="background: rgba(16, 185, 129, 0.08);">
+                        <div class="text-xs text-uppercase fw-bold" style="color: #059669; letter-spacing: 0.5px;">Multas Pend.</div>
+                        <div class="text-xl fw-bold" style="color: #059669;">{{ multas_pendientes }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Historial -->
+    <div class="glass-container p-0 overflow-hidden">
+        <div class="p-4 border-bottom" style="background: rgba(0,0,0,0.02);">
+            <h3 class="mb-0" style="font-size: 18px; font-weight: 700; color: #1d1d1f;">Actividad de Préstamos</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Libro</th>
+                        <th class="text-center">Fecha Salida</th>
+                        <th class="text-center">Devolución</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-end pe-4">Multas / Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prestamo, libro in prestamos %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="text-md fw-bold" style="color: #1d1d1f;">{{ libro.titulo }}</div>
+                            <div class="text-xs text-muted">ID Libro: {{ libro.id }}</div>
+                        </td>
+                        <td class="text-center">
+                            <div class="text-sm fw-semibold">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</div>
+                        </td>
+                        <td class="text-center">
+                            <div class="text-sm fw-semibold">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</div>
+                            {% if prestamo.fecha_devolucion_real %}
+                                <div class="text-xs text-success">Devuelto: {{ prestamo.fecha_devolucion_real.strftime('%d/%m/%Y') }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if prestamo.estado == 'activo' %}
+                                <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-radius: 8px;">En posesión</span>
+                            {% elif prestamo.estado == 'devuelto' %}
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 8px;">Finalizado</span>
+                            {% else %}
+                                <span class="badge" style="background: rgba(0,0,0,0.1); color: #555; border-radius: 8px;">{{ prestamo.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            {% if prestamo.estado == 'activo' %}
+                                <form action="{{ url_for('renovar_prestamo', prestamo_id=prestamo.id) }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-light-custom mb-2 w-100" title="Renovar">
+                                        <i class="bi bi-calendar-plus me-1" style="color: #3b82f6;"></i>Renovar
+                                    </button>
+                                </form>
+                            {% endif %}
+                            {% if multas_map.get(prestamo.id) %}
+                                {% for multa in multas_map[prestamo.id] %}
+                                    <div class="d-flex align-items-center justify-content-end gap-2 mb-1">
+                                        {% if multa.pagado %}
+                                            <span class="text-xs fw-bold" style="color: #059669;">
+                                                Pagada (${{ '%.2f'|format(multa.monto) }})
+                                            </span>
+                                        {% else %}
+                                            <span class="text-xs fw-bold" style="color: #dc2626;">
+                                                Pendiente (${{ '%.2f'|format(multa.monto) }})
+                                            </span>
+                                        {% endif %}
+                                        {% if not multa.pagado %}
+                                            <form action="{{ url_for('pagar_multa', multa_id=multa.id) }}" method="POST" class="d-inline">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn btn-sm btn-success p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; border-radius: 8px;" title="Registrar Pago">
+                                                    <i class="bi bi-cash-stack"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-xs text-muted">Sin cargos</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="bi bi-journal-x" style="font-size: 40px; color: #a1a1aa;"></i>
+                            <p class="mt-2 text-muted">No hay registros de préstamos para este usuario.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock %}

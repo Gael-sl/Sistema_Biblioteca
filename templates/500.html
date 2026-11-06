@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center min-vh-100 py-5 fade-in">
+    <div class="glass-container p-5 text-center" style="max-width: 520px; border-radius: 28px;">
+        <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width: 5.5rem; height: 5.5rem; background: rgba(239, 68, 68, 0.12); border-radius: 24px; border: 1px solid rgba(239, 68, 68, 0.25);">
+            <i class="bi bi-shield-exclamation text-danger" style="font-size: 2.8rem;"></i>
+        </div>
+        <h1 class="fw-bold mb-2" style="font-size: 42px; color: #1d1d1f; letter-spacing: -1px;">500</h1>
+        <h2 class="h5 fw-bold mb-3" style="color: #374151;">Error interno del servidor</h2>
+        <p class="text-muted mb-4" style="font-size: 15px; line-height: 1.6;">
+            Ocurrió un problema temporal al procesar la solicitud. La operación fue resguardada por seguridad.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="{{ url_for('menu') }}" class="btn py-3 px-4 text-white" style="border-radius: 14px; font-weight: 600; background: linear-gradient(135deg, #1d1d1f, #434345); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); border: none;">
+                <i class="bi bi-arrow-left me-2"></i>Regresar al Menú
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

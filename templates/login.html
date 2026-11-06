@@ -1,81 +1,150 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    /* Estilos del Login Atusum GPS (Liquid Glass / Frosted Glass) */
-    .bg-map {
-        background-color: #4a5d4e;
-        background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop'); /* Imagen map-like placeholder */
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+
+    body {
+        background-image: none;
+    }
+
+    body::before {
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .login-page {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 48px 0;
+        font-family: 'Manrope', var(--font-text);
+    }
+
+    .login-page::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
-        background-repeat: no-repeat;
+        filter: blur(6px);
+        transform: scale(1.05);
+        z-index: -2;
     }
-    
-    .glass-card {
-        background: rgba(255, 255, 255, 0.45);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    .login-page::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(9, 15, 26, 0.55), rgba(59, 130, 246, 0.25));
+        z-index: -1;
     }
-    
-    .glass-input-group {
+
+    .login-brand {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 24px;
+        color: #f8fafc;
+        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        text-align: center;
+    }
+
+    .login-brand-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.32);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 28px;
+        padding: 36px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    }
+
+    .login-title {
+        color: #f8fafc;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        text-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-subtitle {
+        color: rgba(248, 250, 252, 0.9);
+        font-size: 14px;
+        font-weight: 600;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-input-group {
         position: relative;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
-    
-    .glass-input {
+
+    .login-input {
         width: 100%;
-        background: rgba(255, 255, 255, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        border-radius: 12px;
-        padding: 14px 14px 14px 45px;
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 14px;
+        padding: 14px 14px 14px 46px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #1f2937;
         transition: all 0.3s ease;
     }
-    
-    .glass-input:focus {
-        background: rgba(255, 255, 255, 0.8);
-        border-color: #fff;
+
+    .login-input:focus {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: rgba(59, 130, 246, 0.65);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
-    
-    .glass-input::placeholder {
-        color: #fff;
+
+    .login-input::placeholder {
+        color: rgba(31, 41, 55, 0.55);
         font-weight: 600;
-        opacity: 0.9;
     }
-    
-    .glass-icon {
+
+    .login-icon {
         position: absolute;
         top: 50%;
-        left: 15px;
+        left: 16px;
         transform: translateY(-50%);
-        color: #fff;
+        color: rgba(31, 41, 55, 0.8);
         font-size: 18px;
         z-index: 2;
     }
-    
-    .glass-icon-right {
+
+    .login-icon-right {
         position: absolute;
         top: 50%;
-        right: 15px;
+        right: 16px;
         transform: translateY(-50%);
-        color: #1d1d1f;
+        color: rgba(31, 41, 55, 0.7);
         font-size: 20px;
         cursor: pointer;
         z-index: 2;
     }
-    
-    .btn-orange-atusum {
-        background: linear-gradient(135deg, #ff7b00, #f55b00);
-        color: white;
+
+    .login-btn {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
         border: none;
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 14px;
         font-size: 16px;
         font-weight: 700;
@@ -86,78 +155,63 @@
         justify-content: center;
         align-items: center;
         gap: 8px;
+        box-shadow: 0 10px 24px rgba(59, 130, 246, 0.35);
     }
-    
-    .btn-orange-atusum:hover {
+
+    .login-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(255, 102, 0, 0.4);
+        box-shadow: 0 16px 28px rgba(59, 130, 246, 0.45);
     }
-    
-    .logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 30px;
-        color: white;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    
-    .logo-circle {
-        width: 60px;
-        height: 60px;
-        border: 2px solid rgba(255,255,255,0.8);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.2);
+
+    .login-alert {
+        background: rgba(239, 68, 68, 0.9);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
     }
 </style>
 
-<div class="d-flex align-items-center justify-content-center min-vh-100 bg-map">
+<div class="login-page">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-5">
-                
-                <!-- Logo Header -->
-                <div class="logo-container fade-in">
-                    <div class="logo-circle">
-                        <i class="bi bi-book-half" style="font-size: 30px;"></i>
+            <div class="col-md-6 col-lg-5">
+                <div class="login-brand fade-in">
+                    <div class="login-brand-icon">
+                        <i class="bi bi-book-half" style="font-size: 26px; color: #f8fafc;"></i>
                     </div>
-                    <div class="text-start">
-                        <h1 class="mb-0" style="font-size: 28px; font-weight: 700; letter-spacing: 1px;">SISTEMA BIBLIO</h1>
-                        <p class="mb-0" style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">ADMINISTRACIÓN DE LIBROS</p>
+                    <div>
+                        <h1 class="mb-0" style="font-size: 24px; font-weight: 800; letter-spacing: 1px;">SISTEMA BIBLIO</h1>
+                        <p class="mb-0" style="font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">GESTION DE BIBLIOTECA</p>
                     </div>
                 </div>
 
-                <!-- Glass Card Login -->
-                <div class="glass-card fade-in">
+                <div class="login-card fade-in">
                     <div class="text-center mb-4">
-                        <h2 class="mb-1 text-white" style="font-size: 28px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">Bienvenido</h2>
-                        <p class="text-white" style="font-size: 14px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Inicia sesión para continuar</p>
+                        <h2 class="mb-1 login-title">Bienvenido</h2>
+                        <p class="login-subtitle">Inicia sesión para continuar</p>
                     </div>
-                    
+
                     {% if error %}
-                        <div class="alert alert-danger d-flex align-items-center mb-3" style="background: rgba(255,59,48,0.9); color: white; border: none; border-radius: 10px;" role="alert">
+                        <div class="alert login-alert d-flex align-items-center mb-3" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             <div>{{ error }}</div>
                         </div>
                     {% endif %}
-                    
+
                     <form method="POST" action="{{ url_for('login') }}">
-                        <div class="glass-input-group">
-                            <i class="bi bi-person-fill glass-icon"></i>
-                            <input type="text" class="glass-input" id="username" name="username" placeholder="admin" required autofocus>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="login-input-group">
+                            <i class="bi bi-person-fill login-icon"></i>
+                            <input type="text" class="login-input" id="username" name="username" placeholder="Usuario" required autofocus>
                         </div>
-                        
-                        <div class="glass-input-group mb-5">
-                            <i class="bi bi-lock-fill glass-icon"></i>
-                            <input type="password" class="glass-input" id="password" name="password" placeholder="••••••••" required>
-                            <i class="bi bi-eye-slash-fill glass-icon-right" id="togglePassword"></i>
+
+                        <div class="login-input-group mb-4">
+                            <i class="bi bi-lock-fill login-icon"></i>
+                            <input type="password" class="login-input" id="password" name="password" placeholder="Contraseña" required>
+                            <i class="bi bi-eye-slash-fill login-icon-right" id="togglePassword"></i>
                         </div>
-                        
-                        <button type="submit" class="btn-orange-atusum">
+
+                        <button type="submit" class="login-btn">
                             INGRESAR <i class="bi bi-arrow-right" style="font-size: 20px; stroke-width: 2px;"></i>
                         </button>
                     </form>

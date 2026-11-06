@@ -77,8 +77,18 @@
         </div>
     </div>
 
-    <!-- Lista de Usuarios -->
-    <div class="mt-5">
+    <div class="glass-container p-3 mt-5 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+            <h2 class="mb-1" style="font-size: 20px; color: #1d1d1f; font-weight: 700; letter-spacing: -0.5px;">Usuarios registrados</h2>
+            <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Total de usuarios: <strong style="color: #3b82f6;">{{ usuarios|length }}</strong></p>
+        </div>
+        <button type="button" id="toggleUsuarios" class="btn btn-light-custom" style="min-width: 200px;">
+            <i class="bi bi-people me-2"></i>Ver usuarios
+        </button>
+    </div>
+
+    <!-- Lista de Usuarios (oculta por defecto) -->
+    <div class="mt-4" id="usuariosSection" style="display: none;">
         <div class="glass-container p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h2 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; letter-spacing: -0.5px;">Usuarios registrados</h2>
@@ -120,22 +130,30 @@
                             <div class="text-xs mt-1" style="color: #6b7280;">{{ usuario.carrera or '' }}</div>
                         </td>
                         <td class="text-center">
-                            {% if usuario.activo %}
-                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 12px; padding: 6px 12px; border-radius: 8px; font-weight: 600;">Activo</span>
-                            {% else %}
+                            {% if not usuario.activo %}
                                 <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #dc2626; font-size: 12px; padding: 6px 12px; border-radius: 8px; font-weight: 600;">Baja</span>
+                            {% elif usuario.estado == 'suspendido' %}
+                                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #dc2626; font-size: 12px; padding: 6px 12px; border-radius: 8px; font-weight: 600;">Suspendido</span>
+                            {% else %}
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 12px; padding: 6px 12px; border-radius: 8px; font-weight: 600;">Activo</span>
                             {% endif %}
                         </td>
                         <td class="text-end pe-4">
-                            <div class="d-flex justify-content-end gap-2">
-                                <button class="btn btn-sm btn-light-custom" style="padding: 6px 12px; font-weight: 600; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
+                            <div class="d-flex justify-content-end gap-2 align-items-center">
+                                <a href="{{ url_for('historial_usuario', usuario_id=usuario.id) }}" class="btn btn-sm btn-light-custom" title="Ver Historial" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                    <i class="bi bi-clock-history" style="color: #2563eb;"></i>
+                                </a>
+                                <button class="btn btn-sm btn-light-custom" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
                                     data-id="{{ usuario.id }}" data-nombre="{{ usuario.nombre }}" data-correo="{{ usuario.correo }}"
                                     data-telefono="{{ usuario.telefono }}" data-facultad="{{ usuario.facultad }}" data-carrera="{{ usuario.carrera }}"
-                                    data-activo="{{ '1' if usuario.activo else '0' }}">
-                                    <i class="bi bi-pencil-square me-1"></i>Editar
+                                    data-activo="{{ '1' if usuario.activo else '0' }}" data-estado="{{ usuario.estado }}" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
+                                    <i class="bi bi-pencil" style="color: #4b5563;"></i>
                                 </button>
-                                <form method="POST" action="{{ url_for('eliminar_usuario_biblioteca', usuario_id=usuario.id) }}" onsubmit="event.preventDefault(); const form = this; showConfirm('¿Dar de baja al usuario?', 'Confirmar Baja', () => form.submit());">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 6px 12px; font-weight: 600; border-radius: 8px;"><i class="bi bi-trash me-1"></i>Baja</button>
+                                <form method="POST" action="{{ url_for('eliminar_usuario_biblioteca', usuario_id=usuario.id) }}" onsubmit="event.preventDefault(); const form = this; showConfirm('¿Dar de baja al usuario?', 'Confirmar Baja', () => form.submit());" class="m-0 d-inline-block" style="height: 36px;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm" title="Dar de baja" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #dc2626; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0; transition: all 0.2s;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>
@@ -187,11 +205,18 @@
                             <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Carrera</label>
                             <input type="text" name="carrera" id="edit_carrera" class="form-control form-control-custom" style="height: 48px; border-radius: 12px; font-weight: 500;">
                         </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Estado del usuario</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Estado de la cuenta</label>
                             <select name="activo" id="edit_activo" class="form-select form-control-custom" style="height: 48px; border-radius: 12px; font-weight: 500;">
                                 <option value="1">🟢 Activo - Puede realizar préstamos</option>
                                 <option value="0">🔴 Inactivo - No puede realizar préstamos (Baja)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Estado Administrativo</label>
+                            <select name="estado" id="edit_estado" class="form-select form-control-custom" style="height: 48px; border-radius: 12px; font-weight: 500;">
+                                <option value="activo">🟢 Activo (Sin sanciones)</option>
+                                <option value="suspendido">🔴 Suspendido (Con sanciones)</option>
                             </select>
                         </div>
                     </div>
@@ -206,19 +231,30 @@
                 </div>
             </form>
         </div>
-    </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
-// Búsqueda en tabla
-document.getElementById('buscarUsuario')?.addEventListener('keyup', function(e) {
-    const value = e.target.value.toLowerCase();
-    const rows = document.querySelectorAll('#tablaUsuarios tbody tr');
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(value) ? '' : 'none';
-    });
+const toggleUsuariosBtn = document.getElementById('toggleUsuarios');
+const usuariosSection = document.getElementById('usuariosSection');
+
+toggleUsuariosBtn?.addEventListener('click', function() {
+    const visible = usuariosSection.style.display !== 'none';
+    usuariosSection.style.display = visible ? 'none' : 'block';
+    toggleUsuariosBtn.innerHTML = visible
+        ? '<i class="bi bi-people me-2"></i>Ver usuarios'
+        : '<i class="bi bi-eye-slash me-2"></i>Ocultar usuarios';
+    
+    // Si se muestra por primera vez, inicializar paginación
+    if (!visible && !document.getElementById('tablaUsuarios').dataset.paginacionActiva) {
+        paginarTabla('tablaUsuarios', 8);
+    }
 });
+
+// Búsqueda en tabla (2.4)
+buscarEnTabla('buscarUsuario', 'tablaUsuarios');
 
 // Modal edit usuario
 document.getElementById('modalEditarUsuario').addEventListener('show.bs.modal', function(event) {
@@ -230,7 +266,20 @@ document.getElementById('modalEditarUsuario').addEventListener('show.bs.modal', 
     document.getElementById('edit_facultad').value = button.getAttribute('data-facultad') || '';
     document.getElementById('edit_carrera').value = button.getAttribute('data-carrera') || '';
     document.getElementById('edit_activo').value = button.getAttribute('data-activo') || '1';
+    document.getElementById('edit_estado').value = button.getAttribute('data-estado') || 'activo';
     document.getElementById('formEditarUsuario').action = `/usuarios-biblioteca/${id}/editar`;
+});
+
+// 2.5 — Spinner en botones
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function() {
+        const btn = this.querySelector('button[type="submit"]');
+        if (btn && !btn.classList.contains('btn-close')) {
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${originalText.includes('Guardar') ? 'Guardando...' : 'Procesando...'}`;
+        }
+    });
 });
 </script>
 {% endblock %}

@@ -1,0 +1,23 @@
+# Variables de entorno y credenciales (NUNCA subir a Git)
+.env
+.env.*
+config/email.py
+
+# Base de datos local
+*.sqlite
+*.sqlite3
+*.db
+
+# Entorno virtual y caché de Python
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos del sistema / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
