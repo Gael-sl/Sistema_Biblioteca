@@ -25,12 +25,12 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
     
     from html import escape as _esc
     u_correo = usuario.correo
+    u_correo_esc = _esc(u_correo or "")
     u_nombre = _esc(usuario.nombre or "")
     u_tipo = usuario.tipo_usuario
     u_cuenta = _esc(usuario.numero_cuenta or "")
     u_id = usuario.id
-    u_facultad = _esc(usuario.facultad or "")
-    u_carrera = _esc(usuario.carrera or "")
+    u_telefono = _esc(usuario.telefono or "")
 
     import threading
     def _send_thread():
@@ -39,7 +39,8 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
         msg["From"] = sender
         msg["To"] = u_correo
 
-        tipo_texto = "Lector externo" if u_tipo == "externo" else f"Afiliación: {u_cuenta or 'N/A'}"
+        tipo_badge = "Lector externo" if u_tipo == "externo" else f"Matrícula: {u_cuenta or 'N/A'}"
+        tipo_texto = "Lector externo" if u_tipo == "externo" else "Lector interno"
         qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=140x140&data={quote(u_id)}"
         fecha_registro = datetime.now().strftime("%d/%m/%Y")
         
@@ -67,7 +68,7 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
                         <div style="padding: 16px;">
                             <!-- Badge -->
                             <span style="background-color: rgba(217, 119, 87, 0.22); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; color: #f5e3c7; display: inline-block; margin-bottom: 12px;">
-                                {tipo_texto}
+                                {tipo_badge}
                             </span>
                             
                             <table width="100%" cellpadding="0" cellspacing="0">
@@ -77,16 +78,16 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
                                         
                                         <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 11px; line-height: 1.5;">
                                             <tr>
-                                                <td style="color: #b0aea5; padding-bottom: 6px; width: 72px;">Inst. / Área:</td>
-                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_facultad or 'General'}</td>
+                                                <td style="color: #b0aea5; padding-bottom: 6px; width: 68px;">Tipo:</td>
+                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{tipo_texto}</td>
                                             </tr>
                                             <tr>
-                                                <td style="color: #b0aea5; padding-bottom: 6px;">Categoría:</td>
-                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_carrera or 'Lector general'}</td>
+                                                <td style="color: #b0aea5; padding-bottom: 6px;">Teléfono:</td>
+                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_telefono or 'No registrado'}</td>
                                             </tr>
                                             <tr>
                                                 <td style="color: #b0aea5; padding-bottom: 6px;">Email:</td>
-                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_correo or 'N/A'}</td>
+                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_correo_esc or 'N/A'}</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -132,9 +133,9 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
             f"Tu credencial de biblioteca\n\n"
             f"ID: {u_id}\n"
             f"Nombre: {u_nombre}\n"
-            f"{tipo_texto}\n"
-            f"Institución / Área: {u_facultad or 'General'}\n"
-            f"Categoría: {u_carrera or 'Lector general'}"
+            f"{tipo_badge}\n"
+            f"Tipo: {tipo_texto}\n"
+            f"Teléfono: {u_telefono or 'No registrado'}"
         )
         msg.add_alternative(html, subtype="html")
 

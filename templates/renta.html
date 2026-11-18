@@ -341,7 +341,12 @@
             if (results) results.style.display = 'none';
 
             if (nameId) document.getElementById(nameId).textContent = u.nombre;
-            if (facultatId) document.getElementById(facultatId).textContent = u.facultad || 'General';
+            if (facultatId) {
+                const etiquetaTipo = u.tipo_usuario === 'externo'
+                    ? 'Lector externo'
+                    : (u.numero_cuenta ? `Matrícula: ${u.numero_cuenta}` : 'Lector interno');
+                document.getElementById(facultatId).textContent = etiquetaTipo;
+            }
             if (prestamosId) document.getElementById(prestamosId).textContent = `${u.prestamos_activos} préstamos activos`;
 
             if (card) {
@@ -449,11 +454,14 @@
                         statusBadge = `<span class="badge bg-warning-custom text-warning ms-2" style="background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 6px;">${u.multas_pendientes} Multas</span>`;
                     }
 
+                    const subtitulo = u.tipo_usuario === 'externo'
+                        ? 'Lector externo'
+                        : (u.numero_cuenta ? `Mat. ${u.numero_cuenta}` : 'Lector interno');
                     item.innerHTML = `
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <div style="font-weight: 700; color: #1d1d1f;">${escapeHtml(u.nombre)} ${statusBadge}</div>
-                                <div style="font-size: 12px; color: #666;">ID: ${escapeHtml(u.id)} • ${escapeHtml(u.facultad)}</div>
+                                <div style="font-size: 12px; color: #666;">ID: ${escapeHtml(u.id)} &bull; ${escapeHtml(subtitulo)}</div>
                             </div>
                             <span class="badge rounded-pill" style="background: rgba(0,0,0,0.05); color: #555;">${Number(u.prestamos_activos) || 0} activos</span>
                         </div>

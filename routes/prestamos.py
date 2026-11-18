@@ -424,6 +424,8 @@ def api_usuarios_buscar():
         {
             "id": u.id,
             "nombre": u.nombre,
+            "tipo_usuario": u.tipo_usuario or "interno",
+            "numero_cuenta": u.numero_cuenta or "",
             "facultad": u.facultad or "",
             "carrera": u.carrera or "",
             "estado": u.estado or "activo",

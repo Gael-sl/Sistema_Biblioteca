@@ -118,32 +118,26 @@
                         <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Correo Electrónico</label>
                         <input type="email" id="correo" class="form-control" 
                                style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
-                               placeholder="">
+                               placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Teléfono <span class="text-xs fw-normal">(opcional)</span></label>
+                        <input type="tel" id="telefono" class="form-control form-control-custom" 
+                               style="border-radius: 12px; padding: 8px 12px;"
+                               placeholder="Ej: 667-123-4567">
                     </div>
                     <div class="mb-2">
                         <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Tipo de Usuario</label>
                         <select id="tipo_usuario" class="form-select" style="border-radius: 12px; padding: 8px 12px;">
-                            <option value="interno" selected>Interno (Miembro / Afiliado)</option>
+                            <option value="interno" selected>Interno (Estudiante / Miembro)</option>
                             <option value="externo">Externo (Visitante / General)</option>
                         </select>
                     </div>
-                    <div class="mb-2" id="grupoCuenta">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">No. de Afiliación / Matrícula</label>
+                    <div class="mb-3" id="grupoCuenta">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Matrícula / No. de Cuenta</label>
                         <input type="text" id="numero_cuenta" class="form-control form-control-custom font-mono" 
                                style="border-radius: 12px; padding: 8px 12px;" inputmode="numeric" placeholder="Ej: 1234567-8">
-                        <div style="font-size: 11px; color: #6b6a65; margin-top: 3px;">Solo números, con guion opcional antes del último dígito (ej. matrícula, socio o folio).</div>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Institución / Área <span class="text-xs fw-normal">(opcional)</span></label>
-                        <input type="text" id="facultad" class="form-control form-control-custom" 
-                               style="border-radius: 12px; padding: 8px 12px;"
-                               placeholder="Ej. Sede Central, Área Académica, General">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Ocupación / Categoría <span class="text-xs fw-normal">(opcional)</span></label>
-                        <input type="text" id="carrera" class="form-control form-control-custom" 
-                               style="border-radius: 12px; padding: 8px 12px;"
-                               placeholder="Ej. Lector general, Estudiante, Docente">
+                        <div style="font-size: 11px; color: #6b6a65; margin-top: 3px;">Solo para usuarios internos (dígitos con guion opcional antes del último número).</div>
                     </div>
                     <div class="d-flex flex-column gap-2">
                         <button type="button" id="btnPreview" class="btn btn-dark-custom w-100 py-2">
@@ -213,18 +207,18 @@
                     </div>
                     
                     <div class="credential-body">
-                        <div class="student-badge" id="previewTipoUsuario">Afiliación: -</div>
+                        <div class="student-badge" id="previewTipoUsuario">Matrícula: -</div>
                         <div class="row">
                             <div class="col-7">
                                 <div class="student-name" id="previewNombre">-</div>
                                 <div class="mb-3">
                                     <div class="info-row">
-                                        <span class="info-label">Inst. / Área:</span>
-                                        <span class="info-value" id="previewFacultad">-</span>
+                                        <span class="info-label">Tipo:</span>
+                                        <span class="info-value" id="previewTipoTexto">-</span>
                                     </div>
                                     <div class="info-row">
-                                        <span class="info-label">Categoría:</span>
-                                        <span class="info-value" id="previewCarrera">-</span>
+                                        <span class="info-label">Teléfono:</span>
+                                        <span class="info-value" id="previewTelefono">—</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Email:</span>
@@ -291,10 +285,9 @@ function generateUniqueId() {
 document.getElementById('btnPreview').addEventListener('click', function() {
     const nombre = document.getElementById('nombre').value.trim();
     const correo = document.getElementById('correo').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
     const tipoUsuario = document.getElementById('tipo_usuario').value;
     const numeroCuenta = document.getElementById('numero_cuenta').value.trim();
-    const facultad = document.getElementById('facultad').value.trim();
-    const carrera = document.getElementById('carrera').value.trim();
     
     if (!nombre || !correo) {
         showAlert('Por favor complete al menos el nombre y correo electrónico', 'Aviso', 'warning');
@@ -303,11 +296,11 @@ document.getElementById('btnPreview').addEventListener('click', function() {
 
     if (tipoUsuario === 'interno') {
         if (!numeroCuenta) {
-            showAlert('Ingresa el número de afiliación o matrícula para usuarios internos', 'Aviso', 'warning');
+            showAlert('Ingresa la matrícula para usuarios internos', 'Aviso', 'warning');
             return;
         }
         if (!cuentaRegex.test(numeroCuenta)) {
-            showAlert('El número solo permite dígitos y un guion opcional antes del último dígito', 'Aviso', 'warning');
+            showAlert('La matrícula solo permite dígitos y un guion opcional antes del último número', 'Aviso', 'warning');
             return;
         }
     }
@@ -320,12 +313,12 @@ document.getElementById('btnPreview').addEventListener('click', function() {
     // Actualizar datos en la credencial
     document.getElementById('previewNombre').textContent = nombre;
     document.getElementById('previewCorreo').textContent = correo;
-    document.getElementById('previewFacultad').textContent = facultad || 'General';
-    document.getElementById('previewCarrera').textContent = carrera || 'Lector general';
+    document.getElementById('previewTelefono').textContent = telefono || 'No registrado';
+    document.getElementById('previewTipoTexto').textContent = tipoUsuario === 'externo' ? 'Lector externo' : 'Lector interno';
     document.getElementById('previewId').textContent = generatedId;
     document.getElementById('previewTipoUsuario').textContent = tipoUsuario === 'externo'
         ? 'Lector externo'
-        : `Afiliación: ${numeroCuenta}`;
+        : `Matrícula: ${numeroCuenta}`;
     
     // Fecha actual
     const hoy = new Date();
@@ -379,10 +372,9 @@ document.getElementById('btnConfirmar').addEventListener('click', function() {
         id: generatedId,
         nombre: document.getElementById('nombre').value.trim(),
         correo: document.getElementById('correo').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
         tipo_usuario: document.getElementById('tipo_usuario').value,
-        numero_cuenta: document.getElementById('numero_cuenta').value.trim(),
-        facultad: document.getElementById('facultad').value.trim(),
-        carrera: document.getElementById('carrera').value.trim()
+        numero_cuenta: document.getElementById('numero_cuenta').value.trim()
     };
     
     this.disabled = true;

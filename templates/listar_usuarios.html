@@ -40,7 +40,7 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Contacto</th>
-                    <th>Institución / Categoría</th>
+                    <th>Tipo / Matrícula</th>
                     <th class="text-center">Registro</th>
                     <th class="text-center">Estado</th>
                     <th class="text-end">Acciones</th>
@@ -58,8 +58,12 @@
                         <div class="text-sm"><i class="bi bi-phone me-1"></i>{{ usuario.telefono or '—' }}</div>
                     </td>
                     <td>
-                        <div class="text-sm">{{ usuario.facultad or '—' }}</div>
-                        <div class="text-xs text-muted">{{ usuario.carrera or '' }}</div>
+                        {% if usuario.tipo_usuario == 'externo' %}
+                            <span class="badge-custom font-mono" style="font-size: 11px;">Externo</span>
+                        {% else %}
+                            <div class="text-sm fw-semibold">Interno</div>
+                            <div class="text-xs font-mono text-muted">{{ usuario.numero_cuenta or 'Sin matrícula' }}</div>
+                        {% endif %}
                     </td>
                     <td class="text-center">
                         <span class="text-xs">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</span>
@@ -78,7 +82,7 @@
                             <a href="{{ url_for('historial_usuario', usuario_id=usuario.id) }}" class="btn btn-sm btn-light-custom text-decoration-none" title="Ver historial y multas" style="height: 32px; display: flex; align-items: center;"><i class="bi bi-clock-history me-1"></i>Historial</a>
                             <button class="btn btn-sm btn-light-custom" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
                                 data-id="{{ usuario.id }}" data-nombre="{{ usuario.nombre }}" data-correo="{{ usuario.correo }}"
-                                data-telefono="{{ usuario.telefono }}" data-facultad="{{ usuario.facultad }}" data-carrera="{{ usuario.carrera }}"
+                                data-telefono="{{ usuario.telefono or '' }}"
                                 data-activo="{{ '1' if usuario.activo else '0' }}" data-estado="{{ usuario.estado }}" style="height: 32px; display: flex; align-items: center;">
                                 <i class="bi bi-pencil me-1"></i>Editar
                             </button>
@@ -135,14 +139,6 @@
                             <input type="text" name="telefono" id="edit_telefono" class="form-control form-control-custom">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom">Institución / Área</label>
-                            <input type="text" name="facultad" id="edit_facultad" class="form-control form-control-custom">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label-custom">Ocupación / Categoría</label>
-                            <input type="text" name="carrera" id="edit_carrera" class="form-control form-control-custom">
-                        </div>
-                        <div class="col-md-6">
                             <label class="form-label-custom">Estado Cuenta</label>
                             <select name="activo" id="edit_activo" class="form-select form-control-custom">
                                 <option value="1">Activo</option>
@@ -187,8 +183,6 @@ document.getElementById('modalEditarUsuario').addEventListener('show.bs.modal', 
     document.getElementById('edit_nombre').value = button.getAttribute('data-nombre');
     document.getElementById('edit_correo').value = button.getAttribute('data-correo') || '';
     document.getElementById('edit_telefono').value = button.getAttribute('data-telefono') || '';
-    document.getElementById('edit_facultad').value = button.getAttribute('data-facultad') || '';
-    document.getElementById('edit_carrera').value = button.getAttribute('data-carrera') || '';
     document.getElementById('edit_activo').value = button.getAttribute('data-activo') || '1';
     document.getElementById('edit_estado').value = button.getAttribute('data-estado') || 'activo';
     document.getElementById('formEditarUsuario').action = `/usuarios-biblioteca/${id}/editar`;

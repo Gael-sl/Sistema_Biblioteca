@@ -38,17 +38,9 @@
                         <label class="form-label-custom fw-bold stat-label-mono">Correo Electrónico</label>
                         <input type="email" name="correo" class="form-control form-control-custom" style="height: 48px;" placeholder="correo@ejemplo.com">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label-custom fw-bold stat-label-mono">Teléfono</label>
-                        <input type="text" name="telefono" class="form-control form-control-custom" style="height: 48px;" placeholder="555-1234">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label-custom fw-bold stat-label-mono">Institución / Área</label>
-                        <input type="text" name="facultad" class="form-control form-control-custom" style="height: 48px;" placeholder="Ej: Sede Central, General">
-                    </div>
                     <div class="mb-4">
-                        <label class="form-label-custom fw-bold stat-label-mono">Ocupación / Categoría</label>
-                        <input type="text" name="carrera" class="form-control form-control-custom" style="height: 48px;" placeholder="Ej: Lector general, Estudiante, Docente">
+                        <label class="form-label-custom fw-bold stat-label-mono">Teléfono <span class="fw-normal">(opcional)</span></label>
+                        <input type="text" name="telefono" class="form-control form-control-custom" style="height: 48px;" placeholder="555-1234">
                     </div>
                     <div class="d-flex gap-2">
                         <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill py-2">Cancelar</a>
@@ -108,7 +100,7 @@
                         <th class="ps-4">ID</th>
                         <th>Nombre</th>
                         <th>Contacto</th>
-                        <th>Institución / Categoría</th>
+                        <th>Tipo / Matrícula</th>
                         <th class="text-center">Estado</th>
                         <th class="text-end pe-4">Acciones</th>
                     </tr>
@@ -126,8 +118,12 @@
                             <div class="text-sm mt-1" style="color: #4b5563;"><i class="bi bi-phone me-2 text-muted"></i>{{ usuario.telefono or '—' }}</div>
                         </td>
                         <td>
-                            <div class="text-sm fw-semibold" style="color: #374151;">{{ usuario.facultad or '—' }}</div>
-                            <div class="text-xs mt-1" style="color: #6b7280;">{{ usuario.carrera or '' }}</div>
+                            {% if usuario.tipo_usuario == 'externo' %}
+                                <span class="badge-custom font-mono" style="font-size: 11px;">Externo</span>
+                            {% else %}
+                                <div class="text-sm fw-semibold" style="color: #374151;">Interno</div>
+                                <div class="text-xs font-mono mt-1" style="color: #6b7280;">{{ usuario.numero_cuenta or 'Sin matrícula' }}</div>
+                            {% endif %}
                         </td>
                         <td class="text-center">
                             {% if not usuario.activo %}
@@ -145,7 +141,7 @@
                                 </a>
                                 <button class="btn btn-sm btn-light-custom" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
                                     data-id="{{ usuario.id }}" data-nombre="{{ usuario.nombre }}" data-correo="{{ usuario.correo }}"
-                                    data-telefono="{{ usuario.telefono }}" data-facultad="{{ usuario.facultad }}" data-carrera="{{ usuario.carrera }}"
+                                    data-telefono="{{ usuario.telefono or '' }}"
                                     data-activo="{{ '1' if usuario.activo else '0' }}" data-estado="{{ usuario.estado }}" style="height: 36px; display: flex; align-items: center; justify-content: center; width: 36px; padding: 0;">
                                     <i class="bi bi-pencil" style="color: #4b5563;"></i>
                                 </button>
@@ -196,14 +192,6 @@
                                 <span class="input-group-text bg-transparent" style="border-radius: 12px 0 0 12px; border: 1px solid rgba(0,0,0,0.1); border-right: none;" id="basic-addon2"><i class="bi bi-telephone text-muted"></i></span>
                                 <input type="text" name="telefono" id="edit_telefono" class="form-control form-control-custom" style="height: 48px; border-radius: 0 12px 12px 0; border-left: none; font-weight: 500;" aria-describedby="basic-addon2">
                             </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label-custom mb-2 stat-label-mono">Institución / Área</label>
-                            <input type="text" name="facultad" id="edit_facultad" class="form-control form-control-custom" style="height: 48px;">
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label-custom mb-2 stat-label-mono">Ocupación / Categoría</label>
-                            <input type="text" name="carrera" id="edit_carrera" class="form-control form-control-custom" style="height: 48px;">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label-custom mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Estado de la cuenta</label>
@@ -263,8 +251,6 @@ document.getElementById('modalEditarUsuario').addEventListener('show.bs.modal', 
     document.getElementById('edit_nombre').value = button.getAttribute('data-nombre');
     document.getElementById('edit_correo').value = button.getAttribute('data-correo') || '';
     document.getElementById('edit_telefono').value = button.getAttribute('data-telefono') || '';
-    document.getElementById('edit_facultad').value = button.getAttribute('data-facultad') || '';
-    document.getElementById('edit_carrera').value = button.getAttribute('data-carrera') || '';
     document.getElementById('edit_activo').value = button.getAttribute('data-activo') || '1';
     document.getElementById('edit_estado').value = button.getAttribute('data-estado') || 'activo';
     document.getElementById('formEditarUsuario').action = `/usuarios-biblioteca/${id}/editar`;

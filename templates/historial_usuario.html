@@ -27,8 +27,8 @@
                 <h2 class="mb-1" style="font-size: 24px; font-weight: 600; color: #141413;">{{ usuario.nombre }}</h2>
                 <div class="d-flex gap-3 flex-wrap">
                     <span class="text-sm fw-semibold font-mono" style="color: #6b6a65;"><i class="bi bi-card-text me-1"></i>ID: {{ usuario.id }}</span>
-                    <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-building me-1"></i>{{ usuario.facultad or 'General' }}</span>
-                    <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-person-badge me-1"></i>{{ usuario.carrera or 'Lector' }}</span>
+                    <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-person-badge me-1"></i>{{ ('Interno · Mat. ' ~ usuario.numero_cuenta) if usuario.tipo_usuario != 'externo' and usuario.numero_cuenta else ('Lector externo' if usuario.tipo_usuario == 'externo' else 'Lector interno') }}</span>
+                    <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-telephone me-1"></i>{{ usuario.telefono or usuario.correo or 'Sin contacto' }}</span>
                 </div>
             </div>
             <div class="col-md-auto mt-3 mt-md-0">

@@ -393,8 +393,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Usuario</th>
-                                <th>Institución / Área</th>
-                                <th>Ocupación / Categoría</th>
+                                <th>Teléfono</th>
+                                <th>Tipo / Matrícula</th>
                                 <th class="text-center">Registro</th>
                             </tr>
                         </thead>
@@ -406,8 +406,15 @@
                                     <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
                                     <div class="text-sm">{{ usuario.correo or '—' }}</div>
                                 </td>
-                                <td><span class="text-sm">{{ usuario.facultad or '—' }}</span></td>
-                                <td><span class="text-sm">{{ usuario.carrera or '—' }}</span></td>
+                                <td><span class="text-sm">{{ usuario.telefono or '—' }}</span></td>
+                                <td>
+                                    {% if usuario.tipo_usuario == 'externo' %}
+                                        <span class="badge-custom font-mono" style="font-size: 11px;">Externo</span>
+                                    {% else %}
+                                        <span class="text-sm">Interno</span>
+                                        <span class="text-xs font-mono text-muted">{{ (' · ' ~ usuario.numero_cuenta) if usuario.numero_cuenta else '' }}</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-center">
                                     <span class="text-xs">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</span>
                                 </td>
