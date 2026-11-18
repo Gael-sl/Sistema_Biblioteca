@@ -32,30 +32,25 @@
             </span>
         </div>
 
-        <div class="row g-2 mb-3">
-            <div class="col-md-6">
-                <div class="surface-oat px-3 py-2 d-flex align-items-center gap-2">
-                    <span class="badge-custom font-mono" style="background: #141413; color: #faf9f5; border-color: #141413;">Paso 1</span>
-                    <span class="text-xs" style="color: #141413;">Apunta el lector QR al <strong>libro</strong> o a la <strong>credencial</strong> (o escribe nombre / ID).</span>
-                </div>
+        <div class="surface-oat px-3 py-2 mb-3 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2" style="border-radius: 14px;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="d-inline-flex align-items-center justify-content-center font-mono fw-bold" style="width: 22px; height: 22px; border-radius: 999px; background: #141413; color: #faf9f5; font-size: 11px; flex-shrink: 0;">1</span>
+                <span class="text-xs" style="color: #30302e;">Escanea el <strong>libro</strong> o <strong>credencial</strong> (o escribe nombre / ID).</span>
             </div>
-            <div class="col-md-6">
-                <div class="surface-oat px-3 py-2 d-flex align-items-center gap-2">
-                    <span class="badge-amber font-mono">Paso 2</span>
-                    <span class="text-xs" style="color: #141413;">Al detectar un código exacto (o presionar <kbd>Enter</kbd>), se abre automáticamente el resumen de devolución.</span>
-                </div>
+            <div class="d-none d-md-block" style="width: 1px; height: 18px; background: #d8d6ce;"></div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="d-inline-flex align-items-center justify-content-center font-mono fw-bold" style="width: 22px; height: 22px; border-radius: 999px; background: #d97757; color: #faf9f5; font-size: 11px; flex-shrink: 0;">2</span>
+                <span class="text-xs" style="color: #30302e;">Al detectar código exacto o pulsar <kbd style="background: #faf9f5; color: #141413; border: 1px solid #d8d6ce; border-radius: 6px; padding: 1px 6px; font-family: var(--font-geist-mono); font-size: 11px; font-weight: 600;">Enter</kbd>, abre la devolución al instante.</span>
             </div>
         </div>
 
-        <div class="input-group">
-            <span class="input-group-text border-end-0" style="background: var(--color-canvas); border: 1px solid var(--color-hairline); border-top-left-radius: 16px; border-bottom-left-radius: 16px; padding-left: 16px;">
-                <i class="bi bi-upc-scan" style="color: #c6613f; font-size: 18px;"></i>
-            </span>
-            <input type="text" id="buscarDevolucion" class="form-control form-control-custom border-start-0"
+        <div class="position-relative">
+            <i class="bi bi-upc-scan position-absolute" style="top: 50%; left: 16px; transform: translateY(-50%); color: #c6613f; font-size: 18px; z-index: 2; pointer-events: none;"></i>
+            <input type="text" id="buscarDevolucion" class="form-control form-control-custom"
                    placeholder="Escanea aquí el código QR del ejemplar (ej. QR0001) o escribe el nombre / ID del lector..."
-                   style="height: 48px; font-size: 14px; border-top-left-radius: 0; border-bottom-left-radius: 0; border: 1px solid var(--color-hairline); border-left: none;" autofocus>
-            <button type="button" id="btnLimpiarBusquedaDev" class="btn btn-light-custom d-none" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" title="Limpiar búsqueda">
-                <i class="bi bi-x-lg"></i>
+                   style="height: 48px; font-size: 14px; padding-left: 46px; padding-right: 44px; border-radius: 16px;" autofocus>
+            <button type="button" id="btnLimpiarBusquedaDev" class="btn btn-sm position-absolute d-none" style="top: 50%; right: 10px; transform: translateY(-50%); border: none; background: #e3dacc; color: #141413; border-radius: 999px; width: 28px; height: 28px; padding: 0;" title="Limpiar búsqueda">
+                <i class="bi bi-x-lg" style="font-size: 12px;"></i>
             </button>
         </div>
     </div>

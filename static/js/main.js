@@ -13,6 +13,7 @@ function showAlert(message, title = 'Aviso', type = 'info', onConfirm = null) {
     
     btnCancel.classList.add('d-none');
     btnConfirm.textContent = 'Entendido';
+    iconInner.style.color = '';
     
     if (type === 'success') {
         iconContainer.style.background = 'rgba(16, 185, 129, 0.1)';
@@ -30,10 +31,11 @@ function showAlert(message, title = 'Aviso', type = 'info', onConfirm = null) {
         btnConfirm.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
         btnConfirm.style.boxShadow = '0 4px 15px rgba(245, 158, 11, 0.3)';
     } else {
-        iconContainer.style.background = 'rgba(59, 130, 246, 0.1)';
-        iconInner.className = 'bi bi-info-circle text-primary';
-        btnConfirm.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
-        btnConfirm.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+        iconContainer.style.background = 'rgba(217, 119, 87, 0.14)';
+        iconInner.className = 'bi bi-info-circle';
+        iconInner.style.color = '#c6613f';
+        btnConfirm.style.background = 'linear-gradient(135deg, #d97757 0%, #c6613f 100%)';
+        btnConfirm.style.boxShadow = '0 8px 20px rgba(217, 119, 87, 0.32)';
     }
     
     // Eliminar listeners previos
@@ -64,11 +66,12 @@ function showConfirm(message, title = 'Confirmar', onConfirm) {
     btnCancel.classList.remove('d-none');
     btnConfirm.textContent = 'Confirmar';
     
-    iconContainer.style.background = 'rgba(245, 158, 11, 0.1)';
-    iconInner.className = 'bi bi-question-circle text-warning';
+    iconContainer.style.background = 'rgba(217, 119, 87, 0.14)';
+    iconInner.className = 'bi bi-question-circle';
+    iconInner.style.color = '#c6613f';
     
-    btnConfirm.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
-    btnConfirm.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
+    btnConfirm.style.background = 'linear-gradient(135deg, #d97757 0%, #c6613f 100%)';
+    btnConfirm.style.boxShadow = '0 8px 20px rgba(217, 119, 87, 0.32)';
     
     // Eliminar listeners previos
     const newBtnConfirm = btnConfirm.cloneNode(true);
@@ -120,9 +123,9 @@ function mostrarMensaje(mensaje, tipo = 'success') {
     const colorBg = {
         'success': 'rgba(16, 185, 129, 0.95)',
         'error': 'rgba(239, 68, 68, 0.95)',
-        'warning': 'rgba(245, 158, 11, 0.95)',
-        'info': 'rgba(59, 130, 246, 0.95)'
-    }[tipo] || 'rgba(59, 130, 246, 0.95)';
+        'warning': 'rgba(217, 119, 87, 0.96)',
+        'info': 'rgba(20, 20, 19, 0.94)'
+    }[tipo] || 'rgba(20, 20, 19, 0.94)';
     
     const alert = document.createElement('div');
     alert.className = 'toast-notification';
