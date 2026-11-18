@@ -7,8 +7,8 @@
                 <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
             </a>
             <div>
-                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Inventario de libros</h1>
-                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Gestión del catálogo completo</p>
+                <h1 class="mb-0" style="font-size: 22px; color: #141413; font-weight: 600;">Inventario de libros</h1>
+                <p class="text-sm mb-0" style="color: #6b6a65;">Gestión del catálogo completo</p>
             </div>
         </div>
     </div>
@@ -17,7 +17,7 @@
     <div class="glass-container p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Total de libros: <strong style="color: #3b82f6;">{{ libros|length }}</strong></p>
+                <p class="mb-0 text-md" style="font-weight: 600; color: #141413;">Total de libros: <strong class="font-mono" style="color: #c6613f;">{{ libros|length }}</strong></p>
             </div>
             <div class="d-flex gap-2">
                 <select id="columnaBusqueda" class="form-select form-control-custom" style="width: auto; cursor: pointer;">
@@ -28,12 +28,12 @@
                     <option value="qr">ID o QR</option>
                 </select>
                 <div class="position-relative">
-                    <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666;"></i>
+                    <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #6b6a65;"></i>
                     <input type="text" id="buscarLibro" class="form-control form-control-custom ps-5" placeholder="Buscar libro..." style="width: 250px;">
                 </div>
                 <div class="d-flex gap-2">
             {% if session.get('ultimos_ids_agregados') %}
-            <a href="{{ url_for('imprimir_qrs') }}" class="btn btn-light-custom d-flex align-items-center gap-2" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.2);">
+            <a href="{{ url_for('imprimir_qrs') }}" class="btn btn-light-custom d-flex align-items-center gap-2" style="background: #e3dacc; color: #141413; border: 1px solid #d8d6ce;">
                 <i class="bi bi-qr-code"></i> Imprimir Lote Reciente
             </a>
             {% endif %}
@@ -65,7 +65,7 @@
                 {% for libro in libros %}
                 <tr data-ids="{{ libro.ids|join(',')|lower }}" data-titulo="{{ libro.titulo|lower }}" data-autor="{{ libro.autor|lower }}" data-isbn="{{ libro.isbn|lower }}" data-ejemplares="{{ libro.ejemplares|tojson|forceescape }}">
                     <td>
-                        <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
+                        <span class="badge" style="background: #e3dacc; color: #141413; border: 1px solid #d8d6ce; font-family: var(--font-geist-mono); font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 12px;">
                             {% if libro.ejemplares|length > 1 %}
                                 <i class="bi bi-collection me-1"></i>{{ libro.ejemplares|length }} Ejemplares
                             {% else %}
@@ -173,36 +173,36 @@
 {% if es_admin() %}
 <div class="modal fade" id="modalAgregarLibro" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+        <div class="modal-content" style="padding: 8px;">
             <div class="modal-header border-0 pb-2">
                 <div>
-                    <h4 class="mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-journal-plus me-2" style="color: #3b82f6;"></i>Agregar nuevo libro</h4>
-                    <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Completa la información del ejemplar para el catálogo</p>
+                    <h4 class="mb-1 serif-heading" style="font-weight: 600; color: #141413;"><i class="bi bi-journal-plus me-2" style="color: #d97757;"></i>Agregar nuevo libro</h4>
+                    <p class="text-sm mb-0" style="color: #6b6a65;">Completa la información del ejemplar para el catálogo</p>
                 </div>
-                <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('agregar_libro') }}">
                 <div class="modal-body py-3">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="row g-3">
                         <div class="col-md-9">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Título del libro</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Título del libro</label>
                             <input type="text" name="titulo" class="form-control form-control-custom" placeholder="Ej. El Principito" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Cantidad</label>
-                            <input type="number" name="cantidad" class="form-control form-control-custom" min="1" value="1" placeholder="0" required>
+                            <label class="form-label-custom mb-1 stat-label-mono">Cantidad</label>
+                            <input type="number" name="cantidad" class="form-control form-control-custom font-mono" min="1" value="1" placeholder="0" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Autor</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Autor</label>
                             <input type="text" name="autor" class="form-control form-control-custom" placeholder="Nombre del autor" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">ISBN</label>
-                            <input type="text" name="isbn" class="form-control form-control-custom" placeholder="000-0-00-000000-0" required>
+                            <label class="form-label-custom mb-1 stat-label-mono">ISBN</label>
+                            <input type="text" name="isbn" class="form-control form-control-custom font-mono" placeholder="000-0-00-000000-0" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Género</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Género</label>
                             <select name="genero" class="form-select form-control-custom" required>
                                 <option value="" disabled selected>Selecciona un género...</option>
                                 <option value="Ciencia ficción">Ciencia ficción</option>
@@ -220,14 +220,14 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Costo de Reposición (+20%)</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Costo de Reposición (+20%)</label>
                             <div class="position-relative">
-                                <i class="bi bi-currency-dollar position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666; font-size: 16px; z-index: 2;"></i>
-                                <input type="number" name="costo" class="form-control form-control-custom ps-4" min="0" step="0.01" value="0.00" required>
+                                <i class="bi bi-currency-dollar position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #6b6a65; font-size: 16px; z-index: 2;"></i>
+                                <input type="number" name="costo" class="form-control form-control-custom ps-4 font-mono" min="0" step="0.01" value="0.00" required>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Etiquetas de Búsqueda (Tags)</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Etiquetas de Búsqueda (Tags)</label>
                             <input type="text" name="tags" class="form-control form-control-custom" placeholder="Ej. infantil, magia, clasico (Separadas por comas)">
                         </div>
                     </div>
@@ -236,7 +236,7 @@
                     <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn flex-fill m-0 py-2 text-white" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+                    <button type="submit" class="btn btn-dark-custom flex-fill m-0 py-2">
                         <i class="bi bi-save me-2"></i>Guardar Libro
                     </button>
                 </div>
@@ -247,58 +247,58 @@
 
 <div class="modal fade" id="modalEditarLibro" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+        <div class="modal-content" style="padding: 8px;">
             <div class="modal-header border-0 pb-2">
                 <div>
-                    <h4 class="mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-pencil-square me-2" style="color: #3b82f6;"></i>Editar libro</h4>
-                    <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Actualiza la información del ejemplar existente</p>
+                    <h4 class="mb-1 serif-heading" style="font-weight: 600; color: #141413;"><i class="bi bi-pencil-square me-2" style="color: #d97757;"></i>Editar libro</h4>
+                    <p class="text-sm mb-0" style="color: #6b6a65;">Actualiza la información del ejemplar existente</p>
                 </div>
-                <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditarLibro">
                 <div class="modal-body py-3">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="row g-3">
                         <div class="col-md-9">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Título del libro</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Título del libro</label>
                             <input type="text" name="titulo" id="edit_titulo" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Total Inicial</label>
-                            <input type="number" name="cantidad" id="edit_cantidad" class="form-control form-control-custom" min="1" required>
+                            <label class="form-label-custom mb-1 stat-label-mono">Total Inicial</label>
+                            <input type="number" name="cantidad" id="edit_cantidad" class="form-control form-control-custom font-mono" min="1" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Autor</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Autor</label>
                             <input type="text" name="autor" id="edit_autor" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">ISBN</label>
-                            <input type="text" name="isbn" id="edit_isbn" class="form-control form-control-custom" required>
+                            <label class="form-label-custom mb-1 stat-label-mono">ISBN</label>
+                            <input type="text" name="isbn" id="edit_isbn" class="form-control form-control-custom font-mono" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Género</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Género</label>
                             <input type="text" name="genero" id="edit_genero" class="form-control form-control-custom" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Costo ($)</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Costo ($)</label>
                             <div class="position-relative">
-                                <i class="bi bi-currency-dollar position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666; font-size: 16px; z-index: 2;"></i>
-                                <input type="number" name="costo" id="edit_costo" class="form-control form-control-custom ps-4" min="0" step="0.01" required>
+                                <i class="bi bi-currency-dollar position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #6b6a65; font-size: 16px; z-index: 2;"></i>
+                                <input type="number" name="costo" id="edit_costo" class="form-control form-control-custom ps-4 font-mono" min="0" step="0.01" required>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Disp. Actual</label>
-                            <input type="number" name="disponibles" id="edit_disponibles" class="form-control form-control-custom" min="0" required>
+                            <label class="form-label-custom mb-1 stat-label-mono">Disp. Actual</label>
+                            <input type="number" name="disponibles" id="edit_disponibles" class="form-control form-control-custom font-mono" min="0" required>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label-custom mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555;">Etiquetas de Búsqueda (Tags)</label>
+                            <label class="form-label-custom mb-1 stat-label-mono">Etiquetas de Búsqueda (Tags)</label>
                             <input type="text" name="tags" id="edit_tags" class="form-control form-control-custom">
                         </div>
                         <div class="col-md-12 mt-3">
-                            <div class="card p-3 border-0" style="background: rgba(59, 130, 246, 0.1); border-radius: 12px;">
+                            <div class="surface-oat p-3">
                                 <div class="form-check form-switch d-flex align-items-center mb-0 gap-2">
                                     <input class="form-check-input mt-0" type="checkbox" id="edit_activo" name="activo" value="1" style="width: 40px; height: 20px; cursor: pointer;">
-                                    <label class="form-check-label mb-0" for="edit_activo" style="font-weight: 600; color: #2563eb; font-size: 15px; cursor: pointer; margin-left: 10px;">El libro está Activo en el catálogo</label>
+                                    <label class="form-check-label mb-0" for="edit_activo" style="font-weight: 600; color: #141413; font-size: 14px; cursor: pointer; margin-left: 10px;">El libro está Activo en el catálogo</label>
                                 </div>
                             </div>
                         </div>
@@ -308,7 +308,7 @@
                     <button type="button" class="btn btn-light-custom flex-fill m-0 py-2" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn flex-fill m-0 py-2 text-white" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+                    <button type="submit" class="btn btn-dark-custom flex-fill m-0 py-2">
                         <i class="bi bi-save me-2"></i>Actualizar Libro
                     </button>
                 </div>
@@ -320,13 +320,13 @@
 <!-- Modal Ejemplares -->
 <div class="modal fade" id="modalVerEjemplares" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+        <div class="modal-content" style="padding: 8px;">
             <div class="modal-header border-0 pb-2">
                 <div>
-                    <h4 class="modal-title mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">Copias Individuales (Ejemplares)</h4>
+                    <h4 class="modal-title mb-1" style="font-weight: 600; color: #141413;">Copias Individuales (Ejemplares)</h4>
                     <p class="text-sm mb-0 text-muted" id="modalEjemplaresTitulo"></p>
                 </div>
-                <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body py-3">
                 <div class="table-responsive">
@@ -359,9 +359,9 @@
 <!-- MODAL: Ver Poseedor (3.3) -->
 <div class="modal fade" id="modalVerPoseedor" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6);">
+        <div class="modal-content">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="tituloLibroPoseedor" style="color: #1d1d1f;">-</h5>
+                <h5 class="modal-title fw-bold" id="tituloLibroPoseedor" style="color: #141413;">-</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -497,9 +497,9 @@
             if (g.count > 1) {
                 const master = g.master;
                 // Mostrar ID como rango o lista
-                master.cells[0].innerHTML = `<div class="text-xs text-primary fw-bold" style="cursor:pointer" onclick="toggleDetalleIDs(this)">
+                master.cells[0].innerHTML = `<div class="text-xs fw-bold" style="cursor:pointer; color: #c6613f;" onclick="toggleDetalleIDs(this)">
                     ${g.count} ejemplares <i class="bi bi-chevron-down ms-1"></i>
-                    <div class="detalle-ids d-none mt-1 p-2 rounded-3 bg-light text-dark shadow-sm">
+                    <div class="detalle-ids d-none mt-1 p-2 rounded-3 surface-oat text-dark">
                         ${g.ids.join(', ')}
                     </div>
                 </div>`;
@@ -519,7 +519,7 @@
     async function verPoseedor(libroId, titulo) {
         document.getElementById('tituloLibroPoseedor').textContent = titulo;
         const lista = document.getElementById('listaPoseedores');
-        lista.innerHTML = '<div class="text-center py-3"><span class="spinner-border spinner-border-sm text-primary"></span></div>';
+        lista.innerHTML = '<div class="text-center py-3"><span class="spinner-border spinner-border-sm" style="color: #d97757;"></span></div>';
         modalVerPoseedor.show();
 
         try {
@@ -543,7 +543,7 @@
                     </div>
                     <div class="text-end">
                         <div class="text-xs fw-bold ${p.vencido ? 'text-danger' : 'text-success'}">Vence: ${p.fecha_esperada}</div>
-                        <a href="/usuarios-biblioteca/${encodeURIComponent(p.usuario_id)}/historial" class="text-xs fw-bold text-primary text-decoration-none">Ver Historial</a>
+                        <a href="/usuarios-biblioteca/${encodeURIComponent(p.usuario_id)}/historial" class="text-xs fw-bold text-decoration-none" style="color: #c6613f;">Ver Historial</a>
                     </div>
                 `;
                 lista.appendChild(item);
@@ -596,16 +596,16 @@
             const tr = document.createElement('tr');
             const isHighlighted = highlightId && ej.id.toLowerCase() === highlightId;
             if (isHighlighted) {
-                tr.style.background = 'rgba(59, 130, 246, 0.1)';
-                tr.style.borderLeft = '4px solid #3b82f6';
+                tr.style.background = 'rgba(217, 119, 87, 0.12)';
+                tr.style.borderLeft = '4px solid #d97757';
                 tr.id = 'ejemplar-highlight';
             }
             
             let estadoHtml = '';
             if (ej.estado === 'disponible') {
-                estadoHtml = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 13px; padding: 6px 12px; border-radius: 8px;">Disponible</span>`;
+                estadoHtml = `<span class="badge-emerald" style="font-size: 13px; padding: 6px 12px;">Disponible</span>`;
             } else if (ej.estado === 'prestado') {
-                estadoHtml = `<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; font-size: 13px; padding: 6px 12px; border-radius: 8px;">Prestado</span>`;
+                estadoHtml = `<span class="badge-custom" style="background: #e3dacc; color: #141413; font-size: 13px; padding: 6px 12px;">Prestado</span>`;
             } else if (ej.estado === 'dañado') {
                 estadoHtml = `
                     <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 13px; padding: 6px 12px; border-radius: 8px; display: inline-block; margin-bottom: 4px;">Dañado</span>
@@ -674,10 +674,10 @@
             
             tr.innerHTML = `
                 <td>
-                    <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
+                    <span class="badge" style="background: #e3dacc; color: #141413; border: 1px solid #d8d6ce; font-family: var(--font-geist-mono); font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 12px;">
                         <i class="bi bi-qr-code me-1"></i>${escapeHtml(ej.id)}
                     </span>
-                    ${isHighlighted ? '<span class="badge ms-2" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; font-size: 11px; padding: 4px 8px; border-radius: 8px;">🎯 Ejemplar buscado</span>' : ''}
+                    ${isHighlighted ? '<span class="badge ms-2" style="background: rgba(217, 119, 87, 0.15); color: #c6613f; border: 1px solid rgba(217, 119, 87, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 18px;"><i class="bi bi-crosshair me-1"></i>Ejemplar buscado</span>' : ''}
                 </td>
                 <td class="text-center">
                     ${estadoHtml}

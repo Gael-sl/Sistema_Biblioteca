@@ -7,40 +7,79 @@
                 <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
             </a>
             <div>
-                <h1 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 700; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">Devoluciones</h1>
-                <p class="text-sm mb-0" style="font-weight: 600; color: #555;">Procesa devoluciones y calcula multas</p>
+                <h1 class="mb-0" style="font-size: 22px; color: #141413; font-weight: 600;">Devoluciones</h1>
+                <p class="text-sm mb-0" style="color: #6b6a65;">Recepción con lector QR y cálculo de multas</p>
             </div>
         </div>
     </div>
 </header>
 <main class="container py-2 mb-5 fade-in">
 
-    {# ── Barra de control (2.3) ──────────────────────────────────────────── #}
+    {# ── Panel Superior Indicativo de Recepción QR ──────────────────────── #}
+    <div class="glass-container p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="icon-box-clay" style="width: 52px; height: 52px; border-radius: 16px;">
+                    <i class="bi bi-qr-code-scan" style="font-size: 24px;"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 serif-heading" style="font-size: 20px; color: #141413; font-weight: 600;">Recepción Rápida por Escáner QR o Búsqueda</h2>
+                    <p class="text-sm mb-0" style="color: #6b6a65;">Escanea el código QR del ejemplar devuelto o de la credencial del lector para abrir su devolución al instante.</p>
+                </div>
+            </div>
+            <span class="badge-emerald font-mono" style="white-space: nowrap;">
+                <i class="bi bi-upc-scan me-1"></i>Lector QR listo
+            </span>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <div class="surface-oat px-3 py-2 d-flex align-items-center gap-2">
+                    <span class="badge-custom font-mono" style="background: #141413; color: #faf9f5; border-color: #141413;">Paso 1</span>
+                    <span class="text-xs" style="color: #141413;">Apunta el lector QR al <strong>libro</strong> o a la <strong>credencial</strong> (o escribe nombre / ID).</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="surface-oat px-3 py-2 d-flex align-items-center gap-2">
+                    <span class="badge-amber font-mono">Paso 2</span>
+                    <span class="text-xs" style="color: #141413;">Al detectar un código exacto (o presionar <kbd>Enter</kbd>), se abre automáticamente el resumen de devolución.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text border-end-0" style="background: var(--color-canvas); border: 1px solid var(--color-hairline); border-top-left-radius: 16px; border-bottom-left-radius: 16px; padding-left: 16px;">
+                <i class="bi bi-upc-scan" style="color: #c6613f; font-size: 18px;"></i>
+            </span>
+            <input type="text" id="buscarDevolucion" class="form-control form-control-custom border-start-0"
+                   placeholder="Escanea aquí el código QR del ejemplar (ej. QR0001) o escribe el nombre / ID del lector..."
+                   style="height: 48px; font-size: 14px; border-top-left-radius: 0; border-bottom-left-radius: 0; border: 1px solid var(--color-hairline); border-left: none;" autofocus>
+            <button type="button" id="btnLimpiarBusquedaDev" class="btn btn-light-custom d-none" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" title="Limpiar búsqueda">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    {# ── Barra de control y filtros ──────────────────────────────────────── #}
     <div class="glass-container p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <p class="mb-0 text-md" style="font-weight: 600; color: #333;">
-            Préstamos activos: <strong style="color: #3b82f6;" id="contadorVisible">{{ prestamos|length }}</strong>
+        <p class="mb-0 text-md" style="font-weight: 600; color: #141413;">
+            Préstamos activos: <strong class="font-mono" style="color: #c6613f;" id="contadorVisible">{{ prestamos|length }}</strong>
         </p>
         <div class="d-flex gap-2 flex-wrap align-items-center">
             {# Filtros de estado #}
-            <div class="d-flex gap-1" style="background: rgba(0,0,0,0.04); border-radius: 10px; padding: 4px;">
+            <div class="d-flex gap-1 surface-oat" style="border-radius: 14px; padding: 4px;">
                 <button class="btn btn-sm filtro-btn active" data-filtro="todos"
-                    style="border-radius: 8px; font-weight: 600; font-size: 12px; padding: 5px 12px; border: none; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                    style="border-radius: 10px; font-weight: 600; font-size: 12px; padding: 6px 14px; border: none; background: #faf9f5; color: #141413; box-shadow: 0 1px 4px rgba(20,20,19,0.08);">
                     Todos
                 </button>
                 <button class="btn btn-sm filtro-btn" data-filtro="activo"
-                    style="border-radius: 8px; font-weight: 600; font-size: 12px; padding: 5px 12px; border: none; background: transparent; color: #059669;">
+                    style="border-radius: 10px; font-weight: 600; font-size: 12px; padding: 6px 14px; border: none; background: transparent; color: #059669;">
                     <i class="bi bi-check-circle me-1"></i>En tiempo
                 </button>
                 <button class="btn btn-sm filtro-btn" data-filtro="vencido"
-                    style="border-radius: 8px; font-weight: 600; font-size: 12px; padding: 5px 12px; border: none; background: transparent; color: #dc2626;">
+                    style="border-radius: 10px; font-weight: 600; font-size: 12px; padding: 6px 14px; border: none; background: transparent; color: #c93b2b;">
                     <i class="bi bi-exclamation-circle me-1"></i>Vencidos
                 </button>
-            </div>
-            {# Búsqueda por usuario o libro #}
-            <div class="position-relative">
-                <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #888; font-size: 14px; z-index: 2;"></i>
-                <input type="text" id="buscarDevolucion" class="form-control form-control-custom ps-5"
-                    placeholder="Buscar usuario o libro..." style="width: 240px; height: 38px; font-size: 13px; border-radius: 10px;" autofocus>
             </div>
         </div>
     </div>
@@ -74,14 +113,17 @@
                     {% set hoy = datetime.now(timezone.utc).date() %}
                     {% set dias_retraso = ((hoy - fecha_limite).days if hoy > fecha_limite else 0) %}
                     {% set vencido = dias_retraso > 0 %}
-                <tr data-estado="{{ 'vencido' if vencido else 'activo' }}" data-search="{{ usuario.nombre|lower }} {{ usuario.id|lower }} {{ libro.titulo|lower }} {{ libro.id|lower }}">
+                <tr data-estado="{{ 'vencido' if vencido else 'activo' }}" data-libro-id="{{ libro.id|lower }}" data-usuario-id="{{ usuario.id|lower }}" data-search="{{ usuario.nombre|lower }} {{ usuario.id|lower }} {{ libro.titulo|lower }} {{ libro.id|lower }}">
                     <td>
-                        <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ usuario.nombre }}</div>
-                        <div class="text-xs" style="color: #6b7280; font-family: monospace;">ID: {{ usuario.id }}</div>
+                        <div class="text-md" style="font-weight: 700; color: #141413;">{{ usuario.nombre }}</div>
+                        <div class="text-xs font-mono" style="color: #6b6a65;">ID: {{ usuario.id }}</div>
                     </td>
                     <td>
-                        <div class="text-md" style="font-weight: 700; color: #1f2937;">{{ libro.titulo }}</div>
-                        <div class="text-sm" style="color: #4b5563;"><i class="bi bi-person me-1"></i>{{ libro.autor }}</div>
+                        <div class="text-md serif-heading" style="font-weight: 600; color: #141413;">{{ libro.titulo }}</div>
+                        <div class="text-sm" style="color: #6b6a65;">
+                            <span class="badge-custom font-mono me-1" style="padding: 2px 8px; font-size: 11px;">{{ libro.id }}</span>
+                            <i class="bi bi-person me-1"></i>{{ libro.autor }}
+                        </div>
                     </td>
                     <td class="text-center">
                         <div class="text-md" style="font-weight: 600; color: #374151;">{{ fecha_limite.strftime('%d/%m/%Y') }}</div>
@@ -102,11 +144,11 @@
                         <div class="d-flex justify-content-end gap-2">
                             <form action="{{ url_for('renovar_prestamo', prestamo_id=prestamo.id) }}" method="POST" class="d-inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-light-custom" title="Renovar" style="border-radius: 12px; font-weight: 600; padding: 8px 12px;">
-                                    <i class="bi bi-calendar-plus me-1" style="color: #3b82f6;"></i>Renovar
+                                <button type="submit" class="btn btn-sm btn-light-custom" title="Renovar" style="border-radius: 14px; font-weight: 600; padding: 8px 12px;">
+                                    <i class="bi bi-calendar-plus me-1" style="color: #141413;"></i>Renovar
                                 </button>
                             </form>
-                            <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1d1d1f, #434345); border-radius: 12px; font-weight: 600; padding: 8px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
+                            <button class="btn btn-sm btn-dark-custom btn-procesar-devolucion" style="border-radius: 14px; font-weight: 600; padding: 8px 16px;"
                                     data-bs-toggle="modal" data-bs-target="#modalDevolucion"
                                     data-prestamo-id="{{ prestamo.id }}"
                                     data-usuario-id="{{ usuario.id }}"
@@ -133,15 +175,15 @@
 {# ── Modal Devolución ──────────────────────────────────────────────────── #}
 <div class="modal fade" id="modalDevolucion" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); padding: 10px;">
+        <div class="modal-content" style="padding: 8px;">
             <form method="POST" action="{{ url_for('procesar_devolucion') }}" id="formDevolucion">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-header border-0 pb-2">
                     <div>
-                        <h4 class="modal-title mb-1" style="font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;"><i class="bi bi-box-arrow-in-left me-2" style="color: #10b981;"></i>Procesar devolución</h4>
-                        <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Evalúa el estado del libro y revisa las garantías o multas</p>
+                        <h4 class="modal-title mb-1" style="font-weight: 600; color: #141413;"><i class="bi bi-box-arrow-in-left me-2" style="color: #059669;"></i>Procesar devolución</h4>
+                        <p class="text-sm mb-0" style="color: #6b6a65;">Evalúa el estado del libro y revisa las garantías o multas</p>
                     </div>
-                    <button type="button" class="btn-close" style="background-color: rgba(255,255,255,0.5); border-radius: 50%; opacity: 1; padding: 10px;" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body py-3">
                     <input type="hidden" name="prestamo_id" id="prestamo_id">
@@ -167,13 +209,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="alert mb-4 border-0" id="garantia_info" style="background: rgba(59, 130, 246, 0.08); border-radius: 16px;">
+                    <div class="alert surface-oat mb-4" id="garantia_info">
                         <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-shield-check" style="font-size: 2.2rem; color: #3b82f6;"></i>
+                            <div class="icon-box-clay" style="width: 48px; height: 48px; border-radius: 14px;">
+                                <i class="bi bi-shield-check" style="font-size: 24px;"></i>
+                            </div>
                             <div>
-                                <div class="text-sm mb-1" style="font-weight: 700; color: #1e3a8a;">Garantía depositada por el usuario</div>
-                                <div style="font-size: 22px; font-weight: 800; color: #2563eb;" id="garantia_usuario">$0.00</div>
-                                <div class="text-xs mt-1" style="color: #3b82f6;">Esta cantidad se regresará íntegra siempre que no existan daños o multas por retraso.</div>
+                                <div class="text-sm mb-1" style="font-weight: 600; color: #141413;">Garantía depositada por el usuario</div>
+                                <div class="serif-heading" style="font-size: 24px; font-weight: 600; color: #141413;" id="garantia_usuario">$0.00</div>
+                                <div class="text-xs mt-1" style="color: #6b6a65;">Esta cantidad se regresará íntegra siempre que no existan daños o multas por retraso.</div>
                             </div>
                         </div>
                     </div>
@@ -372,25 +416,84 @@
                 b.style.background = 'transparent';
                 b.style.boxShadow = 'none';
             });
-            this.style.background = 'white';
-            this.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+            this.style.background = '#faf9f5';
+            this.style.boxShadow = '0 1px 4px rgba(20,20,19,0.08)';
             aplicarFiltros();
         });
     });
 
     const searchInput = document.getElementById('buscarDevolucion');
+    const clearBtn = document.getElementById('btnLimpiarBusquedaDev');
+    let lastAutoOpenedCode = '';
+
+    function abrirDevolucionPorCodigo(codigo, forceOnEnter = false) {
+        const q = (codigo || '').toLowerCase().trim();
+        if (!q) return false;
+        const filas = Array.from(document.querySelectorAll('#tablaDevolucion tbody tr'));
+        const exactLibro = filas.find(f => (f.dataset.libroId || '') === q);
+        if (exactLibro) {
+            const btn = exactLibro.querySelector('.btn-procesar-devolucion') || exactLibro.querySelector('button[data-bs-target="#modalDevolucion"]');
+            if (btn) {
+                lastAutoOpenedCode = q;
+                btn.click();
+                return true;
+            }
+        }
+        if (forceOnEnter) {
+            const filasVisibles = filas.filter(f => f.style.display !== 'none');
+            if (filasVisibles.length === 1) {
+                const btn = filasVisibles[0].querySelector('.btn-procesar-devolucion') || filasVisibles[0].querySelector('button[data-bs-target="#modalDevolucion"]');
+                if (btn) {
+                    lastAutoOpenedCode = q;
+                    btn.click();
+                    return true;
+                }
+            } else if (filasVisibles.length === 0 && typeof mostrarMensaje === 'function') {
+                mostrarMensaje('No se encontró ningún préstamo activo con el código: ' + codigo, 'warning');
+            }
+        }
+        return false;
+    }
+
+    if (clearBtn && searchInput) {
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            lastAutoOpenedCode = '';
+            clearBtn.classList.add('d-none');
+            aplicarFiltros();
+            searchInput.focus();
+        });
+    }
+
     if (searchInput) {
-        searchInput.addEventListener('input', aplicarFiltros);
-        searchInput.addEventListener('keypress', function(e) {
+        searchInput.addEventListener('input', function() {
+            if (clearBtn) {
+                clearBtn.classList.toggle('d-none', !searchInput.value.trim());
+            }
+            aplicarFiltros();
+            const q = searchInput.value.toLowerCase().trim();
+            if (!q) {
+                lastAutoOpenedCode = '';
+                return;
+            }
+            if (q !== lastAutoOpenedCode) {
+                abrirDevolucionPorCodigo(q, false);
+            }
+        });
+        searchInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 aplicarFiltros();
-                const filasVisibles = document.querySelectorAll('#tablaDevolucion tbody tr:not([style*="display: none"])');
-                if (filasVisibles.length === 1) {
-                    const btnProcesar = filasVisibles[0].querySelector('button[data-bs-target="#modalDevolucion"]');
-                    if (btnProcesar) btnProcesar.click();
-                }
+                abrirDevolucionPorCodigo(searchInput.value, true);
             }
+        });
+    }
+
+    const modalDevolucionEl = document.getElementById('modalDevolucion');
+    if (modalDevolucionEl && searchInput) {
+        modalDevolucionEl.addEventListener('hidden.bs.modal', function() {
+            searchInput.focus();
+            searchInput.select();
         });
     }
 </script>

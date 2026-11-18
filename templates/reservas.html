@@ -18,7 +18,7 @@
     <div class="glass-container p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <p class="mb-0 text-md" style="font-weight: 600; color: #333;">Total de reservas: <strong style="color: #3b82f6;">{{ reservas|length }}</strong></p>
+                <p class="mb-0 text-md" style="font-weight: 600; color: #141413;">Total de reservas: <strong class="font-mono" style="color: #c6613f;">{{ reservas|length }}</strong></p>
             </div>
             <div class="position-relative">
                 <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #666;"></i>
@@ -59,7 +59,7 @@
                         {% elif reserva.estado == 'activa' %}
                             <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 8px;">Lista para recolección</span>
                         {% elif reserva.estado == 'completada' %}
-                            <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-radius: 8px;">Completada</span>
+                            <span class="badge-custom" style="background: #e3dacc; color: #141413;">Completada</span>
                         {% else %}
                             <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #dc2626; border-radius: 8px;">Cancelada</span>
                         {% endif %}

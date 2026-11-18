@@ -41,22 +41,38 @@
         </div>
         <div class="col-lg-6">
             <div class="card-custom p-4 h-100">
-                <h5 class="mb-2">Últimas recomendaciones</h5>
-                <ul class="list-group list-group-flush">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="mb-1">Últimas recomendaciones</h5>
+                        <p class="text-xs mb-0">Historial reciente de envíos y sugerencias</p>
+                    </div>
+                    <span class="stat-label-mono">{{ ultimas|length }} lote(s)</span>
+                </div>
+                {% if ultimas %}
+                <div class="d-flex flex-column gap-2">
                     {% for rec in ultimas %}
-                    <li class="list-group-item" style="border:none; padding-left:0; padding-right:0;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-md" style="font-weight: 600;">{{ rec.usuario.nombre }}</div>
-                                <div class="text-xs text-muted">{{ rec.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</div>
-                            </div>
-                            <span class="badge" style="background: rgba(52, 199, 89, 0.15); color: #34c759;">{{ rec.count }} libros</span>
+                    <div class="surface-oat px-3 py-2 d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-md" style="font-weight: 600;">{{ rec.usuario.nombre }}</div>
+                            <div class="text-xs font-mono">{{ rec.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</div>
                         </div>
-                    </li>
-                    {% else %}
-                    <li class="list-group-item">Sin datos</li>
+                        <span class="badge-emerald font-mono">{{ rec.count }} libros</span>
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
+                {% else %}
+                <div class="empty-state-editorial mt-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-box-editorial">
+                            <i class="bi bi-journal-bookmark" style="font-size: 18px;"></i>
+                        </div>
+                        <div>
+                            <div class="text-md" style="font-weight: 600;">Sin recomendaciones previas</div>
+                            <div class="text-xs">Selecciona un lector a la izquierda para calcular afinidad.</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -65,9 +81,10 @@
     <div class="card-custom p-4 mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h5 class="mb-1">Sugerencias para {{ seleccionado.nombre }}</h5>
-                <p class="text-sm mb-0">Mostrando 3 títulos</p>
+                <h5 class="mb-1 serif-heading">Sugerencias para {{ seleccionado.nombre }}</h5>
+                <p class="text-sm mb-0">Top 3 títulos con mayor índice de compatibilidad</p>
             </div>
+            <span class="badge-amber font-mono">Top 3 SAW</span>
         </div>
         <div class="table-responsive">
             <table class="table table-custom mb-0">
@@ -82,10 +99,10 @@
                 <tbody>
                     {% for rec in recomendaciones %}
                     <tr>
-                        <td>{{ rec.titulo }}</td>
+                        <td><span class="serif-heading" style="font-weight: 600;">{{ rec.titulo }}</span></td>
                         <td>{{ rec.autor }}</td>
-                        <td>{{ rec.genero }}</td>
-                        <td class="text-end"><span class="badge-custom">{{ rec.score }}</span></td>
+                        <td><span class="badge-custom">{{ rec.genero }}</span></td>
+                        <td class="text-end"><span class="badge-amber font-mono">{{ rec.score }}</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -95,48 +112,77 @@
     {% endif %}
 
     <div class="card-custom p-4 mt-4">
-        <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 38px; height: 38px; background: #f5f5f7;">
-                <i class="bi bi-lightbulb" style="font-size: 18px; color: #1d1d1f;"></i>
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="icon-box-clay">
+                <i class="bi bi-cpu" style="font-size: 20px;"></i>
             </div>
             <div>
-                <h5 class="mb-1">Algoritmo de Recomendaciones</h5>
-                <p class="text-sm mb-0">Sistema hibrido: Content-Based Filtering + SAW</p>
+                <h5 class="mb-1 serif-heading">Arquitectura del Algoritmo de Recomendación</h5>
+                <p class="text-sm mb-0">Modelo híbrido de filtrado basado en contenido (Content-Based) y ponderación aditiva simple (SAW)</p>
             </div>
         </div>
         <div class="row g-3">
             <div class="col-md-6">
-                <div style="border: 1px solid #eef0f4; border-radius: 12px; padding: 16px; background: #fff;">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <i class="bi bi-file-earmark-text" style="color: #2563eb;"></i>
-                        <strong style="font-size: 14px;">Analisis de Contenido</strong>
+                <div class="alert-panel-card h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-diagram-3" style="color: #c6613f; font-size: 17px;"></i>
+                            <strong style="font-size: 14px; color: #141413;">1. Análisis de Contenido (CBF)</strong>
+                        </div>
+                        <span class="stat-label-mono">Vector de lector</span>
                     </div>
-                    <div class="text-sm" style="color: #6c757d;">Perfil de usuario basado en historial: generos, autores y etiquetas tematicas.</div>
-                    <ul class="mb-0 mt-2" style="padding-left: 18px; color: #6c757d; font-size: 13px;">
-                        <li>Genero (40%)</li>
-                        <li>Autor (30%)</li>
-                        <li>Tags (30%)</li>
-                    </ul>
+                    <p class="text-xs mb-3">Construye el perfil lector analizando el historial de préstamos previos y su correspondencia con el catálogo.</p>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="surface-ivory px-3 py-2 d-flex justify-content-between align-items-center">
+                            <span class="text-sm">Afinidad de género literario</span>
+                            <span class="badge-custom font-mono">40%</span>
+                        </div>
+                        <div class="surface-ivory px-3 py-2 d-flex justify-content-between align-items-center">
+                            <span class="text-sm">Coincidencia de autor</span>
+                            <span class="badge-custom font-mono">30%</span>
+                        </div>
+                        <div class="surface-ivory px-3 py-2 d-flex justify-content-between align-items-center">
+                            <span class="text-sm">Etiquetas y descriptores temáticos</span>
+                            <span class="badge-custom font-mono">30%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6">
-                <div style="border: 1px solid #eef0f4; border-radius: 12px; padding: 16px; background: #fff;">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <i class="bi bi-bar-chart-line" style="color: #22c55e;"></i>
-                        <strong style="font-size: 14px;">Ranking SAW</strong>
+                <div class="alert-panel-card h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-sliders2-vertical" style="color: #059669; font-size: 17px;"></i>
+                            <strong style="font-size: 14px; color: #141413;">2. Ranking Multicriterio (SAW)</strong>
+                        </div>
+                        <span class="stat-label-mono">Score final</span>
                     </div>
-                    <div class="text-sm" style="color: #6c757d;">Metodo multicriterio que pondera similitud, popularidad y disponibilidad.</div>
-                    <ul class="mb-0 mt-2" style="padding-left: 18px; color: #6c757d; font-size: 13px;">
-                        <li>Similitud (50%)</li>
-                        <li>Popularidad (30%)</li>
-                        <li>Disponibilidad (20%)</li>
-                    </ul>
+                    <p class="text-xs mb-3">Pondera la similitud temática junto con la demanda real del acervo y la existencia inmediata en estantería.</p>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="surface-ivory px-3 py-2 d-flex justify-content-between align-items-center">
+                            <span class="text-sm">Similitud con el perfil (CBF)</span>
+                            <span class="badge-amber font-mono">50%</span>
+                        </div>
+                        <div class="surface-ivory px-3 py-2 d-flex justify-content-between align-items-center">
+                            <span class="text-sm">Popularidad global en préstamos</span>
+                            <span class="badge-custom font-mono">30%</span>
+                        </div>
+                        <div class="surface-ivory px-3 py-2 d-flex justify-content-between align-items-center">
+                            <span class="text-sm">Tasa de ejemplares disponibles</span>
+                            <span class="badge-emerald font-mono">20%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="mt-3" style="background: #f0f8ff; border: 1px solid #dbeafe; border-radius: 12px; padding: 12px 14px;">
-            <div class="text-sm" style="color: #2563eb; font-weight: 600;">Proceso automatico</div>
-            <div class="text-sm" style="color: #6b7280;">Las recomendaciones se generan tras cada renta y se envian por email con 3 libros mas compatibles.</div>
+        <div class="surface-manilla mt-3 p-3 d-flex align-items-center gap-3">
+            <div class="icon-box-dark" style="width: 36px; height: 36px; border-radius: 10px;">
+                <i class="bi bi-envelope-paper" style="font-size: 16px;"></i>
+            </div>
+            <div>
+                <div class="text-sm" style="color: #141413; font-weight: 600;">Disparo automático post-renta</div>
+                <div class="text-xs" style="color: #30302e;">Al registrar un préstamo, el sistema evalúa el nuevo historial del alumno y envía por correo las 3 obras más afines disponibles.</div>
+            </div>
         </div>
     </div>
 </main>

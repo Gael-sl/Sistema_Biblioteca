@@ -39,26 +39,26 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
         msg["From"] = sender
         msg["To"] = u_correo
 
-        tipo_texto = "Usuario externo" if u_tipo == "externo" else f"No. cuenta: {u_cuenta or 'N/A'}"
+        tipo_texto = "Lector externo" if u_tipo == "externo" else f"Afiliación: {u_cuenta or 'N/A'}"
         qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=140x140&data={quote(u_id)}"
         fecha_registro = datetime.now().strftime("%d/%m/%Y")
         
         html = f"""
             <html>
-                <body style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f0f2f5;">
-                    <p style="text-align: center; color: #666; margin-bottom: 25px;">Hola <strong>{u_nombre}</strong>, tu credencial ha sido generada exitosamente. Aquí la tienes:</p>
+                <body style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f0eee6;">
+                    <p style="text-align: center; color: #6b6a65; margin-bottom: 25px;">Hola <strong>{u_nombre}</strong>, tu credencial ha sido generada exitosamente. Aquí la tienes:</p>
                     
-                    <div style="max-width: 420px; margin: 0 auto; background-color: #1c212d; border-radius: 11px; overflow: hidden; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); color: #ffffff;">
+                    <div style="max-width: 420px; margin: 0 auto; background-color: #141413; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(20, 20, 19, 0.2); color: #faf9f5;">
                         <!-- Header -->
-                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #242936; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 16px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1f1e1c; border-bottom: 1px solid rgba(250, 249, 245, 0.1); padding: 12px 16px;">
                             <tr>
                                 <td align="left" valign="middle">
-                                    <div style="font-size: 16px; font-weight: bold; color: #ffffff;">&#128214; Sistema de Biblioteca</div>
-                                    <div style="font-size: 11px; color: #a9b2c3; margin-top: 2px;">Universidad</div>
+                                    <div style="font-size: 16px; font-weight: bold; color: #faf9f5;">Sistema de Biblioteca</div>
+                                    <div style="font-size: 11px; color: #b0aea5; margin-top: 2px;">Credencial de Lector</div>
                                 </td>
                                 <td align="right" valign="top">
-                                    <div style="font-size: 8px; color: #a9b2c3; letter-spacing: 0.5px;">ESCANEAR PARA</div>
-                                    <div style="font-size: 10px; font-weight: bold; color: #ffffff; letter-spacing: 0.5px;">RENTAR LIBROS</div>
+                                    <div style="font-size: 8px; color: #b0aea5; letter-spacing: 0.5px;">ESCANEAR PARA</div>
+                                    <div style="font-size: 10px; font-weight: bold; color: #faf9f5; letter-spacing: 0.5px;">RENTAR LIBROS</div>
                                 </td>
                             </tr>
                         </table>
@@ -66,61 +66,61 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
                         <!-- Body -->
                         <div style="padding: 16px;">
                             <!-- Badge -->
-                            <span style="background-color: rgba(255, 255, 255, 0.12); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; color: #e9edf5; display: inline-block; margin-bottom: 12px;">
+                            <span style="background-color: rgba(217, 119, 87, 0.22); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; color: #f5e3c7; display: inline-block; margin-bottom: 12px;">
                                 {tipo_texto}
                             </span>
                             
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td valign="top" style="padding-right: 15px;">
-                                        <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #ffffff;">{u_nombre}</h2>
+                                        <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #faf9f5;">{u_nombre}</h2>
                                         
                                         <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 11px; line-height: 1.5;">
                                             <tr>
-                                                <td style="color: #a9b2c3; padding-bottom: 6px; width: 60px;">Facultad:</td>
-                                                <td style="color: #ffffff; font-weight: 600; padding-bottom: 6px;">{u_facultad or 'N/A'}</td>
+                                                <td style="color: #b0aea5; padding-bottom: 6px; width: 72px;">Inst. / Área:</td>
+                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_facultad or 'General'}</td>
                                             </tr>
                                             <tr>
-                                                <td style="color: #a9b2c3; padding-bottom: 6px;">Carrera:</td>
-                                                <td style="color: #ffffff; font-weight: 600; padding-bottom: 6px;">{u_carrera or 'N/A'}</td>
+                                                <td style="color: #b0aea5; padding-bottom: 6px;">Categoría:</td>
+                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_carrera or 'Lector general'}</td>
                                             </tr>
                                             <tr>
-                                                <td style="color: #a9b2c3; padding-bottom: 6px;">Email:</td>
-                                                <td style="color: #ffffff; font-weight: 600; padding-bottom: 6px;">{u_correo or 'N/A'}</td>
+                                                <td style="color: #b0aea5; padding-bottom: 6px;">Email:</td>
+                                                <td style="color: #faf9f5; font-weight: 600; padding-bottom: 6px;">{u_correo or 'N/A'}</td>
                                             </tr>
                                         </table>
                                     </td>
                                     <td width="110" align="center" valign="middle">
-                                        <div style="background-color: #f7f7f7; padding: 6px; border-radius: 8px; display: inline-block;">
+                                        <div style="background-color: #faf9f5; padding: 6px; border-radius: 10px; display: inline-block;">
                                             <img src="{qr_url}" width="95" height="95" style="display: block; border: 0;" alt="Código QR">
                                         </div>
                                     </td>
                                 </tr>
                             </table>
                             
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 15px; border-top: 1px solid rgba(250, 249, 245, 0.1); padding-top: 12px;">
                                 <tr>
                                     <td align="left" valign="bottom">
-                                        <div style="font-size: 8px; color: #a9b2c3; letter-spacing: 0.5px; margin-bottom: 4px;">ID DE USUARIO</div>
-                                        <div style="font-size: 16px; font-weight: bold; color: #ffffff; letter-spacing: 1px;">{u_id}</div>
+                                        <div style="font-size: 8px; color: #b0aea5; letter-spacing: 0.5px; margin-bottom: 4px;">ID DE USUARIO</div>
+                                        <div style="font-size: 16px; font-weight: bold; color: #faf9f5; letter-spacing: 1px;">{u_id}</div>
                                     </td>
                                     <td align="right" valign="bottom">
-                                        <div style="font-size: 8px; color: #a9b2c3; letter-spacing: 0.5px; margin-bottom: 4px;">REGISTRO</div>
-                                        <div style="font-size: 11px; font-weight: bold; color: #ffffff;">{fecha_registro}</div>
+                                        <div style="font-size: 8px; color: #b0aea5; letter-spacing: 0.5px; margin-bottom: 4px;">REGISTRO</div>
+                                        <div style="font-size: 11px; font-weight: bold; color: #faf9f5;">{fecha_registro}</div>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                         
-                        <!-- Gold line at bottom -->
+                        <!-- Terracotta / gold bar at bottom -->
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td height="5" style="background-color: #c9b27f;"></td>
+                                <td height="5" style="background-color: #d97757;"></td>
                             </tr>
                         </table>
                     </div>
                     
-                    <p style="text-align: center; color: #666; font-size: 12px; margin-top: 30px;">
+                    <p style="text-align: center; color: #6b6a65; font-size: 12px; margin-top: 30px;">
                         Presenta esta credencial en la biblioteca para solicitar préstamos.<br><br>
                         Este es un correo automático, por favor no respondas.
                     </p>
@@ -133,8 +133,8 @@ def enviar_credencial_email(usuario: UsuarioBiblioteca):
             f"ID: {u_id}\n"
             f"Nombre: {u_nombre}\n"
             f"{tipo_texto}\n"
-            f"Facultad: {u_facultad or 'No especificado'}\n"
-            f"Carrera: {u_carrera or 'No especificado'}"
+            f"Institución / Área: {u_facultad or 'General'}\n"
+            f"Categoría: {u_carrera or 'Lector general'}"
         )
         msg.add_alternative(html, subtype="html")
 

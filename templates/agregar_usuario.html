@@ -4,29 +4,31 @@
 
 .credential-card {
     max-width: 420px;
-    background: linear-gradient(135deg, #1f2430 0%, #141822 100%);
-    border-radius: 11px;
+    background: linear-gradient(135deg, #1f1e1c 0%, #141413 100%);
+    border-radius: 16px;
     padding: 0;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 12px 28px rgba(20, 20, 19, 0.20);
 }
 
 .credential-header {
-    background: rgba(255, 255, 255, 0.06);
-    padding: 10px 16px;
-    color: #e9edf5;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(250, 249, 245, 0.06);
+    padding: 12px 16px;
+    color: #faf9f5;
+    border-bottom: 1px solid rgba(250, 249, 245, 0.10);
 }
 
 .credential-body {
     background: transparent;
-    padding: 10px 16px 12px 16px;
-    color: #e9edf5;
+    padding: 12px 16px 14px 16px;
+    color: #faf9f5;
 }
 
 .student-badge {
     display: inline-block;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(217, 119, 87, 0.22);
+    border: 1px solid rgba(217, 119, 87, 0.35);
+    color: #f5e3c7;
     padding: 2px 10px;
     border-radius: 999px;
     font-size: 10px;
@@ -36,8 +38,9 @@
 }
 
 .student-name {
-    font-size: 18px;
-    font-weight: 700;
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 600;
     letter-spacing: 0.1px;
     margin-bottom: 8px;
 }
@@ -48,28 +51,28 @@
 }
 
 .info-label {
-    min-width: 64px;
+    min-width: 72px;
     font-size: 10px;
-    color: #b7beca;
+    color: #b0aea5;
 }
 
 .info-value {
     font-size: 10px;
     font-weight: 600;
-    color: #f3f4f6;
+    color: #faf9f5;
 }
 
 .qr-box {
-    background: #f7f7f7;
+    background: #faf9f5;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 10px;
     display: inline-block;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .credential-footer-bar {
     height: 5px;
-    background: linear-gradient(90deg, #c9b27f 0%, #8f7b54 50%, #d8c79a 100%);
+    background: linear-gradient(90deg, #d97757 0%, #c9b27f 50%, #e3dacc 100%);
 }
 </style>
 
@@ -118,39 +121,37 @@
                                placeholder="">
                     </div>
                     <div class="mb-2">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Tipo de Usuario</label>
-                        <select id="tipo_usuario" class="form-select" style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;">
-                            <option value="interno" selected>Interno (Alumno)</option>
-                            <option value="externo">Externo</option>
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Tipo de Usuario</label>
+                        <select id="tipo_usuario" class="form-select" style="border-radius: 12px; padding: 8px 12px;">
+                            <option value="interno" selected>Interno (Miembro / Afiliado)</option>
+                            <option value="externo">Externo (Visitante / General)</option>
                         </select>
                     </div>
                     <div class="mb-2" id="grupoCuenta">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">No. de Cuenta</label>
-                        <input type="text" id="numero_cuenta" class="form-control" 
-                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;" inputmode="numeric" placeholder="Ej: 1234567-8">
-                        <div style="font-size: 11px; color: #6c757d; margin-top: 3px;">Solo números, con guion opcional antes del último dígito.</div>
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">No. de Afiliación / Matrícula</label>
+                        <input type="text" id="numero_cuenta" class="form-control form-control-custom font-mono" 
+                               style="border-radius: 12px; padding: 8px 12px;" inputmode="numeric" placeholder="Ej: 1234567-8">
+                        <div style="font-size: 11px; color: #6b6a65; margin-top: 3px;">Solo números, con guion opcional antes del último dígito (ej. matrícula, socio o folio).</div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Facultad</label>
-                        <input type="text" id="facultad" class="form-control" 
-                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
-                               placeholder="">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Institución / Área <span class="text-xs fw-normal">(opcional)</span></label>
+                        <input type="text" id="facultad" class="form-control form-control-custom" 
+                               style="border-radius: 12px; padding: 8px 12px;"
+                               placeholder="Ej. Sede Central, Área Académica, General">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #1d1d1f;">Carrera</label>
-                        <input type="text" id="carrera" class="form-control" 
-                               style="border-radius: 8px; padding: 8px 12px; border: 1px solid #e0e0e0;"
-                               placeholder="">
+                        <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Ocupación / Categoría <span class="text-xs fw-normal">(opcional)</span></label>
+                        <input type="text" id="carrera" class="form-control form-control-custom" 
+                               style="border-radius: 12px; padding: 8px 12px;"
+                               placeholder="Ej. Lector general, Estudiante, Docente">
                     </div>
                     <div class="d-flex flex-column gap-2">
-                        <button type="button" id="btnPreview" class="btn btn-dark w-100" 
-                                style="border-radius: 8px; padding: 10px; font-weight: 600; background: #111827; border: none;">
+                        <button type="button" id="btnPreview" class="btn btn-dark-custom w-100 py-2">
                             <i class="bi bi-eye me-2"></i>Ver Vista Previa
                         </button>
                         
                         <div id="actionButtons" style="display: none;">
-                            <button type="button" id="btnConfirmar" class="btn btn-dark w-100 mb-2" 
-                                    style="border-radius: 8px; padding: 10px; font-weight: 600; background: #111827; border: none;">
+                            <button type="button" id="btnConfirmar" class="btn btn-dark-custom w-100 mb-2 py-2">
                                 <i class="bi bi-check-lg me-2"></i>Confirmar y Guardar
                             </button>
                             <div class="d-flex gap-2">
@@ -201,7 +202,7 @@
                                 <i class="bi bi-book" style="font-size: 22px;"></i>
                                 <div>
                                     <div style="font-size: 16px; font-weight: 700;">Sistema de Biblioteca</div>
-                                    <div style="font-size: 11px; opacity: 0.9;">Universidad</div>
+                                    <div style="font-size: 11px; opacity: 0.9;">Credencial de Lector</div>
                                 </div>
                             </div>
                             <div class="text-end" style="line-height: 1.2;">
@@ -212,17 +213,17 @@
                     </div>
                     
                     <div class="credential-body">
-                        <div class="student-badge" id="previewTipoUsuario">No. cuenta: -</div>
+                        <div class="student-badge" id="previewTipoUsuario">Afiliación: -</div>
                         <div class="row">
                             <div class="col-7">
                                 <div class="student-name" id="previewNombre">-</div>
                                 <div class="mb-3">
                                     <div class="info-row">
-                                        <span class="info-label">Facultad:</span>
+                                        <span class="info-label">Inst. / Área:</span>
                                         <span class="info-value" id="previewFacultad">-</span>
                                     </div>
                                     <div class="info-row">
-                                        <span class="info-label">Carrera:</span>
+                                        <span class="info-label">Categoría:</span>
                                         <span class="info-value" id="previewCarrera">-</span>
                                     </div>
                                     <div class="info-row">
@@ -302,11 +303,11 @@ document.getElementById('btnPreview').addEventListener('click', function() {
 
     if (tipoUsuario === 'interno') {
         if (!numeroCuenta) {
-            showAlert('Ingresa el número de cuenta para usuarios internos', 'Aviso', 'warning');
+            showAlert('Ingresa el número de afiliación o matrícula para usuarios internos', 'Aviso', 'warning');
             return;
         }
         if (!cuentaRegex.test(numeroCuenta)) {
-            showAlert('El número de cuenta solo permite números y un guion antes del último dígito', 'Aviso', 'warning');
+            showAlert('El número solo permite dígitos y un guion opcional antes del último dígito', 'Aviso', 'warning');
             return;
         }
     }
@@ -319,12 +320,12 @@ document.getElementById('btnPreview').addEventListener('click', function() {
     // Actualizar datos en la credencial
     document.getElementById('previewNombre').textContent = nombre;
     document.getElementById('previewCorreo').textContent = correo;
-    document.getElementById('previewFacultad').textContent = facultad || 'No especificado';
-    document.getElementById('previewCarrera').textContent = carrera || 'No especificado';
+    document.getElementById('previewFacultad').textContent = facultad || 'General';
+    document.getElementById('previewCarrera').textContent = carrera || 'Lector general';
     document.getElementById('previewId').textContent = generatedId;
     document.getElementById('previewTipoUsuario').textContent = tipoUsuario === 'externo'
-        ? 'Usuario externo'
-        : `No. cuenta: ${numeroCuenta}`;
+        ? 'Lector externo'
+        : `Afiliación: ${numeroCuenta}`;
     
     // Fecha actual
     const hoy = new Date();

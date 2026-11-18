@@ -1,324 +1,478 @@
 /*
  * SISTEMA DE BIBLIOTECA - ESTILOS PERSONALIZADOS
- * Diseño estilo Apple con tipografía SF Pro
+ * Fusión de DESIGN (4).md (Anthropic: Pergamino Cálido & Editorial Serif)
+ * + DESIGN (2).md (shadcn/ui: Geometría 24px/18px)
+ * + DESIGN.md (Factory: Geist, Geist Mono & Visualización de Datos)
  */
 
 /* ============================================
-   FUENTES Y COLORES BASE
+   TOKENS DE DISEÑO (DESIGN (4).md + DESIGN (2).md)
    ============================================ */
 
 :root {
-    /* Colores principales Glassmorphism */
-    --color-dark: #1d1d1f;
-    --color-gray-light: rgba(255, 255, 255, 0.6);
-    --color-gray-medium: #6e6e73;
-    --color-gray-border: rgba(255, 255, 255, 0.4);
-    --color-gray-bg: rgba(240, 248, 255, 0.8);
-    --color-gray-text: #555;
-    --color-white: rgba(255, 255, 255, 0.85);
+    /* Paleta cálida editorial de DESIGN (4).md (Anthropic) */
+    --color-canvas: #f0eee6;          /* Ivory Medium — lienzo cálido tipo papel archivo */
+    --color-paper: #faf9f5;           /* Ivory Light — superficie elevada de tarjetas */
+    --color-surface-alt: #e3dacc;     /* Oat Warm — paneles agrupados y fondos secundarios */
+    --color-manilla: #f5e3c7;         /* Manilla — acento cálido para tarjetas destacadas */
+    --color-ink: #141413;             /* Slate Dark — tinta principal de alto contraste */
+    --color-ink-soft: #30302e;        /* Slate Medium — texto secundario fuerte */
+    --color-mid-gray: #6b6a65;        /* Cloud Dark — metadatos y subtítulos */
+    --color-cloud-medium: #87867f;    /* Cloud Medium — etiquetas discretas */
+    --color-hairline: #d8d6ce;        /* Stone — bordes de 1px y divisores */
+    --color-clay: #d97757;            /* Clay — acento terracota editorial */
+    --color-clay-deep: #c6613f;       /* Clay Deep — hover terracota */
+    --color-ember: #c93b2b;           /* Rojo ladrillo sobrio para alertas críticas */
 
-    /* Acentos Atusum-style */
-    --color-accent-blue: #3b82f6;
-    --color-accent-blue-gradient: linear-gradient(135deg, #60a5fa, #3b82f6);
-    --color-accent-green: #10b981;
-    --color-accent-red: #ef4444;
-    
-    /* Tipografía */
-    --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
-    --font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
-    
-    /* Variables de Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.45);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-blur: blur(12px);
-    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+    /* Tokens de datos y gráficas (Armonizados con DESIGN (4).md) */
+    --color-signal-orange: #d97757;
+    --color-metric-green: #059669;
+    --color-graphite-mid: #4d4c48;
+
+    /* Variables de compatibilidad con plantillas */
+    --color-dark: var(--color-ink);
+    --color-gray-light: var(--color-canvas);
+    --color-gray-medium: var(--color-mid-gray);
+    --color-gray-border: var(--color-hairline);
+    --color-gray-bg: var(--color-surface-alt);
+    --color-gray-text: var(--color-mid-gray);
+    --color-white: var(--color-paper);
+
+    /* Acentos funcionales */
+    --color-accent-blue: var(--color-ink);
+    --color-accent-blue-gradient: var(--color-ink);
+    --color-accent-green: #059669;
+    --color-accent-red: var(--color-ember);
+
+    /* Tipografías:
+       - Display Editorial: Source Serif 4 (DESIGN 4)
+       - UI / Controles: Geist (DESIGN 2)
+       - Técnica / QR / Métricas: Geist Mono (Factory) */
+    --font-serif: 'Source Serif 4', Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-geist: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-geist-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-display: var(--font-serif);
+    --font-text: var(--font-geist);
+
+    /* Escala tipográfica */
+    --text-caption: 12px;
+    --leading-caption: 1.35;
+    --tracking-caption: 0.05em;
+    --text-body: 14px;
+    --leading-body: 1.5;
+    --text-body-lg: 16px;
+    --text-subheading: 18px;
+    --text-heading-sm: 24px;
+    --text-heading: 30px;
+    --text-heading-lg: 36px;
+
+    /* Radios y Sombras (DESIGN 4 + DESIGN 2) */
+    --radius-cards: 24px;
+    --radius-small: 8px;
+    --radius-badges: 18px;
+    --radius-inputs: 16px;
+    --radius-nested: 14px;
+    --radius-buttons: 18px;
+
+    --shadow-subtle: 0 0 0 1px rgba(20, 20, 19, 0.04), 0 2px 6px 0 rgba(20, 20, 19, 0.04);
+    --shadow-subtle-hover: 0 0 0 1px rgba(20, 20, 19, 0.12), 0 8px 20px -4px rgba(20, 20, 19, 0.07);
+
+    --glass-bg: var(--color-paper);
+    --glass-border: var(--color-hairline);
+    --glass-blur: none;
+    --glass-shadow: var(--shadow-subtle);
 }
 
 body {
     font-family: var(--font-text);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Fondo global estilo biblioteca con blur */
-    background-color: #e9eff5;
-    background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: var(--color-dark);
+    font-feature-settings: "ss01" on, "cv11" on;
+    background-color: var(--color-canvas);
+    background-image: none;
+    color: var(--color-ink);
 }
 
-/* Overlay para que el contenido sea legible sobre el mapa */
 body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(240, 246, 252, 0.9);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    z-index: -1;
+    display: none;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    font-weight: 700;
-}
-
-/* ============================================
-   CLASES GLOBALES LIQUID GLASS
-   ============================================ */
-
-.glass-container {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: var(--glass-shadow);
-}
-
-/* ============================================
-   BOTONES PERSONALIZADOS
-   ============================================ */
-
-.btn-dark-custom {
-    background: var(--color-accent-blue-gradient);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-size: 15px;
+/* Jerarquía editorial: Serif para títulos principales, Sans limpia para subtítulos de control */
+h1, h2, .serif-heading, .modal-title {
+    font-family: var(--font-serif);
     font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    text-shadow: none !important;
 }
 
-.btn-dark-custom:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-    color: #fff;
-}
-
-.btn-light-custom {
-    background: rgba(255, 255, 255, 0.7);
-    color: var(--color-dark);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-size: 15px;
+h3, h4, h5, h6 {
+    font-family: var(--font-geist);
     font-weight: 600;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    text-shadow: none !important;
 }
 
-.btn-light-custom:hover {
-    background: rgba(255, 255, 255, 0.9);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+/* Voz técnica monoespaciada para QRs, IDs y etiquetas de métricas */
+code,
+.font-mono,
+.stat-label-mono {
+    font-family: var(--font-geist-mono) !important;
+    letter-spacing: -0.02em;
+}
+
+.stat-label-mono {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-mid-gray);
+    font-weight: 500;
+}
+
+.stat-value-display {
+    font-family: var(--font-serif);
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--color-ink);
+    letter-spacing: -0.03em;
+    line-height: 1.08;
 }
 
 /* ============================================
-   CARDS PERSONALIZADOS
+   CARDS Y CONTENEDORES (24px + 1px Stone border)
    ============================================ */
 
+.glass-container,
 .card-custom {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: var(--glass-shadow);
-    transition: all 0.3s ease;
+    background: var(--color-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-cards);
+    box-shadow: var(--shadow-subtle);
+    transition: border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-custom:hover {
-    border-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 10px 40px rgba(31, 38, 135, 0.1);
-    transform: translateY(-3px);
+    border-color: #b0aea5;
+    box-shadow: var(--shadow-subtle-hover);
+    transform: translateY(-1px);
+}
+
+.logo-circle {
+    background: var(--color-ink) !important;
+    box-shadow: none !important;
+}
+
+/* Paneles internos cálidos estilo DESIGN (4).md */
+.surface-oat {
+    background-color: var(--color-surface-alt);
+    border: 1px solid var(--color-hairline);
+    border-radius: 18px;
+}
+
+.surface-manilla {
+    background-color: var(--color-manilla);
+    border: 1px solid #e2c9a6;
+    border-radius: 18px;
+}
+
+.surface-ivory {
+    background-color: var(--color-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: 18px;
+}
+
+.icon-box-editorial {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface-alt);
+    color: var(--color-ink);
+    border: 1px solid var(--color-hairline);
+    flex-shrink: 0;
+}
+
+.icon-box-clay {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(217, 119, 87, 0.14);
+    color: var(--color-clay-deep);
+    border: 1px solid rgba(217, 119, 87, 0.28);
+    flex-shrink: 0;
+}
+
+.icon-box-dark {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    flex-shrink: 0;
+}
+
+.section-heading-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: 999px;
+    padding: 8px 18px;
+    box-shadow: var(--shadow-subtle);
 }
 
 /* ============================================
-   INPUTS Y FORMULARIOS
+   BOTONES (Cápsula 18px — Slate Dark & Oat Warm)
    ============================================ */
 
-.form-control-custom, .form-select {
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 15px;
+.btn-dark-custom {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border: 1px solid var(--color-ink);
+    border-radius: var(--radius-buttons);
+    padding: 8px 18px;
+    font-size: 14px;
     font-weight: 500;
-    color: #333;
-    transition: all 0.3s ease;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
 }
 
-.form-control-custom:focus, .form-select:focus {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+.btn-dark-custom:hover,
+.btn-dark-custom:focus {
+    background: #30302e;
+    border-color: #30302e;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+.btn-dark-custom:disabled {
+    background: #87867f;
+    border-color: #87867f;
+    color: #faf9f5;
+    transform: none;
+}
+
+.btn-clay-custom {
+    background: var(--color-clay);
+    color: #faf9f5;
+    border: 1px solid var(--color-clay);
+    border-radius: var(--radius-buttons);
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.btn-clay-custom:hover,
+.btn-clay-custom:focus {
+    background: var(--color-clay-deep);
+    border-color: var(--color-clay-deep);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-light-custom {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-buttons);
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-light-custom:hover,
+.btn-light-custom:focus {
+    background: var(--color-surface-alt);
+    border-color: #b0aea5;
+    color: var(--color-ink);
+    box-shadow: none;
+}
+
+.btn-danger-custom {
+    background: rgba(231, 0, 11, 0.08);
+    color: var(--color-ember);
+    border: 1px solid rgba(231, 0, 11, 0.2);
+    border-radius: var(--radius-buttons);
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.btn-danger-custom:hover {
+    background: var(--color-ember);
+    border-color: var(--color-ember);
+    color: #ffffff;
+}
+
+/* ============================================
+   INPUTS Y FORMULARIOS (18px)
+   ============================================ */
+
+.form-control-custom,
+.form-select {
+    background: var(--color-canvas);
+    border: 1px solid transparent;
+    border-radius: var(--radius-inputs);
+    padding: 9px 14px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-ink);
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control-custom::placeholder {
+    color: var(--color-mid-gray);
+}
+
+.form-control-custom:focus,
+.form-select:focus {
+    background: var(--color-paper);
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-ink);
     outline: none;
 }
 
 .form-label-custom {
-    font-size: 14px;
-    color: var(--color-dark);
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--color-ink);
+    font-weight: 500;
+    margin-bottom: 6px;
 }
 
 /* ============================================
-   BARRAS NAV / NAVBAR
+   HEADER STICKY (Marfil contrastado + acento editorial)
    ============================================ */
+
+.header-sticky,
 .navbar-glass {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(250, 249, 245, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 3px solid var(--color-ink);
+    border-bottom: 1px solid #c5c3ba;
+    box-shadow: 0 4px 18px -2px rgba(20, 20, 19, 0.06);
 }
 
 /* ============================================
-   TABLAS Y LISTAS (Estilo Rutas)
+   TABLAS DE DATOS (Cabeceras Geist Mono + filas redondeadas)
    ============================================ */
 
 .table-custom {
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    --bs-table-striped-bg: transparent;
+    --bs-table-hover-bg: transparent;
     border-collapse: separate;
-    border-spacing: 0 8px; /* Espacio entre filas */
+    border-spacing: 0 6px;
     width: 100%;
     background: transparent;
     border: none;
 }
 
-.table-custom thead {
-    background: transparent;
+.table-custom thead tr {
+    background: var(--color-surface-alt);
 }
 
 .table-custom thead th {
+    font-family: var(--font-geist-mono);
+    background: transparent;
     border: none;
-    padding: 10px 24px;
-    font-size: 12px;
-    color: var(--color-gray-text);
+    padding: 10px 20px;
+    font-size: 11px;
+    color: var(--color-mid-gray);
     text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.table-custom thead th:first-child {
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+}
+
+.table-custom thead th:last-child {
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
 }
 
 .table-custom tbody tr {
-    background: linear-gradient(90deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    transition: all 0.2s ease;
-    border-radius: 12px;
+    background: var(--color-paper);
+    box-shadow: 0 0 0 1px var(--color-hairline);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 18px;
 }
 
 .table-custom tbody tr td:first-child {
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
 }
+
 .table-custom tbody tr td:last-child {
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
 }
 
 .table-custom tbody td {
+    background: transparent;
     border: none;
-    padding: 16px 24px;
+    padding: 14px 20px;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--color-dark);
+    font-weight: 400;
+    color: var(--color-ink);
     vertical-align: middle;
 }
 
 .table-custom tbody tr:hover {
-    background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    background: var(--color-surface-alt);
+    box-shadow: 0 0 0 1px #b0aea5;
 }
 
 /* ============================================
-   MODALES GLASS
-   ============================================ */
-.modal-content {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 20px;
-    box-shadow: 0 10px 50px rgba(0,0,0,0.1);
-}
-.modal-header {
-    border-bottom: 1px solid rgba(255,255,255,0.4);
-}
-.modal-footer {
-    border-top: 1px solid rgba(255,255,255,0.4);
-}
-
-/* ============================================
-   BADGES Y ETIQUETAS
-   ============================================ */
-
-.badge-custom {
-    background-color: var(--color-gray-light);
-    color: var(--color-dark);
-    font-size: 15px;
-    font-weight: 400;
-    padding: 6px 16px;
-    border-radius: 20px;
-    display: inline-block;
-}
-
-.badge-status-activo {
-    background-color: rgba(52, 199, 89, 0.15);
-    color: #34c759;
-}
-
-.badge-status-devuelto {
-    background-color: var(--color-gray-light);
-    color: var(--color-gray-medium);
-}
-
-.badge-status-vencido {
-    background-color: rgba(255, 59, 48, 0.15);
-    color: #ff3b30;
-}
-
-/* ============================================
-   TEXTOS AUXILIARES
-   ============================================ */
-
-.text-xs {
-    font-size: 13px;
-    color: var(--color-gray-text);
-}
-
-.text-sm {
-    font-size: 14px;
-    color: var(--color-gray-medium);
-}
-
-.text-md {
-    font-size: 15px;
-    color: var(--color-dark);
-}
-
-/* ============================================
-   MODALES PERSONALIZADOS
+   MODALES (24px)
    ============================================ */
 
 .modal-content {
-    border-radius: 20px;
-    border: 1px solid var(--color-gray-border);
+    background: var(--color-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-cards);
+    box-shadow: 0 0 0 1px rgba(20, 20, 19, 0.05), 0 20px 48px rgba(20, 20, 19, 0.14);
 }
 
 .modal-header {
-    border-bottom: 1px solid var(--color-gray-border);
+    border-bottom: 1px solid var(--color-hairline);
     padding: 20px 24px;
 }
 
 .modal-title {
     font-size: 20px;
     font-weight: 600;
-    color: var(--color-dark);
-    margin-bottom: 4px;
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
 }
 
 .modal-body {
@@ -326,20 +480,133 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .modal-footer {
-    border-top: 1px solid var(--color-gray-border);
+    border-top: 1px solid var(--color-hairline);
     padding: 16px 24px;
 }
 
 /* ============================================
-   HEADER STICKY
+   BADGES Y PÍLDORAS DE ESTADO (Cápsula 18px)
    ============================================ */
 
-.header-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: var(--color-white);
-    border-bottom: 1px solid var(--color-gray-border);
+.badge,
+.badge-custom {
+    border-radius: var(--radius-badges);
+    font-weight: 500;
+}
+
+.badge-custom {
+    background-color: var(--color-canvas);
+    color: var(--color-ink-soft);
+    border: 1px solid var(--color-hairline);
+    font-size: 12px;
+    padding: 4px 12px;
+    display: inline-block;
+}
+
+.badge-status-activo,
+.badge-emerald {
+    background-color: rgba(5, 150, 105, 0.10);
+    color: #065f46;
+    border: 1px solid rgba(5, 150, 105, 0.24);
+    border-radius: var(--radius-badges);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-status-devuelto {
+    background-color: var(--color-canvas);
+    color: var(--color-mid-gray);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-badges);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-status-vencido,
+.badge-clay-danger {
+    background-color: rgba(201, 59, 43, 0.10);
+    color: var(--color-ember);
+    border: 1px solid rgba(201, 59, 43, 0.25);
+    border-radius: var(--radius-badges);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-amber {
+    background-color: rgba(217, 119, 87, 0.14);
+    color: #9a3412;
+    border: 1px solid rgba(217, 119, 87, 0.30);
+    border-radius: var(--radius-badges);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ============================================
+   PANELES DE ALERTA Y ESTADOS VACÍOS EDITORIALES
+   ============================================ */
+
+.alert-panel-card {
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: 18px;
+    padding: 18px 20px;
+}
+
+.empty-state-editorial {
+    background-color: var(--color-paper);
+    border: 1px dashed #c5c3ba;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.empty-state-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background-color: rgba(5, 150, 105, 0.10);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.22);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   TEXTOS AUXILIARES
+   ============================================ */
+
+.text-xs {
+    font-size: 12px;
+    line-height: var(--leading-caption);
+    color: var(--color-mid-gray);
+}
+
+.text-sm {
+    font-size: 13px;
+    color: var(--color-mid-gray);
+}
+
+.text-md {
+    font-size: 14px;
+    color: var(--color-ink);
 }
 
 /* ============================================
@@ -353,36 +620,37 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-tabs-custom .nav-link {
-    border: 1px solid var(--color-gray-border);
-    border-radius: 12px;
-    padding: 12px 24px;
-    color: var(--color-gray-medium);
-    font-size: 15px;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-buttons);
+    padding: 9px 18px;
+    color: var(--color-mid-gray);
+    font-size: 14px;
     font-weight: 500;
-    background: var(--color-white);
-    transition: all 0.2s ease;
+    background: var(--color-paper);
+    transition: all 0.15s ease;
 }
 
 .nav-tabs-custom .nav-link:hover {
-    border-color: var(--color-dark);
-    color: var(--color-dark);
-    background: var(--color-gray-light);
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+    background: var(--color-surface-alt);
 }
 
 .nav-tabs-custom .nav-link.active {
-    border-color: var(--color-dark);
-    background-color: var(--color-dark);
-    color: var(--color-white);
+    border-color: var(--color-ink);
+    background-color: var(--color-ink);
+    color: var(--color-paper);
 }
 
 /* ============================================
-   ALERTAS PERSONALIZADAS
+   ALERTAS
    ============================================ */
 
 .alert-custom {
-    border-radius: 12px;
-    padding: 16px 20px;
+    border-radius: 18px;
+    padding: 14px 18px;
     border: 1px solid;
+    font-size: 14px;
 }
 
 .flash-container {
@@ -396,74 +664,65 @@ h1, h2, h3, h4, h5, h6 {
 
 .flash-container .alert {
     margin-bottom: 12px;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-subtle-hover);
 }
 
 .alert-success-custom {
-    background-color: rgba(52, 199, 89, 0.1);
-    border-color: rgba(52, 199, 89, 0.3);
-    color: #1e8e3e;
+    background-color: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.25);
+    color: #065f46;
 }
 
 .alert-danger-custom {
-    background-color: rgba(255, 59, 48, 0.1);
-    border-color: rgba(255, 59, 48, 0.3);
-    color: #d70015;
+    background-color: rgba(201, 59, 43, 0.08);
+    border-color: rgba(201, 59, 43, 0.25);
+    color: var(--color-ember);
 }
 
 .alert-warning-custom {
-    background-color: rgba(255, 149, 0, 0.1);
-    border-color: rgba(255, 149, 0, 0.3);
-    color: #c93400;
+    background-color: rgba(217, 119, 87, 0.12);
+    border-color: rgba(217, 119, 87, 0.30);
+    color: #9a3412;
 }
 
 .alert-info-custom {
-    background-color: rgba(0, 122, 255, 0.1);
-    border-color: rgba(0, 122, 255, 0.3);
-    color: #0051a8;
+    background-color: var(--color-canvas);
+    border-color: var(--color-hairline);
+    color: var(--color-ink-soft);
 }
 
 /* ============================================
-   GRADIENTES SUTILES
+   UTILIDADES Y ANIMACIONES
    ============================================ */
 
 .gradient-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+    background: var(--color-surface-alt);
 }
-
-/* ============================================
-   UTILIDADES
-   ============================================ */
 
 .rounded-xl {
     border-radius: 12px;
 }
 
 .rounded-2xl {
-    border-radius: 16px;
+    border-radius: 18px;
 }
 
 .shadow-custom {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-subtle);
 }
 
 .shadow-custom-hover:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-subtle-hover);
 }
 
-/* ============================================
-   ANIMACIONES
-   ============================================ */
-
 .fade-in {
-    animation: fadeIn 0.3s ease-in;
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(4px);
     }
     to {
         opacity: 1;
@@ -471,15 +730,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* ============================================
-   CREDENCIAL Y TICKET
-   ============================================ */
-
-.credential-card {
-    position: relative;
-    display: block;
-}
-
+.credential-card,
 .ticket-card {
     position: relative;
     display: block;
@@ -490,12 +741,10 @@ h1, h2, h3, h4, h5, h6 {
    ============================================ */
 
 @media print {
-    /* Ocultar todo excepto lo que queremos imprimir */
     body * {
         visibility: hidden;
     }
     
-    /* Mostrar solo credencial o ticket */
     #credencial, #credencial *,
     #ticket, #ticket *,
     .credential-card, .credential-card *,
@@ -503,7 +752,6 @@ h1, h2, h3, h4, h5, h6 {
         visibility: visible !important;
     }
     
-    /* Posicionar credencial centrada y con tamaño fijo */
     #credencial, .credential-card {
         position: fixed !important;
         left: 50% !important;
@@ -526,7 +774,6 @@ h1, h2, h3, h4, h5, h6 {
         max-width: 400px !important;
     }
     
-    /* FORZAR colores de fondo en impresión */
     .credential-card,
     .ticket-card,
     .credential-card *,
@@ -536,7 +783,6 @@ h1, h2, h3, h4, h5, h6 {
         color-adjust: exact !important;
     }
     
-    /* Ocultar elementos no necesarios */
     .header-sticky,
     .btn,
     button,
@@ -547,13 +793,11 @@ h1, h2, h3, h4, h5, h6 {
         display: none !important;
     }
     
-    /* Configurar página */
     @page {
         margin: 10mm;
         size: A4 portrait;
     }
     
-    /* Asegurar que backgrounds se impriman */
     * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -561,7 +805,6 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* Impresión específica para credencial */
 @media print {
     .credential-card {
         box-shadow: none !important;
@@ -569,10 +812,6 @@ h1, h2, h3, h4, h5, h6 {
         border-radius: 16px !important;
     }
 }
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 
 @media (max-width: 768px) {
     .table-custom thead th,
@@ -583,7 +822,7 @@ h1, h2, h3, h4, h5, h6 {
     
     .btn-dark-custom,
     .btn-light-custom {
-        padding: 10px 20px;
+        padding: 8px 16px;
         font-size: 14px;
     }
     
@@ -592,8 +831,6 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-
-/* Quitar subrayado global de enlaces */
 a {
     text-decoration: none;
 }

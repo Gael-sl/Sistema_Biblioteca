@@ -85,38 +85,38 @@
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-6">
-                                <div class="p-3 rounded-4" style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15);">
-                                    <p class="text-uppercase mb-1" style="font-size: 10px; letter-spacing: 1px; color: #3b82f6; font-weight: 700;">Fecha de Salida</p>
-                                    <p class="mb-0" style="font-size: 16px; font-weight: 700; color: #1d1d1f;">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</p>
+                                <div class="surface-oat p-3 rounded-4">
+                                    <p class="text-uppercase mb-1 stat-label-mono" style="font-size: 10px;">Fecha de Salida</p>
+                                    <p class="mb-0 font-mono" style="font-size: 16px; font-weight: 700; color: #141413;">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</p>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="p-3 rounded-4" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15);">
-                                    <p class="text-uppercase mb-1" style="font-size: 10px; letter-spacing: 1px; color: #dc2626; font-weight: 700;">Fecha Límite</p>
-                                    <p class="mb-0" style="font-size: 16px; font-weight: 700; color: #dc2626;">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</p>
+                                <div class="p-3 rounded-4" style="background: rgba(201, 59, 43, 0.08); border: 1px solid rgba(201, 59, 43, 0.22);">
+                                    <p class="text-uppercase mb-1 stat-label-mono" style="font-size: 10px; color: #c93b2b;">Fecha Límite</p>
+                                    <p class="mb-0 font-mono" style="font-size: 16px; font-weight: 700; color: #c93b2b;">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-4 p-3 rounded-4" style="background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
-                            <p class="text-uppercase mb-2" style="font-size: 11px; letter-spacing: 1.5px; color: #86868b; font-weight: 600;">Usuario</p>
-                            <p class="mb-1" style="font-size: 16px; font-weight: 700; color: #1d1d1f;">{{ usuario.nombre }}</p>
-                            <p class="mb-0" style="font-size: 13px; color: #555; font-weight: 500;">
-                                <span class="badge" style="background: rgba(0,0,0,0.1); color: #333; font-family: monospace; font-size: 11px;">ID: {{ usuario.id }}</span>
+                        <div class="mb-4 p-3 rounded-4" style="background: rgba(20, 20, 19, 0.03); border: 1px solid #d8d6ce;">
+                            <p class="text-uppercase mb-2" style="font-size: 11px; letter-spacing: 1.5px; color: #6b6a65; font-weight: 600;">Usuario</p>
+                            <p class="mb-1" style="font-size: 16px; font-weight: 700; color: #141413;">{{ usuario.nombre }}</p>
+                            <p class="mb-0" style="font-size: 13px; color: #6b6a65; font-weight: 500;">
+                                <span class="badge-custom font-mono" style="font-size: 11px;">ID: {{ usuario.id }}</span>
                             </p>
                         </div>
-                        <div class="mb-4 p-4 rounded-4" style="background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.2);">
+                        <div class="mb-4 p-4 rounded-4 surface-manilla">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="flex-shrink-0">
-                                    <div style="width: 42px; height: 42px; background: rgba(255, 149, 0, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-shield-lock-fill" style="font-size: 20px; color: #d97706;"></i>
+                                    <div class="icon-box-clay" style="width: 42px; height: 42px; border-radius: 12px;">
+                                        <i class="bi bi-shield-lock-fill" style="font-size: 20px;"></i>
                                     </div>
                                 </div>
                                 <div class="flex-fill">
-                                    <p class="text-uppercase mb-1" style="font-size: 11px; letter-spacing: 1px; color: #d97706; font-weight: 700;">Garantía Total</p>
-                                    <p class="mb-2" style="font-size: 24px; font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">${{ '%.2f'|format(ns.garantia) }}</p>
-                                    <p class="mb-0" style="font-size: 13px; color: #555; line-height: 1.5; font-weight: 500;">
+                                    <p class="text-uppercase mb-1" style="font-size: 11px; letter-spacing: 1px; color: #9a3412; font-weight: 700;">Garantía Total</p>
+                                    <p class="mb-2 serif-heading" style="font-size: 24px; font-weight: 700; color: #141413; letter-spacing: -0.5px;">${{ '%.2f'|format(ns.garantia) }}</p>
+                                    <p class="mb-0" style="font-size: 13px; color: #30302e; line-height: 1.5; font-weight: 500;">
                                         Equivale al 20% del valor. 
-                                        <span style="color: #2563eb; font-weight: 600;">Se devuelve íntegramente al entregar sin daños.</span>
+                                        <span style="color: #141413; font-weight: 600;">Se devuelve íntegramente al entregar sin daños.</span>
                                     </p>
                                 </div>
                             </div>
@@ -137,14 +137,14 @@
     {% else %}
     <div class="row justify-content-center fade-in">
         <div class="col-lg-8">
-            <ul class="nav nav-tabs border-0 gap-2 mb-4 d-flex justify-content-center" role="tablist">
+            <ul class="nav nav-tabs nav-tabs-custom justify-content-center" role="tablist">
                 <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-escanear-qr" type="button" style="border-radius: 12px; font-weight: 600; padding: 10px 20px; transition: all 0.3s; background: transparent; border: 2px solid transparent; color: #555;">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-escanear-qr" type="button">
                         <i class="bi bi-qr-code-scan me-2"></i>Escanear Códigos
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-ver-catalogo" type="button" style="border-radius: 12px; font-weight: 600; padding: 10px 20px; transition: all 0.3s; background: transparent; border: 2px solid transparent; color: #555;">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-ver-catalogo" type="button">
                         <i class="bi bi-journal-text me-2"></i>Catálogo Manual
                     </button>
                 </li>
@@ -156,11 +156,11 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="confirmar_prestamo" value="1">
                             <div class="text-center mb-5">
-                                <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 5.5rem; height: 5.5rem; background: rgba(59, 130, 246, 0.1); border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                    <i class="bi bi-upc-scan" style="font-size: 2.8rem; color: #3b82f6;"></i>
+                                <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 5.5rem; height: 5.5rem; background: #e3dacc; border-radius: 24px; border: 1px solid #d8d6ce;">
+                                    <i class="bi bi-upc-scan" style="font-size: 2.8rem; color: #c6613f;"></i>
                                 </div>
-                                <h3 class="mb-2" style="font-size: 22px; font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">Registro de Préstamo</h3>
-                                <p class="text-muted" style="font-size: 14px; font-weight: 500;">Ingresa los códigos del usuario y del libro para procesar la renta</p>
+                                <h3 class="mb-2 serif-heading" style="font-size: 24px; font-weight: 600; color: #141413;">Registro de Préstamo</h3>
+                                <p style="font-size: 14px; font-weight: 500; color: #6b6a65;">Escanea o ingresa los códigos del lector y del libro para procesar la renta</p>
                             </div>
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6 position-relative">
@@ -200,18 +200,18 @@
                                 </div>
                             </div>
 
-                            <div id="libroInfoCard" class="card border-0 mb-4 rounded-4 fade-in" style="background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.2) !important; display: none;">
+                            <div id="libroInfoCard" class="card border-0 mb-4 rounded-4 fade-in" style="background: #e3dacc; border: 1px solid #d8d6ce !important; display: none;">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-start gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(59, 130, 246, 0.15);">
-                                            <i class="bi bi-book" style="color: #2563eb; font-size: 20px;"></i>
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: #faf9f5; border: 1px solid #d8d6ce;">
+                                            <i class="bi bi-book" style="color: #c6613f; font-size: 20px;"></i>
                                         </div>
                                         <div class="flex-fill">
-                                            <div id="libroInfoTitulo" style="font-size: 15px; font-weight: 700; color: #1d1d1f;">-</div>
-                                            <div id="libroInfoAutor" style="font-size: 13px; color: #555; font-weight: 500;"></div>
+                                            <div id="libroInfoTitulo" class="serif-heading" style="font-size: 16px; font-weight: 600; color: #141413;">-</div>
+                                            <div id="libroInfoAutor" style="font-size: 13px; color: #6b6a65; font-weight: 500;"></div>
                                             <div class="d-flex flex-wrap gap-2 mt-2">
-                                                <span id="libroInfoGenero" class="badge" style="background: rgba(59, 130, 246, 0.12); color: #2563eb; font-size: 10px; font-weight: 700; border-radius: 8px; padding: 4px 8px;"></span>
-                                                <span id="libroInfoEstado" class="badge" style="font-size: 10px; font-weight: 700; border-radius: 8px; padding: 4px 8px;"></span>
+                                                <span id="libroInfoGenero" class="badge" style="background: #faf9f5; color: #141413; border: 1px solid #d8d6ce; font-size: 11px; font-weight: 600; border-radius: 18px; padding: 4px 10px;"></span>
+                                                <span id="libroInfoEstado" class="badge" style="font-size: 11px; font-weight: 600; border-radius: 18px; padding: 4px 10px;"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -219,10 +219,10 @@
                             </div>
 
                             <div class="d-flex gap-3">
-                                <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill py-3" style="border-radius: 14px; font-weight: 600; color: #555;">
+                                <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill py-3">
                                     <i class="bi bi-x-lg me-2"></i>Cancelar
                                 </a>
-                                <button type="submit" name="confirmar_prestamo" value="1" class="btn btn-submit-with-spinner flex-fill py-3 text-white" style="border-radius: 14px; font-weight: 600; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); border: none;">
+                                <button type="submit" name="confirmar_prestamo" value="1" class="btn btn-dark-custom btn-submit-with-spinner flex-fill py-3">
                                     <span class="btn-text"><i class="bi bi-check2-circle me-2"></i>Procesar Renta</span>
                                     <span class="btn-spinner" style="display: none;"><span class="spinner-border spinner-border-sm me-2"></span>Procesando...</span>
                                 </button>
@@ -265,7 +265,7 @@
                                 </div>
                                 <div class="table-responsive rounded-4 border border-1" style="max-height: 300px; overflow-y: auto; border-color: rgba(0,0,0,0.08) !important;">
                                     <table class="table table-custom table-hover mb-0" id="tablaLibros">
-                                        <thead class="sticky-top bg-white" style="z-index: 10;">
+                                        <thead class="sticky-top" style="z-index: 10; background: #e3dacc;">
                                             <tr>
                                                 <th style="width: 50px;" class="text-center">#</th>
                                                 <th>Libro</th>
@@ -279,11 +279,11 @@
                                                     <input type="checkbox" name="libro_id" value="{{ libro.id }}" class="form-check-input" style="width: 18px; height: 18px;">
                                                 </td>
                                                 <td>
-                                                    <div style="font-weight: 700; color: #1d1d1f;">{{ libro.titulo }}</div>
-                                                    <div style="font-size: 12px; color: #666;">{{ libro.autor }}</div>
+                                                    <div style="font-weight: 700; color: #141413;">{{ libro.titulo }}</div>
+                                                    <div style="font-size: 12px; color: #6b6a65;">{{ libro.autor }}</div>
                                                 </td>
                                                 <td class="text-center align-middle">
-                                                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; font-size: 12px;">{{ libro.disponibles }}</span>
+                                                    <span class="badge-custom font-mono" style="font-size: 12px;">{{ libro.disponibles }}</span>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -292,10 +292,10 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-3">
-                                <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill py-3" style="border-radius: 14px; font-weight: 600; color: #555;">
+                                <a href="{{ url_for('menu') }}" class="btn btn-light-custom flex-fill py-3">
                                     <i class="bi bi-x-lg me-2"></i>Cancelar
                                 </a>
-                                <button type="submit" name="confirmar_prestamo" value="1" class="btn btn-submit-with-spinner flex-fill py-3 text-white" style="border-radius: 14px; font-weight: 600; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); border: none;">
+                                <button type="submit" name="confirmar_prestamo" value="1" class="btn btn-dark-custom btn-submit-with-spinner flex-fill py-3">
                                     <span class="btn-text"><i class="bi bi-check2-circle me-2"></i>Confirmar Préstamo</span>
                                     <span class="btn-spinner" style="display: none;"><span class="spinner-border spinner-border-sm me-2"></span>Procesando...</span>
                                 </button>
@@ -341,7 +341,7 @@
             if (results) results.style.display = 'none';
 
             if (nameId) document.getElementById(nameId).textContent = u.nombre;
-            if (facultatId) document.getElementById(facultatId).textContent = u.facultad || 'Sin facultad';
+            if (facultatId) document.getElementById(facultatId).textContent = u.facultad || 'General';
             if (prestamosId) document.getElementById(prestamosId).textContent = `${u.prestamos_activos} préstamos activos`;
 
             if (card) {
@@ -517,20 +517,20 @@
                         toggleSubmitRenta(true);
                     } else if (libro.en_prestamo_activo) {
                         // Error del bibliotecario: escaneó un código que ya está prestado
-                        estadoBadge.textContent = '⚠ Este ejemplar ya está en un préstamo activo';
+                        estadoBadge.innerHTML = '<i class="bi bi-exclamation-octagon me-1"></i>Este ejemplar ya está en un préstamo activo';
                         estadoBadge.style.background = 'rgba(239, 68, 68, 0.12)';
                         estadoBadge.style.color = '#dc2626';
                         estadoBadge.style.display = '';
                         toggleSubmitRenta(false);
                     } else if (libro.estado === 'dañado') {
-                        estadoBadge.textContent = '⚠ Este ejemplar está reportado como dañado';
-                        if (libro.detalle_estado) estadoBadge.textContent += ': ' + libro.detalle_estado;
+                        const detalle = libro.detalle_estado ? ': ' + escapeHtml(libro.detalle_estado) : '';
+                        estadoBadge.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Este ejemplar está reportado como dañado' + detalle;
                         estadoBadge.style.background = 'rgba(245, 158, 11, 0.12)';
                         estadoBadge.style.color = '#d97706';
                         estadoBadge.style.display = '';
                         toggleSubmitRenta(false);
                     } else if (libro.estado === 'dado_de_baja') {
-                        estadoBadge.textContent = '⚠ Este ejemplar fue dado de baja';
+                        estadoBadge.innerHTML = '<i class="bi bi-slash-circle me-1"></i>Este ejemplar fue dado de baja';
                         estadoBadge.style.background = 'rgba(239, 68, 68, 0.12)';
                         estadoBadge.style.color = '#dc2626';
                         estadoBadge.style.display = '';

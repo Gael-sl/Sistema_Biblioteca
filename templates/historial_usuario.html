@@ -19,16 +19,16 @@
     <div class="glass-container p-4 mb-4">
         <div class="row align-items-center">
             <div class="col-auto">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
-                    <i class="bi bi-person-fill" style="font-size: 32px; color: #2563eb;"></i>
+                <div class="icon-box-clay" style="width: 70px; height: 70px; border-radius: 20px;">
+                    <i class="bi bi-person-fill" style="font-size: 32px;"></i>
                 </div>
             </div>
             <div class="col">
-                <h2 class="mb-1" style="font-size: 24px; font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">{{ usuario.nombre }}</h2>
+                <h2 class="mb-1" style="font-size: 24px; font-weight: 600; color: #141413;">{{ usuario.nombre }}</h2>
                 <div class="d-flex gap-3 flex-wrap">
-                    <span class="text-sm fw-semibold" style="color: #6b7280;"><i class="bi bi-card-text me-1"></i>ID: {{ usuario.id }}</span>
-                    <span class="text-sm fw-semibold" style="color: #6b7280;"><i class="bi bi-building me-1"></i>{{ usuario.facultad }}</span>
-                    <span class="text-sm fw-semibold" style="color: #6b7280;"><i class="bi bi-mortarboard me-1"></i>{{ usuario.carrera }}</span>
+                    <span class="text-sm fw-semibold font-mono" style="color: #6b6a65;"><i class="bi bi-card-text me-1"></i>ID: {{ usuario.id }}</span>
+                    <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-building me-1"></i>{{ usuario.facultad or 'General' }}</span>
+                    <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-person-badge me-1"></i>{{ usuario.carrera or 'Lector' }}</span>
                 </div>
             </div>
             <div class="col-md-auto mt-3 mt-md-0">
@@ -91,11 +91,11 @@
                         </td>
                         <td class="text-center">
                             {% if prestamo.estado == 'activo' %}
-                                <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-radius: 8px;">En posesión</span>
+                                <span class="badge-amber">En posesión</span>
                             {% elif prestamo.estado == 'devuelto' %}
-                                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 8px;">Finalizado</span>
+                                <span class="badge-emerald">Finalizado</span>
                             {% else %}
-                                <span class="badge" style="background: rgba(0,0,0,0.1); color: #555; border-radius: 8px;">{{ prestamo.estado }}</span>
+                                <span class="badge-custom">{{ prestamo.estado }}</span>
                             {% endif %}
                         </td>
                         <td class="text-end pe-4">
@@ -103,7 +103,7 @@
                                 <form action="{{ url_for('renovar_prestamo', prestamo_id=prestamo.id) }}" method="POST" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="btn btn-sm btn-light-custom mb-2 w-100" title="Renovar">
-                                        <i class="bi bi-calendar-plus me-1" style="color: #3b82f6;"></i>Renovar
+                                        <i class="bi bi-calendar-plus me-1" style="color: #c6613f;"></i>Renovar
                                     </button>
                                 </form>
                             {% endif %}

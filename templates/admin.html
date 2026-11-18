@@ -18,18 +18,20 @@
 
 <main class="container py-4">
     <!-- Acciones Rápidas -->
-    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Acciones rápidas</h2>
+    <div class="section-heading-pill mb-3">
+        <i class="bi bi-lightning-charge" style="color: #d97757; font-size: 16px;"></i>
+        <h2 class="mb-0" style="font-size: 19px; color: #141413; font-weight: 600;">Acciones rápidas</h2>
+    </div>
     <div class="row g-3 mb-5">
         <div class="col-md-4">
             <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
                     data-bs-toggle="modal" data-bs-target="#modalUsuarios" style="cursor: pointer;">
-                <div class="d-flex gap-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background-color: #f5f5f7; border-radius: 10px;">
-                        <i class="bi bi-people" style="font-size: 20px; color: #1d1d1f;"></i>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="icon-box-editorial">
+                        <i class="bi bi-people" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Gestionar usuarios
                         </h3>
                         <p class="text-sm mb-0">Ver y editar usuarios registrados</p>
@@ -40,49 +42,54 @@
         <div class="col-md-4">
             <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
                     data-bs-toggle="modal" data-bs-target="#modalConfiguracion" style="cursor: pointer;">
-                <div class="d-flex gap-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background-color: #f5f5f7; border-radius: 10px;">
-                        <i class="bi bi-gear" style="font-size: 20px; color: #1d1d1f;"></i>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="icon-box-editorial">
+                        <i class="bi bi-sliders" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Configuración del sistema
                         </h3>
-                        <p class="text-sm mb-0">Ajustes y parámetros generales</p>
+                        <p class="text-sm mb-0">Políticas, multas y zona horaria</p>
                     </div>
                 </div>
             </button>
         </div>
         <div class="col-md-4">
+            {% set total_alertas = (alertas_retraso|length) + (usuarios_con_multas|length) + (libros_inventario_bajo|length) %}
             <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
                     data-bs-toggle="modal" data-bs-target="#modalAlertas" style="cursor: pointer;">
-                <div class="d-flex gap-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background-color: #f5f5f7; border-radius: 10px;">
-                        <i class="bi bi-exclamation-circle" style="font-size: 20px; color: #1d1d1f;"></i>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="{% if total_alertas > 0 %}icon-box-clay{% else %}icon-box-editorial{% endif %}">
+                        <i class="bi bi-bell" style="font-size: 20px;"></i>
                     </div>
-                    <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
-                            Alertas y notificaciones
-                        </h3>
-                        <p class="text-sm mb-0">Ver pendientes importantes</p>
+                    <div class="flex-fill">
+                        <div class="d-flex align-items-center justify-content-between gap-2">
+                            <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
+                                Alertas y notificaciones
+                            </h3>
+                            {% if total_alertas > 0 %}
+                            <span class="badge-amber font-mono" style="font-size: 11px; padding: 2px 9px;">{{ total_alertas }}</span>
+                            {% else %}
+                            <span class="badge-emerald font-mono" style="font-size: 11px; padding: 2px 9px;">Al día</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm mb-0">Retrasos, adeudos y stock crítico</p>
                     </div>
                 </div>
             </button>
         </div>
         <div class="col-md-6">
             <a href="{{ url_for('admin_recomendaciones') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
-                <div class="d-flex gap-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px;">
-                        <i class="bi bi-stars" style="font-size: 20px; color: white;"></i>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="icon-box-clay">
+                        <i class="bi bi-stars" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Sistema de Recomendaciones
                         </h3>
-                        <p class="text-sm mb-0">Algoritmo: Content-Based + SAW</p>
+                        <p class="text-sm mb-0">Algoritmo híbrido: Content-Based + SAW</p>
                     </div>
                 </div>
             </a>
@@ -90,16 +97,15 @@
         <div class="col-md-6">
             <button class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover" 
                     data-bs-toggle="modal" data-bs-target="#modalUsuariosSistema" style="cursor: pointer;">
-                <div class="d-flex gap-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border-radius: 10px;">
-                        <i class="bi bi-person-badge" style="font-size: 20px; color: white;"></i>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="icon-box-dark">
+                        <i class="bi bi-person-badge" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 500;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Usuarios del Sistema
                         </h3>
-                        <p class="text-sm mb-0">Gestionar admins y bibliotecarios</p>
+                        <p class="text-sm mb-0">Gestionar administradores y bibliotecarios</p>
                     </div>
                 </div>
             </button>
@@ -108,12 +114,11 @@
         <div class="col-md-12">
             <a href="{{ url_for('admin_logs') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
                 <div class="d-flex gap-3 align-items-center">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background: rgba(59, 130, 246, 0.1); border-radius: 10px;">
-                        <i class="bi bi-journal-text" style="font-size: 20px; color: #2563eb;"></i>
+                    <div class="icon-box-editorial">
+                        <i class="bi bi-journal-text" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Log de Auditoría
                         </h3>
                         <p class="text-sm mb-0">Ver historial completo de acciones y movimientos del sistema</p>
@@ -127,17 +132,19 @@
     </div>
 
     <!-- Reportes -->
-    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Reportes y Exportación</h2>
+    <div class="section-heading-pill mb-3">
+        <i class="bi bi-file-earmark-bar-graph" style="color: #d97757; font-size: 16px;"></i>
+        <h2 class="mb-0" style="font-size: 19px; color: #141413; font-weight: 600;">Reportes y Exportación</h2>
+    </div>
     <div class="row g-3 mb-5">
         <div class="col-md-4">
             <a href="{{ url_for('exportar_prestamos') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
                 <div class="d-flex gap-3 align-items-center">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                    <div class="icon-box-editorial" style="background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.24);">
                         <i class="bi bi-file-earmark-spreadsheet" style="font-size: 20px; color: #059669;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Exportar Préstamos
                         </h3>
                         <p class="text-sm mb-0">Descargar historial completo en Excel</p>
@@ -148,12 +155,11 @@
         <div class="col-md-4">
             <a href="{{ url_for('exportar_multas') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
                 <div class="d-flex gap-3 align-items-center">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background: rgba(245, 158, 11, 0.1); border-radius: 10px;">
-                        <i class="bi bi-cash-coin" style="font-size: 20px; color: #d97706;"></i>
+                    <div class="icon-box-clay">
+                        <i class="bi bi-cash-coin" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Exportar Multas
                         </h3>
                         <p class="text-sm mb-0">Listado de cobros y deudas en Excel</p>
@@ -164,12 +170,11 @@
         <div class="col-md-4">
             <a href="{{ url_for('exportar_inventario') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
                 <div class="d-flex gap-3 align-items-center">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 44px; height: 44px; background: rgba(59, 130, 246, 0.1); border-radius: 10px;">
-                        <i class="bi bi-box-seam" style="font-size: 20px; color: #2563eb;"></i>
+                    <div class="icon-box-dark">
+                        <i class="bi bi-box-seam" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #1d1d1f; font-weight: 600;">
+                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
                             Exportar Inventario
                         </h3>
                         <p class="text-sm mb-0">Descargar catálogo completo en Excel</p>
@@ -180,17 +185,19 @@
     </div>
 
     <!-- Estadísticas -->
-    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Estadísticas Generales</h2>
+    <div class="section-heading-pill mb-3">
+        <i class="bi bi-bar-chart" style="color: #d97757; font-size: 16px;"></i>
+        <h2 class="mb-0" style="font-size: 19px; color: #141413; font-weight: 600;">Estadísticas Generales</h2>
+    </div>
     <div class="row g-4 mb-5">
         <div class="col-md-3">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
-                        <i class="bi bi-book" style="font-size: 24px; color: #1d1d1f;"></i>
+                    <div class="icon-box-editorial" style="width: 48px; height: 48px;">
+                        <i class="bi bi-book" style="font-size: 22px;"></i>
                     </div>
                 </div>
-                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                <p class="stat-value-display mb-1">
                     {{ stats.total_libros }}
                 </p>
                 <p class="text-sm mb-0">Total de libros</p>
@@ -199,12 +206,11 @@
         <div class="col-md-3">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
-                        <i class="bi bi-people" style="font-size: 24px; color: #1d1d1f;"></i>
+                    <div class="icon-box-editorial" style="width: 48px; height: 48px;">
+                        <i class="bi bi-people" style="font-size: 22px;"></i>
                     </div>
                 </div>
-                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                <p class="stat-value-display mb-1">
                     {{ stats.usuarios_biblioteca }}
                 </p>
                 <p class="text-sm mb-0">Usuarios activos</p>
@@ -213,12 +219,11 @@
         <div class="col-md-3">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
-                        <i class="bi bi-graph-up" style="font-size: 24px; color: #1d1d1f;"></i>
+                    <div class="icon-box-clay" style="width: 48px; height: 48px;">
+                        <i class="bi bi-graph-up" style="font-size: 22px;"></i>
                     </div>
                 </div>
-                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                <p class="stat-value-display mb-1">
                     {{ stats.prestamos_activos }}
                 </p>
                 <p class="text-sm mb-0">Préstamos activos</p>
@@ -227,12 +232,11 @@
         <div class="col-md-3">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center justify-content-center" 
-                         style="width: 48px; height: 48px; background-color: #f5f5f7; border-radius: 12px;">
-                        <i class="bi bi-clock-history" style="font-size: 24px; color: #1d1d1f;"></i>
+                    <div class="icon-box-dark" style="width: 48px; height: 48px;">
+                        <i class="bi bi-clock-history" style="font-size: 22px;"></i>
                     </div>
                 </div>
-                <p style="font-size: 32px; color: #1d1d1f; margin-bottom: 4px; font-weight: 600;">
+                <p class="stat-value-display mb-1">
                     {{ stats.devoluciones_hoy }}
                 </p>
                 <p class="text-sm mb-0">Devoluciones hoy</p>
@@ -241,17 +245,20 @@
     </div>
 
     <!-- Gráficas Interactivas -->
-    <h2 class="mb-3" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Estadísticas y Análisis</h2>
+    <div class="section-heading-pill mb-3">
+        <i class="bi bi-graph-up" style="color: #d97757; font-size: 16px;"></i>
+        <h2 class="mb-0" style="font-size: 19px; color: #141413; font-weight: 600;">Estadísticas y Análisis</h2>
+    </div>
     <div class="row g-4 mb-5">
         <!-- Libros Más Rentados -->
         <div class="col-lg-6">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-trophy" style="font-size: 20px; color: white;"></i>
+                    <div class="icon-box-clay">
+                        <i class="bi bi-trophy" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Top 10 Libros Más Rentados</h3>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #141413;">Top 10 Libros Más Rentados</h3>
                         <p class="text-sm mb-0">Popularidad por número de préstamos</p>
                     </div>
                 </div>
@@ -265,11 +272,11 @@
         <div class="col-lg-6">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #34c759 0%, #28a745 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-star" style="font-size: 20px; color: white;"></i>
+                    <div class="icon-box-editorial" style="background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.24);">
+                        <i class="bi bi-star" style="font-size: 20px; color: #059669;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Usuarios Top</h3>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #141413;">Usuarios Top</h3>
                         <p class="text-sm mb-0">Lectores más activos del sistema</p>
                     </div>
                 </div>
@@ -283,11 +290,11 @@
         <div class="col-lg-8">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-graph-up-arrow" style="font-size: 20px; color: white;"></i>
+                    <div class="icon-box-dark">
+                        <i class="bi bi-graph-up-arrow" style="font-size: 20px;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Tendencia de Préstamos</h3>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #141413;">Tendencia de Préstamos</h3>
                         <p class="text-sm mb-0">Última semana</p>
                     </div>
                 </div>
@@ -301,19 +308,19 @@
         <div class="col-lg-4">
             <div class="card-custom p-4">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #ff3b30 0%, #d62828 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-exclamation-triangle" style="font-size: 20px; color: white;"></i>
+                    <div class="icon-box-editorial" style="background: rgba(201, 59, 43, 0.10); border-color: rgba(201, 59, 43, 0.25);">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 20px; color: #c93b2b;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d1d1f;">Devoluciones Retrasadas</h3>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: #141413;">Devoluciones Retrasadas</h3>
                         <p class="text-sm mb-0">Préstamos vencidos</p>
                     </div>
                 </div>
                 <div class="mt-4" style="text-align: center;">
-                    <div style="font-size: 68px; font-weight: 700; color: #ff3b30;">
+                    <div class="serif-heading" style="font-size: 64px; font-weight: 600; color: #c93b2b; line-height: 1.05;">
                         {{ devoluciones_pendientes }}
                     </div>
-                    <div style="font-size: 14px; color: #6b6b6f; font-weight: 500;">
+                    <div style="font-size: 14px; color: #6b6a65; font-weight: 500;">
                         Préstamos con retraso
                     </div>
                 </div>
@@ -386,15 +393,15 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Usuario</th>
-                                <th>Facultad</th>
-                                <th>Carrera</th>
+                                <th>Institución / Área</th>
+                                <th>Ocupación / Categoría</th>
                                 <th class="text-center">Registro</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for usuario in usuarios_biblioteca %}
                             <tr>
-                                <td><span class="badge" style="background: rgba(0, 122, 255, 0.15); color: #007aff;">{{ usuario.id }}</span></td>
+                                <td><span class="badge-custom font-mono">{{ usuario.id }}</span></td>
                                 <td>
                                     <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
                                     <div class="text-sm">{{ usuario.correo or '—' }}</div>
@@ -429,27 +436,26 @@
                 </div>
                 <div class="modal-body">
                     <!-- Préstamos -->
-                    <div class="card-custom p-4 mb-3" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                    <div class="surface-oat p-4 mb-3">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="d-flex align-items-center justify-content-center" 
-                                 style="width: 44px; height: 44px; background-color: #1d1d1f; border-radius: 12px;">
-                                <i class="bi bi-calendar" style="font-size: 20px; color: white;"></i>
+                            <div class="icon-box-dark">
+                                <i class="bi bi-calendar" style="font-size: 20px;"></i>
                             </div>
                             <div>
-                                <h4 class="mb-0" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">
+                                <h4 class="mb-0" style="font-size: 17px; color: #141413; font-weight: 600;">
                                     Políticas de préstamos
                                 </h4>
-                                <p class="text-xs mb-0">Duración y límites</p>
+                                <p class="text-xs mb-0">Duración, límites y huso horario</p>
                             </div>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="card-custom p-3" style="background: white;">
+                                <div class="card-custom p-3">
                                     <label class="form-label-custom mb-2">Días de préstamo</label>
                                     <p class="text-xs mb-2">Duración predeterminada</p>
                                     <div class="input-group">
                                         <input type="number" name="dias_prestamo" 
-                                               class="form-control form-control-custom text-center" 
+                                               class="form-control form-control-custom text-center font-mono" 
                                                value="{{ config.get('dias_prestamo', 7) }}"
                                                min="1" max="90" required style="font-size: 17px;">
                                         <span class="input-group-text bg-transparent border-start-0">días</span>
@@ -457,12 +463,12 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="card-custom p-3" style="background: white;">
+                                <div class="card-custom p-3">
                                     <label class="form-label-custom mb-2">Límite de libros</label>
                                     <p class="text-xs mb-2">Máximo por usuario</p>
                                     <div class="input-group">
                                         <input type="number" name="limite_libros" 
-                                               class="form-control form-control-custom text-center" 
+                                               class="form-control form-control-custom text-center font-mono" 
                                                value="{{ config.get('limite_libros', 3) }}"
                                                min="1" max="10" required style="font-size: 17px;">
                                         <span class="input-group-text bg-transparent border-start-0">libros</span>
@@ -470,7 +476,7 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="card-custom p-3" style="background: white;">
+                                <div class="card-custom p-3">
                                     <label class="form-label-custom mb-1"><i class="bi bi-globe-americas me-1"></i>Zona horaria de la biblioteca</label>
                                     <p class="text-xs mb-2">Se usa para calcular fechas de salida, vencimiento y retrasos aunque el servidor esté en otro país</p>
                                     {% set zh = config.get('zona_horaria', '-7') %}
@@ -486,14 +492,13 @@
                         </div>
                     </div>
                     <!-- Multas -->
-                    <div class="card-custom p-4 mb-3" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                    <div class="surface-manilla p-4 mb-3">
                         <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="d-flex align-items-center justify-content-center" 
-                                 style="width: 44px; height: 44px; background-color: #1d1d1f; border-radius: 12px;">
-                                <i class="bi bi-currency-dollar" style="font-size: 20px; color: white;"></i>
+                            <div class="icon-box-dark">
+                                <i class="bi bi-currency-dollar" style="font-size: 20px;"></i>
                             </div>
                             <div>
-                                <h4 class="mb-0" style="font-size: 17px; color: #1d1d1f; font-weight: 600;">
+                                <h4 class="mb-0" style="font-size: 17px; color: #141413; font-weight: 600;">
                                     Sistema de multas
                                 </h4>
                                 <p class="text-xs mb-0">Tarifas por retrasos y daños</p>
@@ -507,8 +512,7 @@
                                 {'clave': 'multa_grave', 'label': 'Daño grave', 'desc': 'Pérdida total o destrucción del libro'}
                             ] %}
                             {% for multa in multas %}
-                            <div class="card-custom p-3 d-flex flex-row justify-content-between align-items-center" 
-                                 style="background: white;">
+                            <div class="card-custom p-3 d-flex flex-row justify-content-between align-items-center">
                                 <div class="flex-fill">
                                     <div class="text-md" style="font-weight: 500;">{{ multa.label }}</div>
                                     <p class="text-xs mb-0">{{ multa.desc }}</p>
@@ -516,7 +520,7 @@
                                 <div class="input-group" style="width: 140px;">
                                     <span class="input-group-text bg-transparent" style="font-size: 17px;">$</span>
                                     <input type="number" name="{{ multa.clave }}" 
-                                           class="form-control form-control-custom text-center" 
+                                           class="form-control form-control-custom text-center font-mono" 
                                            value="{{ config.get(multa.clave, '0') }}"
                                            min="0" step="0.01" required style="font-size: 17px;">
                                 </div>
@@ -536,23 +540,75 @@
     </div>
 </div>
 
-<!-- MODAL: Alertas -->
+<!-- MODAL: Alertas (Rediseñado estilo DESIGN 4 Editorial) -->
 <div class="modal fade" id="modalAlertas" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div>
-                    <h5 class="modal-title mb-1">Alertas y Notificaciones</h5>
-                    <p class="text-sm mb-0">Situaciones que requieren atención</p>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box-clay">
+                        <i class="bi bi-bell" style="font-size: 20px;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-1">Centro de Alertas Operativas</h5>
+                        <p class="text-sm mb-0">Monitoreo en tiempo real de vencimientos, cargos pendientes y existencias</p>
+                    </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Préstamos con Retraso -->
-                <div class="mb-4">
-                    <h6 class="mb-3" style="font-weight: 600; color: #1d1d1f;">
-                        <i class="bi bi-clock-fill text-danger me-2"></i>Préstamos con retraso
-                    </h6>
+                <!-- Resumen ejecutivo de 3 tarjetas KPI -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="surface-oat p-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="stat-label-mono mb-1">Préstamos vencidos</div>
+                                <div class="serif-heading" style="font-size: 28px; line-height: 1.1;">{{ alertas_retraso|length }}</div>
+                            </div>
+                            {% if alertas_retraso %}
+                            <span class="badge-clay-danger"><i class="bi bi-clock-history"></i>Atención</span>
+                            {% else %}
+                            <span class="badge-emerald"><i class="bi bi-check2"></i>Al día</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="surface-oat p-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="stat-label-mono mb-1">Cuentas con adeudo</div>
+                                <div class="serif-heading" style="font-size: 28px; line-height: 1.1;">{{ usuarios_con_multas|length }}</div>
+                            </div>
+                            {% if usuarios_con_multas %}
+                            <span class="badge-amber"><i class="bi bi-receipt"></i>Pendiente</span>
+                            {% else %}
+                            <span class="badge-emerald"><i class="bi bi-check2"></i>Sin adeudos</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="surface-oat p-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="stat-label-mono mb-1">Stock crítico (≤ 1 disp.)</div>
+                                <div class="serif-heading" style="font-size: 28px; line-height: 1.1;">{{ libros_inventario_bajo|length }}</div>
+                            </div>
+                            {% if libros_inventario_bajo %}
+                            <span class="badge-amber"><i class="bi bi-box-seam"></i>Revisar</span>
+                            {% else %}
+                            <span class="badge-emerald"><i class="bi bi-check2"></i>Óptimo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Préstamos con Retraso -->
+                <div class="alert-panel-card mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history" style="color: #c93b2b; font-size: 17px;"></i>
+                            <h6 class="mb-0" style="font-weight: 600; color: #141413;">Préstamos con retraso</h6>
+                        </div>
+                        <span class="stat-label-mono">{{ alertas_retraso|length }} registro(s)</span>
+                    </div>
                     {% if alertas_retraso %}
                     <div class="table-custom">
                         <table class="table table-custom mb-0">
@@ -568,12 +624,12 @@
                                 {% for prestamo, usuario_nombre, libro_titulo, dias_retraso in alertas_retraso %}
                                 <tr>
                                     <td><span class="text-md" style="font-weight: 500;">{{ usuario_nombre }}</span></td>
-                                    <td><span class="text-sm">{{ libro_titulo }}</span></td>
+                                    <td><span class="text-sm serif-heading" style="font-size: 14px;">{{ libro_titulo }}</span></td>
                                     <td class="text-center">
-                                        <span class="badge bg-danger">{{ dias_retraso }} días</span>
+                                        <span class="badge-clay-danger font-mono">{{ dias_retraso }} días</span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="text-xs">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</span>
+                                        <span class="text-xs font-mono">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</span>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -581,24 +637,37 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="alert alert-success-custom">
-                        <i class="bi bi-check-circle me-2"></i>No hay préstamos con retraso
+                    <div class="empty-state-editorial">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-check2-circle" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <div class="text-md" style="font-weight: 600;">Sin préstamos vencidos</div>
+                                <div class="text-xs">Todas las devoluciones activas se encuentran dentro del plazo establecido.</div>
+                            </div>
+                        </div>
+                        <span class="badge-emerald">En regla</span>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Usuarios con Multas -->
-                <div class="mb-4">
-                    <h6 class="mb-3" style="font-weight: 600; color: #1d1d1f;">
-                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Usuarios con multas pendientes
-                    </h6>
+                <!-- 2. Usuarios con Multas -->
+                <div class="alert-panel-card mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-cash-stack" style="color: #c6613f; font-size: 17px;"></i>
+                            <h6 class="mb-0" style="font-weight: 600; color: #141413;">Usuarios con multas pendientes</h6>
+                        </div>
+                        <span class="stat-label-mono">{{ usuarios_con_multas|length }} cuenta(s)</span>
+                    </div>
                     {% if usuarios_con_multas %}
                     <div class="table-custom">
                         <table class="table table-custom mb-0">
                             <thead>
                                 <tr>
                                     <th>Usuario</th>
-                                    <th class="text-end">Total multas</th>
+                                    <th class="text-end">Saldo pendiente</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -606,7 +675,7 @@
                                 <tr>
                                     <td><span class="text-md" style="font-weight: 500;">{{ usuario_nombre }}</span></td>
                                     <td class="text-end">
-                                        <span class="badge bg-warning text-dark">${{ "%.2f"|format(total_multas) }}</span>
+                                        <span class="badge-amber font-mono">${{ "%.2f"|format(total_multas) }}</span>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -614,17 +683,30 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="alert alert-success-custom">
-                        <i class="bi bi-check-circle me-2"></i>No hay multas pendientes
+                    <div class="empty-state-editorial">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-shield-check" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <div class="text-md" style="font-weight: 600;">Sin cargos ni multas activas</div>
+                                <div class="text-xs">Ningún lector presenta adeudos por entrega tardía o reporte de daño.</div>
+                            </div>
+                        </div>
+                        <span class="badge-emerald">Saldo $0.00</span>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Inventario Bajo -->
-                <div>
-                    <h6 class="mb-3" style="font-weight: 600; color: #1d1d1f;">
-                        <i class="bi bi-box-seam text-info me-2"></i>Libros con inventario bajo
-                    </h6>
+                <!-- 3. Inventario Bajo -->
+                <div class="alert-panel-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-box-seam" style="color: #141413; font-size: 17px;"></i>
+                            <h6 class="mb-0" style="font-weight: 600; color: #141413;">Títulos con disponibilidad reducida</h6>
+                        </div>
+                        <span class="stat-label-mono">{{ libros_inventario_bajo|length }} título(s)</span>
+                    </div>
                     {% if libros_inventario_bajo %}
                     <div class="table-custom">
                         <table class="table table-custom mb-0">
@@ -632,28 +714,40 @@
                                 <tr>
                                     <th>Título</th>
                                     <th class="text-center">Disponibles</th>
-                                    <th class="text-center">Cantidad total</th>
+                                    <th class="text-center">Acervo total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for libro in libros_inventario_bajo %}
                                 <tr>
-                                    <td><span class="text-md" style="font-weight: 500;">{{ libro.titulo }}</span></td>
+                                    <td><span class="text-md serif-heading" style="font-weight: 600;">{{ libro.titulo }}</span></td>
                                     <td class="text-center">
-                                        <span class="badge bg-info">{{ libro.disponibles }}</span>
+                                        <span class="badge-amber font-mono">{{ libro.disponibles }} disp.</span>
                                     </td>
-                                    <td class="text-center">{{ libro.cantidad }}</td>
+                                    <td class="text-center font-mono">{{ libro.cantidad }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     {% else %}
-                    <div class="alert alert-success-custom">
-                        <i class="bi bi-check-circle me-2"></i>Todos los libros tienen inventario suficiente
+                    <div class="empty-state-editorial">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-journal-check" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <div class="text-md" style="font-weight: 600;">Cobertura de acervo suficiente</div>
+                                <div class="text-xs">Todos los títulos registrados cuentan con ejemplares disponibles para préstamo.</div>
+                            </div>
+                        </div>
+                        <span class="badge-emerald">Abastecido</span>
                     </div>
                     {% endif %}
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-custom px-4" data-bs-dismiss="modal">Cerrar panel</button>
             </div>
         </div>
     </div>
@@ -811,5 +905,5 @@
 
 <!-- Librerías externas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="{{ url_for('static', filename='js/admin-charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin-charts.js') }}?v=design4"></script>
 {% endblock %}

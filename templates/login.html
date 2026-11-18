@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
-
     body {
         background-image: none;
     }
@@ -18,10 +16,12 @@
         min-height: 100vh;
         display: flex;
         align-items: center;
-        padding: 48px 0;
-        font-family: 'Manrope', var(--font-text);
+        justify-content: center;
+        padding: 48px 16px;
+        font-family: var(--font-text);
     }
 
+    /* Fondo de libros conservado */
     .login-page::before {
         content: '';
         position: fixed;
@@ -29,209 +29,322 @@
         background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
-        filter: blur(6px);
+        filter: blur(5px);
         transform: scale(1.05);
         z-index: -2;
     }
 
+    /* Overlay calido y oscuro estilo Fostrelark (elimina el azul antiguo) */
     .login-page::after {
         content: '';
         position: fixed;
         inset: 0;
-        background: linear-gradient(135deg, rgba(9, 15, 26, 0.55), rgba(59, 130, 246, 0.25));
+        background: radial-gradient(circle at 50% 25%, rgba(20, 20, 19, 0.70) 0%, rgba(14, 14, 13, 0.90) 100%);
         z-index: -1;
     }
 
-    .login-brand {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 24px;
-        color: #f8fafc;
-        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-        text-align: center;
+    /* Card Fostrelark: Near-black surface, bordes sutiles y esquinas redondeadas */
+    .login-card {
+        background: rgba(20, 20, 19, 0.88);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(216, 214, 206, 0.14);
+        border-radius: 28px;
+        padding: 40px 36px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
     }
 
+    /* Brand mark */
     .login-brand-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(255, 255, 255, 0.18);
+        width: 58px;
+        height: 58px;
+        border-radius: 9999px;
+        background: #1b1a18;
+        border: 1px solid rgba(217, 119, 87, 0.4);
+        box-shadow: 0 0 0 4px rgba(217, 119, 87, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        margin: 0 auto 16px auto;
+        color: #d97757;
+        font-size: 24px;
     }
 
-    .login-card {
-        background: rgba(255, 255, 255, 0.32);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        border: 1px solid rgba(255, 255, 255, 0.45);
-        border-radius: 28px;
-        padding: 36px;
-        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    .login-brand-title {
+        font-family: var(--font-title);
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #faf9f5;
+        margin: 0;
+        text-align: center;
+    }
+
+    .login-brand-subtitle {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #8c8980;
+        margin-top: 4px;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+
+    .login-heading {
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(216, 214, 206, 0.08);
     }
 
     .login-title {
-        color: #f8fafc;
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        text-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        color: #faf9f5;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
     }
 
     .login-subtitle {
-        color: rgba(248, 250, 252, 0.9);
-        font-size: 14px;
-        font-weight: 600;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        color: #8c8980;
+        font-size: 13.5px;
+        margin: 0;
+        font-weight: 400;
     }
 
-    .login-input-group {
+    /* Alerta de error elegante y sutil */
+    .login-alert {
+        background: rgba(217, 119, 87, 0.12);
+        border: 1px solid rgba(217, 119, 87, 0.35);
+        color: #fce8e1;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-size: 13.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* Formulario e Inputs en pildora */
+    .login-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #b0aea5;
+        margin-bottom: 6px;
+        margin-left: 14px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .login-input-wrap {
         position: relative;
         margin-bottom: 18px;
     }
 
-    .login-input {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.55);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 14px;
-        padding: 14px 14px 14px 46px;
-        font-size: 15px;
-        font-weight: 600;
-        color: #1f2937;
-        transition: all 0.3s ease;
-    }
-
-    .login-input:focus {
-        background: rgba(255, 255, 255, 0.85);
-        border-color: rgba(59, 130, 246, 0.65);
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    .login-input::placeholder {
-        color: rgba(31, 41, 55, 0.55);
-        font-weight: 600;
-    }
-
-    .login-icon {
+    .login-input-icon {
         position: absolute;
         top: 50%;
-        left: 16px;
+        left: 18px;
         transform: translateY(-50%);
-        color: rgba(31, 41, 55, 0.8);
-        font-size: 18px;
-        z-index: 2;
+        color: #8c8980;
+        font-size: 17px;
+        pointer-events: none;
+        transition: color 0.2s ease;
     }
 
-    .login-icon-right {
+    .login-pill-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(216, 214, 206, 0.16);
+        border-radius: 9999px;
+        padding: 13px 46px 13px 48px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #faf9f5;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+
+    .login-pill-input::placeholder {
+        color: #6b6a65;
+        font-weight: 400;
+    }
+
+    .login-pill-input:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: #d97757;
+        box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.22);
+        color: #ffffff;
+    }
+
+    .login-input-wrap:focus-within .login-input-icon {
+        color: #d97757;
+    }
+
+    .login-pw-toggle {
         position: absolute;
         top: 50%;
         right: 16px;
         transform: translateY(-50%);
-        color: rgba(31, 41, 55, 0.7);
-        font-size: 20px;
+        background: transparent;
+        border: none;
+        color: #8c8980;
+        font-size: 17px;
+        padding: 4px;
         cursor: pointer;
-        z-index: 2;
-    }
-
-    .login-btn {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: #fff;
-        border: none;
-        border-radius: 14px;
-        padding: 14px;
-        font-size: 16px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        width: 100%;
-        transition: transform 0.2s, box-shadow 0.2s;
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+    }
+
+    .login-pw-toggle:hover {
+        color: #faf9f5;
+    }
+
+    /* Boton en pildora Fostrelark */
+    .login-submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #d97757 0%, #c6613f 100%);
+        color: #faf9f5;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 9999px;
+        padding: 13px 24px;
+        font-size: 14.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 8px;
-        box-shadow: 0 10px 24px rgba(59, 130, 246, 0.35);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 22px rgba(217, 119, 87, 0.32);
+        margin-top: 24px;
     }
 
-    .login-btn:hover {
+    .login-submit-btn:hover {
+        background: linear-gradient(135deg, #e08364 0%, #cf6947 100%);
         transform: translateY(-2px);
-        box-shadow: 0 16px 28px rgba(59, 130, 246, 0.45);
+        box-shadow: 0 12px 28px rgba(217, 119, 87, 0.42);
+        color: #ffffff;
     }
 
-    .login-alert {
-        background: rgba(239, 68, 68, 0.9);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
+    .login-submit-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(217, 119, 87, 0.25);
+    }
+
+    .login-submit-btn:disabled {
+        opacity: 0.75;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Banda inferior de seguridad estilo Fostrelark */
+    .login-footer-band {
+        margin-top: 24px;
+        text-align: center;
+        font-size: 11.5px;
+        color: #737067;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 </style>
 
 <div class="login-page">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="login-brand fade-in">
-                    <div class="login-brand-icon">
-                        <i class="bi bi-book-half" style="font-size: 26px; color: #f8fafc;"></i>
-                    </div>
-                    <div>
-                        <h1 class="mb-0" style="font-size: 24px; font-weight: 800; letter-spacing: 1px;">SISTEMA BIBLIO</h1>
-                        <p class="mb-0" style="font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">GESTION DE BIBLIOTECA</p>
-                    </div>
-                </div>
+    <div class="login-card fade-in">
+        <!-- Brand Mark -->
+        <div class="login-brand-icon">
+            <i class="bi bi-book-half"></i>
+        </div>
+        <h1 class="login-brand-title">SISTEMA BIBLIOTECA</h1>
+        <p class="login-brand-subtitle">CATÁLOGO &amp; GESTIÓN</p>
 
-                <div class="login-card fade-in">
-                    <div class="text-center mb-4">
-                        <h2 class="mb-1 login-title">Bienvenido</h2>
-                        <p class="login-subtitle">Inicia sesión para continuar</p>
-                    </div>
+        <!-- Heading -->
+        <div class="login-heading">
+            <h2 class="login-title">Iniciar Sesión</h2>
+            <p class="login-subtitle">Ingresa tus credenciales para continuar</p>
+        </div>
 
-                    {% if error %}
-                        <div class="alert login-alert d-flex align-items-center mb-3" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <div>{{ error }}</div>
-                        </div>
-                    {% endif %}
+        <!-- Alerta de Error -->
+        {% if error %}
+            <div class="login-alert" role="alert">
+                <i class="bi bi-shield-exclamation" style="font-size: 17px; color: #d97757;"></i>
+                <span>{{ error }}</span>
+            </div>
+        {% endif %}
 
-                    <form method="POST" action="{{ url_for('login') }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="login-input-group">
-                            <i class="bi bi-person-fill login-icon"></i>
-                            <input type="text" class="login-input" id="username" name="username" placeholder="Usuario" required autofocus>
-                        </div>
+        <!-- Formulario -->
+        <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-                        <div class="login-input-group mb-4">
-                            <i class="bi bi-lock-fill login-icon"></i>
-                            <input type="password" class="login-input" id="password" name="password" placeholder="Contraseña" required>
-                            <i class="bi bi-eye-slash-fill login-icon-right" id="togglePassword"></i>
-                        </div>
-
-                        <button type="submit" class="login-btn">
-                            INGRESAR <i class="bi bi-arrow-right" style="font-size: 20px; stroke-width: 2px;"></i>
-                        </button>
-                    </form>
+            <div class="mb-3">
+                <label for="username" class="login-label">Usuario</label>
+                <div class="login-input-wrap mb-0">
+                    <i class="bi bi-person login-input-icon"></i>
+                    <input type="text" class="login-pill-input" id="username" name="username" placeholder="Ingresa tu usuario" required autofocus autocomplete="username">
                 </div>
             </div>
+
+            <div class="mb-2">
+                <label for="password" class="login-label">Contraseña</label>
+                <div class="login-input-wrap mb-0">
+                    <i class="bi bi-lock login-input-icon"></i>
+                    <input type="password" class="login-pill-input" id="password" name="password" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
+                    <button type="button" class="login-pw-toggle" id="togglePassword" aria-label="Mostrar u ocultar contraseña">
+                        <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+                <span>Ingresar al Sistema</span>
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        </form>
+
+        <!-- Banda de Seguridad Fostrelark -->
+        <div class="login-footer-band">
+            <span><i class="bi bi-shield-lock" style="color: #d97757;"></i> Acceso Seguro</span>
+            <span>&bull;</span>
+            <span>Protección Fuerza Bruta</span>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('togglePassword').addEventListener('click', function (e) {
-        const password = document.getElementById('password');
-        if (password.type === 'password') {
-            password.type = 'text';
-            this.classList.remove('bi-eye-slash-fill');
-            this.classList.add('bi-eye-fill');
-        } else {
-            password.type = 'password';
-            this.classList.remove('bi-eye-fill');
-            this.classList.add('bi-eye-slash-fill');
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('togglePassword');
+        const pwInput = document.getElementById('password');
+        const pwIcon = document.getElementById('togglePasswordIcon');
+
+        if (toggleBtn && pwInput && pwIcon) {
+            toggleBtn.addEventListener('click', function () {
+                const isPassword = pwInput.type === 'password';
+                pwInput.type = isPassword ? 'text' : 'password';
+                pwIcon.classList.toggle('bi-eye-slash', !isPassword);
+                pwIcon.classList.toggle('bi-eye', isPassword);
+            });
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('loginSubmitBtn');
+        if (loginForm && submitBtn) {
+            loginForm.addEventListener('submit', function () {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>Verificando...</span>';
+            });
         }
     });
 </script>
