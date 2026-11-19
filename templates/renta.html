@@ -137,11 +137,16 @@
                     <div class="serif-heading flex-shrink-0" style="font-size: 20px; font-weight: 700; color: #141413;">${{ '%.2f'|format(ns.garantia) }}</div>
                 </div>
 
-                {# Pie estilo recibo con código de barras decorativo #}
-                <div class="text-center pt-1">
-                    <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #6b6a65; margin-bottom: 5px;">PRESENTA ESTE TICKET AL DEVOLVER</div>
-                    <div style="height: 22px; width: 78%; margin: 0 auto; opacity: 0.85; background: repeating-linear-gradient(90deg, #141413 0 2px, transparent 2px 4px, #141413 4px 7px, transparent 7px 9px, #141413 9px 10px, transparent 10px 13px, #141413 13px 16px, transparent 16px 18px);"></div>
-                    <div class="font-mono" style="font-size: 9.5px; color: #87867f; margin-top: 2px; letter-spacing: 0.18em;">BIB-{{ '%06d'|format(prestamo.id) }}</div>
+                {# Pie estilo recibo con código QR real del préstamo #}
+                <div class="d-flex align-items-center justify-content-between gap-2 pt-2" style="border-top: 1px dashed #d8d6ce;">
+                    <div style="min-width: 0;">
+                        <div style="font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; color: #141413;">ESCANEA PARA DEVOLVER</div>
+                        <div class="font-mono" style="font-size: 11.5px; font-weight: 700; color: #c6613f; letter-spacing: 0.06em;">BIB-{{ '%06d'|format(prestamo.id) }}</div>
+                        <div style="font-size: 9.5px; color: #6b6a65;">Presenta este ticket o el libro</div>
+                    </div>
+                    <div class="flex-shrink-0 p-1 rounded-2" style="background: #ffffff; border: 1px solid #d8d6ce;">
+                        <div id="ticketQrCode" data-ticket-code="BIB-{{ '%06d'|format(prestamo.id) }}"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -337,6 +342,22 @@
 
 {% block scripts %}
 <script>
+    // Generar código QR real del ticket de préstamo (BIB-XXXXXX)
+    const ticketQrEl = document.getElementById('ticketQrCode');
+    if (ticketQrEl && typeof QRCode !== 'undefined') {
+        const ticketCode = ticketQrEl.getAttribute('data-ticket-code') || '';
+        if (ticketCode) {
+            new QRCode(ticketQrEl, {
+                text: ticketCode,
+                width: 56,
+                height: 56,
+                colorDark: '#141413',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    }
+
     // Búsqueda en tabla (Catálogo manual)
     const inputBusqueda = document.getElementById('buscarLibro');
     const tablaLibros = document.getElementById('tablaLibros');
@@ -446,62 +467,93 @@
             }
         });
 
+        async function buscarYMostrarResultados(q) {
+            const resp = await fetch(`/api/usuarios/buscar?q=${encodeURIComponent(q)}`);
+            const users = await resp.json();
+
+            if (!results) return users;
+            results.innerHTML = '';
+            if (users.length === 0) {
+                results.style.display = 'none';
+                return users;
+            }
+
+            users.forEach(u => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action border-0 py-3 px-4';
+                item.style.background = 'transparent';
+
+                let statusBadge = '';
+                if (u.estado === 'suspendido') {
+                    statusBadge = '<span class="badge bg-danger-custom text-danger ms-2" style="background: rgba(239,68,68,0.1); padding: 4px 8px; border-radius: 6px;">Suspendido</span>';
+                } else if (u.multas_pendientes > 0) {
+                    statusBadge = `<span class="badge bg-warning-custom text-warning ms-2" style="background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 6px;">${u.multas_pendientes} Multas</span>`;
+                }
+
+                const subtitulo = u.tipo_usuario === 'externo'
+                    ? 'Lector externo'
+                    : (u.numero_cuenta ? `Mat. ${u.numero_cuenta}` : 'Lector interno');
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-weight: 700; color: #1d1d1f;">${escapeHtml(u.nombre)} ${statusBadge}</div>
+                            <div style="font-size: 12px; color: #666;">ID: ${escapeHtml(u.id)} &bull; ${escapeHtml(subtitulo)}</div>
+                        </div>
+                        <span class="badge rounded-pill" style="background: rgba(0,0,0,0.05); color: #555;">${Number(u.prestamos_activos) || 0} activos</span>
+                    </div>
+                `;
+                item.onclick = () => {
+                    seleccionarUsuario(u);
+                    const nextField = document.getElementById('libro_id_qr');
+                    if (nextField && inputId === 'usuario_search_qr') {
+                        setTimeout(() => nextField.focus(), 150);
+                    }
+                };
+                results.appendChild(item);
+            });
+            results.style.display = 'block';
+            return users;
+        }
+
         input.addEventListener('input', () => {
             clearTimeout(timer);
             const q = input.value.trim();
+            hidden.value = '';
+            if (card) card.style.display = 'none';
             if (q.length < 2) {
                 if (results) results.style.display = 'none';
-                hidden.value = '';
-                if (card) card.style.display = 'none';
                 return;
             }
-            timer = setTimeout(async () => {
-                const resp = await fetch(`/api/usuarios/buscar?q=${encodeURIComponent(q)}`);
-                const users = await resp.json();
-                
-                if (!results) return;
-                results.innerHTML = '';
-                if (users.length === 0) {
-                    results.style.display = 'none';
-                    return;
-                }
+            timer = setTimeout(() => buscarYMostrarResultados(q), 250);
+        });
 
-                users.forEach(u => {
-                    const item = document.createElement('button');
-                    item.type = 'button';
-                    item.className = 'list-group-item list-group-item-action border-0 py-3 px-4';
-                    item.style.background = 'transparent';
-                    
-                    let statusBadge = '';
-                    if (u.estado === 'suspendido') {
-                        statusBadge = '<span class="badge bg-danger-custom text-danger ms-2" style="background: rgba(239,68,68,0.1); padding: 4px 8px; border-radius: 6px;">Suspendido</span>';
-                    } else if (u.multas_pendientes > 0) {
-                        statusBadge = `<span class="badge bg-warning-custom text-warning ms-2" style="background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 6px;">${u.multas_pendientes} Multas</span>`;
+        // Reabrir sugerencias al volver a enfocar el campo si aún no se ha seleccionado un usuario
+        input.addEventListener('focus', () => {
+            const q = input.value.trim();
+            if (q.length >= 2 && !hidden.value) {
+                clearTimeout(timer);
+                buscarYMostrarResultados(q);
+            }
+        });
+
+        // Si el usuario escribió un ID exacto (ej. USR001) y cambió de casilla sin dar clic, seleccionarlo automáticamente
+        input.addEventListener('blur', () => {
+            setTimeout(async () => {
+                if (document.activeElement === input) return;
+                const q = input.value.trim();
+                if (!q || hidden.value || q.length < 3) return;
+                try {
+                    const resp = await fetch(`/api/usuarios/buscar?q=${encodeURIComponent(q)}`);
+                    const users = await resp.json();
+                    const exact = users.find(u => u.id.toLowerCase() === q.toLowerCase());
+                    if (exact) {
+                        seleccionarUsuario(exact);
                     }
-
-                    const subtitulo = u.tipo_usuario === 'externo'
-                        ? 'Lector externo'
-                        : (u.numero_cuenta ? `Mat. ${u.numero_cuenta}` : 'Lector interno');
-                    item.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div style="font-weight: 700; color: #1d1d1f;">${escapeHtml(u.nombre)} ${statusBadge}</div>
-                                <div style="font-size: 12px; color: #666;">ID: ${escapeHtml(u.id)} &bull; ${escapeHtml(subtitulo)}</div>
-                            </div>
-                            <span class="badge rounded-pill" style="background: rgba(0,0,0,0.05); color: #555;">${Number(u.prestamos_activos) || 0} activos</span>
-                        </div>
-                    `;
-                    item.onclick = () => {
-                        seleccionarUsuario(u);
-                        const nextField = document.getElementById('libro_id_qr');
-                        if (nextField && inputId === 'usuario_search_qr') {
-                            setTimeout(() => nextField.focus(), 150);
-                        }
-                    };
-                    results.appendChild(item);
-                });
-                results.style.display = 'block';
-            }, 300);
+                } catch (err) {
+                    console.error('Error al auto-completar ID de usuario:', err);
+                }
+            }, 180);
         });
 
         // Cerrar resultados al hacer click fuera

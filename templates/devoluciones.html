@@ -24,7 +24,7 @@
                 </div>
                 <div>
                     <h2 class="mb-1 serif-heading" style="font-size: 20px; color: #141413; font-weight: 600;">Recepción Rápida por Escáner QR o Búsqueda</h2>
-                    <p class="text-sm mb-0" style="color: #6b6a65;">Escanea el código QR del ejemplar devuelto o de la credencial del lector para abrir su devolución al instante.</p>
+                    <p class="text-sm mb-0" style="color: #6b6a65;">Escanea el código QR del ejemplar, del ticket de préstamo o de la credencial del lector para abrir su devolución al instante.</p>
                 </div>
             </div>
             <span class="badge-emerald font-mono" style="white-space: nowrap;">
@@ -35,7 +35,7 @@
         <div class="surface-oat px-3 py-2 mb-3 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2" style="border-radius: 14px;">
             <div class="d-flex align-items-center gap-2">
                 <span class="d-inline-flex align-items-center justify-content-center font-mono fw-bold" style="width: 22px; height: 22px; border-radius: 999px; background: #141413; color: #faf9f5; font-size: 11px; flex-shrink: 0;">1</span>
-                <span class="text-xs" style="color: #30302e;">Escanea el <strong>libro</strong> o <strong>credencial</strong> (o escribe nombre / ID).</span>
+                <span class="text-xs" style="color: #30302e;">Escanea <strong>libro</strong>, <strong>ticket (BIB-...)</strong> o <strong>credencial</strong> (o escribe nombre / ID).</span>
             </div>
             <div class="d-none d-md-block" style="width: 1px; height: 18px; background: #d8d6ce;"></div>
             <div class="d-flex align-items-center gap-2">
@@ -47,7 +47,7 @@
         <div class="position-relative">
             <i class="bi bi-upc-scan position-absolute" style="top: 50%; left: 16px; transform: translateY(-50%); color: #c6613f; font-size: 18px; z-index: 2; pointer-events: none;"></i>
             <input type="text" id="buscarDevolucion" class="form-control form-control-custom"
-                   placeholder="Escanea aquí el código QR del ejemplar (ej. QR0001) o escribe el nombre / ID del lector..."
+                   placeholder="Escanea código del libro (QR0001), ticket (BIB-000020) o credencial (USR001)..."
                    style="height: 48px; font-size: 14px; padding-left: 46px; padding-right: 44px; border-radius: 16px;" autofocus>
             <button type="button" id="btnLimpiarBusquedaDev" class="btn btn-sm position-absolute d-none" style="top: 50%; right: 10px; transform: translateY(-50%); border: none; background: #e3dacc; color: #141413; border-radius: 999px; width: 28px; height: 28px; padding: 0;" title="Limpiar búsqueda">
                 <i class="bi bi-x-lg" style="font-size: 12px;"></i>
@@ -108,7 +108,7 @@
                     {% set hoy = datetime.now(timezone.utc).date() %}
                     {% set dias_retraso = ((hoy - fecha_limite).days if hoy > fecha_limite else 0) %}
                     {% set vencido = dias_retraso > 0 %}
-                <tr data-estado="{{ 'vencido' if vencido else 'activo' }}" data-libro-id="{{ libro.id|lower }}" data-usuario-id="{{ usuario.id|lower }}" data-search="{{ usuario.nombre|lower }} {{ usuario.id|lower }} {{ libro.titulo|lower }} {{ libro.id|lower }}">
+                <tr data-estado="{{ 'vencido' if vencido else 'activo' }}" data-libro-id="{{ libro.id|lower }}" data-usuario-id="{{ usuario.id|lower }}" data-ticket-code="bib-{{ '%06d'|format(prestamo.id) }}" data-prestamo-id="{{ prestamo.id }}" data-search="{{ usuario.nombre|lower }} {{ usuario.id|lower }} {{ libro.titulo|lower }} {{ libro.id|lower }} bib-{{ '%06d'|format(prestamo.id) }}">
                     <td>
                         <div class="text-md" style="font-weight: 700; color: #141413;">{{ usuario.nombre }}</div>
                         <div class="text-xs font-mono" style="color: #6b6a65;">ID: {{ usuario.id }}</div>
@@ -117,6 +117,7 @@
                         <div class="text-md serif-heading" style="font-weight: 600; color: #141413;">{{ libro.titulo }}</div>
                         <div class="text-sm" style="color: #6b6a65;">
                             <span class="badge-custom font-mono me-1" style="padding: 2px 8px; font-size: 11px;">{{ libro.id }}</span>
+                            <span class="font-mono me-1" style="font-size: 11px; color: #c6613f; font-weight: 600;">BIB-{{ '%06d'|format(prestamo.id) }}</span>
                             <i class="bi bi-person me-1"></i>{{ libro.autor }}
                         </div>
                     </td>
@@ -425,15 +426,32 @@
         const q = (codigo || '').toLowerCase().trim();
         if (!q) return false;
         const filas = Array.from(document.querySelectorAll('#tablaDevolucion tbody tr'));
-        const exactLibro = filas.find(f => (f.dataset.libroId || '') === q);
-        if (exactLibro) {
-            const btn = exactLibro.querySelector('.btn-procesar-devolucion') || exactLibro.querySelector('button[data-bs-target="#modalDevolucion"]');
+
+        // 1) Coincidencia exacta por QR del libro (QR0001) o QR del ticket (BIB-000020)
+        const exactMatch = filas.find(f =>
+            (f.dataset.libroId || '') === q ||
+            (f.dataset.ticketCode || '') === q
+        );
+        if (exactMatch) {
+            const btn = exactMatch.querySelector('.btn-procesar-devolucion') || exactMatch.querySelector('button[data-bs-target="#modalDevolucion"]');
             if (btn) {
                 lastAutoOpenedCode = q;
                 btn.click();
                 return true;
             }
         }
+
+        // 2) Coincidencia exacta por QR de credencial (USR001): abre directo si solo tiene 1 préstamo activo
+        const porUsuario = filas.filter(f => (f.dataset.usuarioId || '') === q);
+        if (porUsuario.length === 1) {
+            const btn = porUsuario[0].querySelector('.btn-procesar-devolucion') || porUsuario[0].querySelector('button[data-bs-target="#modalDevolucion"]');
+            if (btn) {
+                lastAutoOpenedCode = q;
+                btn.click();
+                return true;
+            }
+        }
+
         if (forceOnEnter) {
             const filasVisibles = filas.filter(f => f.style.display !== 'none');
             if (filasVisibles.length === 1) {
