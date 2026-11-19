@@ -77,7 +77,7 @@
 </style>
 
 <header class="header-sticky">
-    <div class="container py-3 d-flex align-items-center justify-content-between">
+    <div class="container py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center gap-3">
             <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
                 <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
@@ -222,7 +222,7 @@
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Email:</span>
-                                        <span class="info-value" id="previewCorreo" style="font-size: 10px;">-</span>
+                                        <span class="info-value" id="previewCorreo" style="font-size: 10px; word-break: break-word; overflow-wrap: anywhere;">-</span>
                                     </div>
                                 </div>
                             </div>
@@ -394,7 +394,7 @@ document.getElementById('btnConfirmar').addEventListener('click', function() {
                 window.location.href = '{{ url_for("listar_usuarios_biblioteca") }}';
             });
         } else {
-            showAlert('Error: ' + data.message, 'Error', 'error');
+            showAlert(data.message, 'No se pudo registrar', 'error');
             this.disabled = false;
             this.innerHTML = '<i class="bi bi-check-lg me-2"></i>Confirmar y Guardar';
         }

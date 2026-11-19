@@ -5,11 +5,53 @@ from email.message import EmailMessage
 from urllib.parse import quote
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from sqlalchemy import func
 from extensions import db, csrf
 from models import UsuarioBiblioteca, registrar_log
 from utils import login_required
 
 usuarios_bp = Blueprint("usuarios", __name__)
+
+
+def _normalizar_telefono(telefono: str | None) -> str:
+    """Devuelve solo dígitos si hay al menos 6, o el texto en minúsculas sin espacios extra."""
+    limpio = (telefono or "").strip()
+    if not limpio:
+        return ""
+    digitos = re.sub(r"\D", "", limpio)
+    return digitos if len(digitos) >= 6 else limpio.lower()
+
+
+def _buscar_duplicado_lector(
+    correo: str,
+    telefono: str | None,
+    tipo_usuario: str,
+    numero_cuenta: str | None,
+    excluir_id: str | None = None,
+) -> str | None:
+    """Valida que correo, teléfono y matrícula no estén repetidos en lectores activos."""
+    base_q = UsuarioBiblioteca.query.filter(UsuarioBiblioteca.activo == True)
+    if excluir_id:
+        base_q = base_q.filter(UsuarioBiblioteca.id != excluir_id)
+
+    if correo:
+        dup_correo = base_q.filter(func.lower(UsuarioBiblioteca.correo) == correo.lower()).first()
+        if dup_correo:
+            return f"Ya existe un lector registrado con ese correo electrónico ({dup_correo.id} — {dup_correo.nombre})."
+
+    tel_norm = _normalizar_telefono(telefono)
+    if tel_norm:
+        candidatos_tel = base_q.filter(UsuarioBiblioteca.telefono.isnot(None), UsuarioBiblioteca.telefono != "").all()
+        for cand in candidatos_tel:
+            if _normalizar_telefono(cand.telefono) == tel_norm:
+                return f"Ya existe un lector registrado con ese número de teléfono ({cand.id} — {cand.nombre})."
+
+    if tipo_usuario == "interno" and numero_cuenta:
+        dup_cuenta = base_q.filter(UsuarioBiblioteca.numero_cuenta == numero_cuenta).first()
+        if dup_cuenta:
+            return f"Ya existe un lector registrado con esa matrícula ({dup_cuenta.id} — {dup_cuenta.nombre})."
+
+    return None
 
 def enviar_credencial_email(usuario: UsuarioBiblioteca):
     """Envía la credencial del usuario por correo electrónico"""
@@ -192,12 +234,17 @@ def crear_usuario_biblioteca():
                 return jsonify({"success": False, "message": "Formato de número de cuenta inválido"}), 400
         else:
             numero_cuenta = None
+
+        telefono = (data.get("telefono") or "").strip()[:40] or None
+        error_duplicado = _buscar_duplicado_lector(correo, telefono, tipo_usuario, numero_cuenta)
+        if error_duplicado:
+            return jsonify({"success": False, "message": error_duplicado}), 400
         
         usuario = UsuarioBiblioteca(
             id=nuevo_id,
             nombre=nombre,
             correo=correo,
-            telefono=(data.get("telefono") or "").strip()[:40] or None,
+            telefono=telefono,
             facultad=(data.get("facultad") or "").strip()[:120] or None,
             carrera=(data.get("carrera") or "").strip()[:120] or None,
             tipo_usuario=tipo_usuario,
@@ -239,12 +286,29 @@ def editar_usuario_biblioteca(usuario_id: str):
         flash("Estado inválido", "error")
         return redirect(url_for("usuarios.listar_usuarios_biblioteca"))
 
-    usuario.nombre = (data.get("nombre") or usuario.nombre).strip()[:120]
-    usuario.correo = nuevo_correo or usuario.correo
-    usuario.telefono = (data.get("telefono") or usuario.telefono or "")[:40]
+    nuevo_nombre = (data.get("nombre") or usuario.nombre).strip()[:120]
+    correo_final = nuevo_correo or usuario.correo
+    telefono_final = (data.get("telefono") if "telefono" in data else (usuario.telefono or "")).strip()[:40] or None
+    activo_final = data.get("activo") == "1"
+
+    if activo_final:
+        error_duplicado = _buscar_duplicado_lector(
+            correo_final,
+            telefono_final,
+            usuario.tipo_usuario or "interno",
+            usuario.numero_cuenta,
+            excluir_id=usuario.id,
+        )
+        if error_duplicado:
+            flash(error_duplicado, "error")
+            return redirect(url_for("usuarios.listar_usuarios_biblioteca"))
+
+    usuario.nombre = nuevo_nombre
+    usuario.correo = correo_final
+    usuario.telefono = telefono_final
     usuario.facultad = (data.get("facultad") or usuario.facultad or "")[:120]
     usuario.carrera = (data.get("carrera") or usuario.carrera or "")[:120]
-    usuario.activo = data.get("activo") == "1"
+    usuario.activo = activo_final
     usuario.estado = nuevo_estado
     registrar_log("Editar Usuario", f"Usuario {usuario.nombre} (ID: {usuario.id}) actualizado")
     db.session.commit()

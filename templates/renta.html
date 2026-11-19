@@ -20,7 +20,7 @@
     }
 }
 </style>
-<header class="header-sticky navbar-glass mb-4">
+<header class="header-sticky navbar-glass {{ 'mb-2' if show_ticket else 'mb-4' }}">
     <div class="container py-3">
         <div class="d-flex align-items-center gap-3">
             <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
@@ -33,7 +33,7 @@
         </div>
     </div>
 </header>
-<main class="container py-2 mb-5">
+<main class="container {{ 'py-1 mb-3' if show_ticket else 'py-2 mb-5' }}">
     {% if error %}
         <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -43,98 +43,120 @@
     {% endif %}
 
     {% if show_ticket and prestamo %}
-    <div class="row justify-content-center fade-in">
-        <div class="col-lg-6">
-            <div class="glass-container p-4 mb-3">
-                <div class="text-center mb-4">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 4rem; height: 4rem; background: rgba(52, 199, 89, 0.15); border: 1px solid rgba(52, 199, 89, 0.3);">
-                        <i class="bi bi-check-circle-fill" style="font-size: 2rem; color: #34c759;"></i>
-                    </div>
-                    <h2 class="mb-1" style="font-size: 24px; font-weight: 800; color: #1d1d1f; letter-spacing: -0.5px;">Préstamo Registrado</h2>
-                    <p class="text-sm mb-0" style="color: #666; font-weight: 500;">Ticket #{{ '%06d'|format(prestamo.id) }}</p>
-                </div>
-                <div id="ticket" class="ticket-card mx-auto" style="max-width: 450px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(25px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden;">
-                    <div class="p-4 text-white" style="background: linear-gradient(135deg, #1d1d1f 0%, #434345 100%); -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="bi bi-journal-bookmark mt-1" style="font-size: 1.8rem; color: #fff;"></i>
-                                <div>
-                                    <h3 class="mb-0" style="font-size: 18px; font-weight: 700; letter-spacing: 0.5px;">Ticket de Préstamo</h3>
-                                    <p class="mb-0" style="font-size: 12px; opacity: 0.8;">Sistema de Biblioteca</p>
-                                </div>
-                            </div>
+    <div class="d-flex flex-column align-items-center fade-in">
+        {# Confirmación compacta arriba del ticket para que todo quepa sin scroll #}
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-2 rounded-pill" style="background: rgba(5, 150, 105, 0.12); border: 1px solid rgba(5, 150, 105, 0.28); color: #059669; font-size: 12px; font-weight: 600;">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>Préstamo Registrado</span>
+            <span class="font-mono opacity-75">· #{{ '%06d'|format(prestamo.id) }}</span>
+        </div>
+
+        {# Ticket estilo recibo compacto con paleta editorial #}
+        <div id="ticket" class="ticket-card w-100 mx-auto" style="max-width: 390px; background: #faf9f5; border-radius: 18px; border: 1px solid #d8d6ce; box-shadow: 0 8px 24px rgba(20, 20, 19, 0.08); overflow: hidden;">
+            {# Cabecera oscura estilo recibo con acento terracota #}
+            <div style="background: #141413; border-top: 3px solid #d97757; padding: 11px 16px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-journal-bookmark" style="font-size: 1.25rem; color: #d97757;"></i>
+                        <div>
+                            <h3 class="mb-0" style="font-size: 15px; font-weight: 700; color: #faf9f5 !important; letter-spacing: 0.2px;">Ticket de Préstamo</h3>
+                            <p class="mb-0" style="font-size: 11px; color: #b0aea5;">Sistema de Biblioteca</p>
                         </div>
                     </div>
-                    <div class="p-4">
-                        {% set ns = namespace(garantia=0) %}
-                        <div class="mb-4 pb-3" style="border-bottom: 1.5px dashed rgba(0,0,0,0.1);">
-                            <p class="text-uppercase mb-2" style="font-size: 11px; letter-spacing: 1.5px; color: #86868b; font-weight: 600;">Libros Prestados</p>
-                            {% if prestamos %}
-                                {% for p in prestamos %}
-                                    <h4 class="mb-1" style="font-size: 19px; font-weight: 800; color: #1d1d1f; line-height: 1.2;">{{ p.libro.titulo }}</h4>
-                                    <p class="mb-1" style="font-size: 14px; color: #555; font-weight: 500;"><i class="bi bi-person me-1"></i>{{ p.libro.autor }}</p>
-                                    <p class="mb-3" style="font-size: 12px; color: #86868b;"><i class="bi bi-upc-scan me-1"></i>ISBN: {{ p.libro.isbn }}</p>
-                                    {% set ns.garantia = ns.garantia + ((p.libro.costo or 0) * 0.20) %}
-                                {% endfor %}
-                            {% else %}
-                                <h4 class="mb-1" style="font-size: 19px; font-weight: 800; color: #1d1d1f; line-height: 1.2;">{{ libro.titulo }}</h4>
-                                <p class="mb-1" style="font-size: 14px; color: #555; font-weight: 500;"><i class="bi bi-person me-1"></i>{{ libro.autor }}</p>
-                                <p class="mb-0" style="font-size: 12px; color: #86868b;"><i class="bi bi-upc-scan me-1"></i>ISBN: {{ libro.isbn }}</p>
-                                {% set ns.garantia = (libro.costo or 0) * 0.20 %}
-                            {% endif %}
-                        </div>
-                        <div class="row g-3 mb-4">
-                            <div class="col-6">
-                                <div class="surface-oat p-3 rounded-4">
-                                    <p class="text-uppercase mb-1 stat-label-mono" style="font-size: 10px;">Fecha de Salida</p>
-                                    <p class="mb-0 font-mono" style="font-size: 16px; font-weight: 700; color: #141413;">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</p>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 rounded-4" style="background: rgba(201, 59, 43, 0.08); border: 1px solid rgba(201, 59, 43, 0.22);">
-                                    <p class="text-uppercase mb-1 stat-label-mono" style="font-size: 10px; color: #c93b2b;">Fecha Límite</p>
-                                    <p class="mb-0 font-mono" style="font-size: 16px; font-weight: 700; color: #c93b2b;">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4 p-3 rounded-4" style="background: rgba(20, 20, 19, 0.03); border: 1px solid #d8d6ce;">
-                            <p class="text-uppercase mb-2" style="font-size: 11px; letter-spacing: 1.5px; color: #6b6a65; font-weight: 600;">Usuario</p>
-                            <p class="mb-1" style="font-size: 16px; font-weight: 700; color: #141413;">{{ usuario.nombre }}</p>
-                            <p class="mb-0" style="font-size: 13px; color: #6b6a65; font-weight: 500;">
-                                <span class="badge-custom font-mono" style="font-size: 11px;">ID: {{ usuario.id }}</span>
-                            </p>
-                        </div>
-                        <div class="mb-4 p-4 rounded-4 surface-manilla">
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="flex-shrink-0">
-                                    <div class="icon-box-clay" style="width: 42px; height: 42px; border-radius: 12px;">
-                                        <i class="bi bi-shield-lock-fill" style="font-size: 20px;"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-fill">
-                                    <p class="text-uppercase mb-1" style="font-size: 11px; letter-spacing: 1px; color: #9a3412; font-weight: 700;">Garantía Total</p>
-                                    <p class="mb-2 serif-heading" style="font-size: 24px; font-weight: 700; color: #141413; letter-spacing: -0.5px;">${{ '%.2f'|format(ns.garantia) }}</p>
-                                    <p class="mb-0" style="font-size: 13px; color: #30302e; line-height: 1.5; font-weight: 500;">
-                                        Equivale al 20% del valor. 
-                                        <span style="color: #141413; font-weight: 600;">Se devuelve íntegramente al entregar sin daños.</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
-                    <button onclick="imprimirElemento('ticket')" class="btn btn-light-custom flex-fill py-2" style="font-weight: 600; border-radius: 9999px; border: 1px solid #d8d6ce;">
-                        <i class="bi bi-printer me-2"></i>Imprimir Ticket
-                    </button>
-                    <a href="{{ url_for('renta') }}" class="btn flex-fill py-2 text-white text-decoration-none d-inline-flex align-items-center justify-content-center" style="font-weight: 600; border-radius: 9999px; background: linear-gradient(135deg, #d97757 0%, #c6613f 100%); border: none; box-shadow: 0 4px 12px rgba(217, 119, 87, 0.25);">
-                        <i class="bi bi-plus-lg me-2"></i>Nuevo Préstamo
-                    </a>
-                    <a href="{{ url_for('menu') }}" class="btn btn-dark-custom flex-fill py-2 text-decoration-none d-inline-flex align-items-center justify-content-center" style="font-weight: 600; border-radius: 9999px;">
-                        <i class="bi bi-house-door me-2"></i>Volver al Menú
-                    </a>
+                    <span class="font-mono" style="font-size: 11px; font-weight: 600; color: #f5e3c7; background: rgba(217, 119, 87, 0.18); border: 1px solid rgba(217, 119, 87, 0.35); padding: 2px 8px; border-radius: 999px;">#{{ '%06d'|format(prestamo.id) }}</span>
                 </div>
             </div>
+
+            <div style="padding: 12px 16px;">
+                {% set ns = namespace(garantia=0) %}
+                {# Encabezado de columnas tipo recibo #}
+                <div class="d-flex justify-content-between align-items-center pb-1 mb-2" style="border-bottom: 1px dashed #d8d6ce; font-size: 10px; letter-spacing: 0.08em; color: #6b6a65; font-weight: 700; text-transform: uppercase;">
+                    <span>Libro Prestado</span>
+                    <span>Garantía</span>
+                </div>
+
+                {# Lista compacta de libros prestados #}
+                <div class="mb-2" style="border-bottom: 1px dashed #d8d6ce; padding-bottom: 8px;">
+                    {% if prestamos %}
+                        {% for p in prestamos %}
+                            {% set g_item = (p.libro.costo or 0) * 0.20 %}
+                            {% set ns.garantia = ns.garantia + g_item %}
+                            <div class="d-flex justify-content-between align-items-start gap-2 {{ 'mb-2' if not loop.last else '' }}">
+                                <div style="min-width: 0;">
+                                    <div style="font-size: 13.5px; font-weight: 700; color: #141413; line-height: 1.25;">{{ p.libro.titulo }}</div>
+                                    <div style="font-size: 11px; color: #6b6a65;">{{ p.libro.autor }} · <span class="font-mono">{{ p.libro.id }}</span></div>
+                                </div>
+                                <span class="font-mono flex-shrink-0" style="font-size: 12px; font-weight: 600; color: #30302e;">${{ '%.2f'|format(g_item) }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {% set ns.garantia = (libro.costo or 0) * 0.20 %}
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 13.5px; font-weight: 700; color: #141413; line-height: 1.25;">{{ libro.titulo }}</div>
+                                <div style="font-size: 11px; color: #6b6a65;">{{ libro.autor }} · <span class="font-mono">{{ libro.id }}</span></div>
+                            </div>
+                            <span class="font-mono flex-shrink-0" style="font-size: 12px; font-weight: 600; color: #30302e;">${{ '%.2f'|format(ns.garantia) }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Fechas compactas en 2 columnas #}
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <div class="surface-oat" style="padding: 6px 10px; border-radius: 10px;">
+                            <div class="stat-label-mono" style="font-size: 9.5px; margin-bottom: 1px;">Salida</div>
+                            <div class="font-mono" style="font-size: 13px; font-weight: 700; color: #141413;">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div style="padding: 6px 10px; border-radius: 10px; background: rgba(201, 59, 43, 0.08); border: 1px solid rgba(201, 59, 43, 0.22);">
+                            <div class="stat-label-mono" style="font-size: 9.5px; color: #c93b2b; margin-bottom: 1px;">Fecha Límite</div>
+                            <div class="font-mono" style="font-size: 13px; font-weight: 700; color: #c93b2b;">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Lector en una fila limpia #}
+                <div class="d-flex justify-content-between align-items-center gap-2 py-2 mb-2" style="border-top: 1px dashed #d8d6ce; border-bottom: 1px dashed #d8d6ce;">
+                    <div style="min-width: 0;">
+                        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b6a65; font-weight: 600;">Lector</div>
+                        <div class="text-truncate" style="font-size: 13.5px; font-weight: 700; color: #141413;">{{ usuario.nombre }}</div>
+                    </div>
+                    <span class="badge-custom font-mono flex-shrink-0" style="font-size: 11px; padding: 3px 9px;">{{ usuario.id }}</span>
+                </div>
+
+                {# Total Garantía compacto #}
+                <div class="surface-manilla d-flex justify-content-between align-items-center gap-2 mb-2" style="padding: 9px 12px; border-radius: 12px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                    <div>
+                        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #9a3412; font-weight: 700;">
+                            <i class="bi bi-shield-lock-fill me-1"></i>Garantía Total (20%)
+                        </div>
+                        <div style="font-size: 10.5px; color: #5c3d22; font-weight: 500;">Reembolsable al entregar sin daños</div>
+                    </div>
+                    <div class="serif-heading flex-shrink-0" style="font-size: 20px; font-weight: 700; color: #141413;">${{ '%.2f'|format(ns.garantia) }}</div>
+                </div>
+
+                {# Pie estilo recibo con código de barras decorativo #}
+                <div class="text-center pt-1">
+                    <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #6b6a65; margin-bottom: 5px;">PRESENTA ESTE TICKET AL DEVOLVER</div>
+                    <div style="height: 22px; width: 78%; margin: 0 auto; opacity: 0.85; background: repeating-linear-gradient(90deg, #141413 0 2px, transparent 2px 4px, #141413 4px 7px, transparent 7px 9px, #141413 9px 10px, transparent 10px 13px, #141413 13px 16px, transparent 16px 18px);"></div>
+                    <div class="font-mono" style="font-size: 9.5px; color: #87867f; margin-top: 2px; letter-spacing: 0.18em;">BIB-{{ '%06d'|format(prestamo.id) }}</div>
+                </div>
+            </div>
+        </div>
+
+        {# Barra de acciones compacta visible sin hacer scroll #}
+        <div class="d-flex flex-wrap gap-2 mt-3 w-100 mx-auto" style="max-width: 390px;">
+            <button onclick="imprimirElemento('ticket')" class="btn btn-light-custom flex-fill py-2 px-2" style="font-size: 12.5px; font-weight: 600; border-radius: 9999px; border: 1px solid #d8d6ce; white-space: nowrap;">
+                <i class="bi bi-printer me-1"></i>Imprimir
+            </button>
+            <a href="{{ url_for('renta') }}" class="btn flex-fill py-2 px-2 text-white text-decoration-none d-inline-flex align-items-center justify-content-center" style="font-size: 12.5px; font-weight: 600; border-radius: 9999px; background: linear-gradient(135deg, #d97757 0%, #c6613f 100%); border: none; box-shadow: 0 4px 12px rgba(217, 119, 87, 0.25); white-space: nowrap;">
+                <i class="bi bi-plus-lg me-1"></i>Nuevo Préstamo
+            </a>
+            <a href="{{ url_for('menu') }}" class="btn btn-dark-custom flex-fill py-2 px-2 text-decoration-none d-inline-flex align-items-center justify-content-center" style="font-size: 12.5px; font-weight: 600; border-radius: 9999px; white-space: nowrap;">
+                <i class="bi bi-house-door me-1"></i>Menú
+            </a>
         </div>
     </div>
     {% else %}

@@ -19,19 +19,19 @@
             <div>
                 <p class="mb-0 text-md" style="font-weight: 600; color: #141413;">Total de libros: <strong class="font-mono" style="color: #c6613f;">{{ libros|length }}</strong></p>
             </div>
-            <div class="d-flex gap-2">
-                <select id="columnaBusqueda" class="form-select form-control-custom" style="width: auto; cursor: pointer;">
+            <div class="d-flex flex-wrap gap-2 w-100 w-lg-auto justify-content-lg-end">
+                <select id="columnaBusqueda" class="form-select form-control-custom" style="width: auto; max-width: 100%; cursor: pointer;">
                     <option value="todas">Buscar en todos</option>
                     <option value="1">Título</option>
                     <option value="2">Autor</option>
                     <option value="3">ISBN</option>
                     <option value="qr">ID o QR</option>
                 </select>
-                <div class="position-relative">
+                <div class="position-relative flex-grow-1 flex-sm-grow-0" style="min-width: 180px;">
                     <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #6b6a65;"></i>
-                    <input type="text" id="buscarLibro" class="form-control form-control-custom ps-5" placeholder="Buscar libro..." style="width: 250px;">
+                    <input type="text" id="buscarLibro" class="form-control form-control-custom ps-5 w-100" placeholder="Buscar libro..." style="max-width: 260px;">
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex flex-wrap gap-2">
             {% if session.get('ultimos_ids_agregados') %}
             <a href="{{ url_for('imprimir_qrs') }}" class="btn btn-light-custom d-flex align-items-center gap-2" style="background: #e3dacc; color: #141413; border: 1px solid #d8d6ce;">
                 <i class="bi bi-qr-code"></i> Imprimir Lote Reciente

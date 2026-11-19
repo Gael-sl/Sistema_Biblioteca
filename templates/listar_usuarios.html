@@ -2,7 +2,7 @@
 {% block content %}
 <header class="header-sticky">
     <div class="container py-3">
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <div class="d-flex align-items-center gap-3">
                 <a href="{{ url_for('menu') }}" class="btn btn-light-custom d-flex align-items-center justify-content-center text-decoration-none" style="width: 40px; height: 40px; border-radius: 12px; color: #1d1d1f; padding: 0;">
                     <i class="bi bi-arrow-left" style="font-size: 20px;"></i>
@@ -27,13 +27,13 @@
             <h2 class="mb-0" style="font-size: 22px; color: #1d1d1f; font-weight: 600;">Usuarios registrados</h2>
             <p class="text-sm mb-0">Total de usuarios: <strong>{{ usuarios|length }}</strong></p>
         </div>
-        <div>
-            <input type="text" id="buscarUsuario" class="form-control form-control-custom" 
-                   placeholder="Buscar usuario..." style="width: 250px;">
+        <div class="w-100 w-sm-auto" style="max-width: 260px;">
+            <input type="text" id="buscarUsuario" class="form-control form-control-custom w-100" 
+                   placeholder="Buscar usuario...">
         </div>
     </div>
     
-    <div class="table-custom">
+    <div class="table-responsive">
         <table class="table table-custom mb-0" id="tablaUsuarios">
             <thead>
                 <tr>
