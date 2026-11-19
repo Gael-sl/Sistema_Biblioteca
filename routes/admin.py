@@ -343,50 +343,209 @@ def guardar_configuracion():
 @admin_bp.route("/exportar/prestamos")
 @admin_required
 def exportar_prestamos():
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Préstamos"
-    ws.append(["ID", "Usuario", "Libro", "Fecha Salida", "Fecha Devolución", "Estado"])
-    prestamos = Prestamo.query.all()
-    for p in prestamos:
-        ws.append([p.id, p.usuario.nombre, p.libro.titulo, p.fecha_salida.strftime('%Y-%m-%d'), 
-                   p.fecha_devolucion_esperada.strftime('%Y-%m-%d') if p.fecha_devolucion_esperada else "", p.estado])
-    output = io.BytesIO()
-    wb.save(output)
-    output.seek(0)
-    return send_file(output, download_name="prestamos.xlsx", as_attachment=True)
+    return _generar_reporte_excel("prestamos")
 
 
 @admin_bp.route("/exportar/multas")
 @admin_required
 def exportar_multas():
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Multas"
-    ws.append(["ID", "Usuario", "Monto", "Motivo", "Estado", "Libro"])
-    multas = Multa.query.all()
-    for m in multas:
-        ws.append([m.id, m.prestamo.usuario.nombre, m.monto, m.descripcion, "Pagado" if m.pagado else "Pendiente", m.prestamo.libro.titulo])
-    output = io.BytesIO()
-    wb.save(output)
-    output.seek(0)
-    return send_file(output, download_name="multas.xlsx", as_attachment=True)
+    return _generar_reporte_excel("multas")
 
 
 @admin_bp.route("/exportar/inventario")
 @admin_required
 def exportar_inventario():
+    return _generar_reporte_excel("inventario")
+
+
+@admin_bp.route("/exportar/reporte")
+@admin_required
+def exportar_reporte():
+    tipo = (request.args.get("tipo") or "completo").strip().lower()
+    if tipo not in {"completo", "prestamos", "multas", "inventario"}:
+        flash("Tipo de reporte inválido.", "error")
+        return redirect(url_for("admin.admin_panel"))
+    return _generar_reporte_excel(tipo)
+
+
+def _parse_fecha_arg(valor: str | None):
+    raw = (valor or "").strip()
+    if not raw:
+        return None
+    return datetime.strptime(raw, "%Y-%m-%d").date()
+
+
+def _autoajustar_hoja(ws):
+    from openpyxl.styles import Font, PatternFill
+
+    header_fill = PatternFill(start_color="141413", end_color="141413", fill_type="solid")
+    header_font = Font(bold=True, color="FAF9F5")
+    title_font = Font(bold=True, size=11, color="C6613F")
+
+    if ws.max_row >= 1:
+        ws.cell(row=1, column=1).font = title_font
+    if ws.max_row >= 2:
+        for cell in ws[2]:
+            cell.fill = header_fill
+            cell.font = header_font
+
+    for col in ws.columns:
+        max_len = 0
+        col_letter = col[0].column_letter
+        for cell in col:
+            if cell.row == 1:
+                continue
+            val = str(cell.value or "")
+            if len(val) > max_len:
+                max_len = len(val)
+        ws.column_dimensions[col_letter].width = min(max(max_len + 4, 14), 45)
+
+
+def _llenar_hoja_prestamos(ws, prestamos, etiqueta_periodo: str):
+    ws.append([f"Reporte de Préstamos — {etiqueta_periodo}"])
+    ws.append(["ID Préstamo", "Lector", "ID Lector", "Libro", "ID Ejemplar", "Fecha Salida", "Fecha Límite", "Fecha Devolución Real", "Estado"])
+    for p in prestamos:
+        ws.append([
+            p.id,
+            p.usuario.nombre if p.usuario else "N/A",
+            p.usuario_id,
+            p.libro.titulo if p.libro else "N/A",
+            p.libro_id,
+            p.fecha_salida.strftime("%Y-%m-%d") if p.fecha_salida else "",
+            p.fecha_devolucion_esperada.strftime("%Y-%m-%d") if p.fecha_devolucion_esperada else "",
+            p.fecha_devolucion_real.strftime("%Y-%m-%d") if p.fecha_devolucion_real else "Pendiente",
+            p.estado,
+        ])
+    _autoajustar_hoja(ws)
+
+
+def _llenar_hoja_multas(ws, multas, etiqueta_periodo: str):
+    ws.append([f"Reporte de Multas — {etiqueta_periodo}"])
+    ws.append(["ID Multa", "Lector", "Libro", "Fecha Préstamo", "Tipo", "Monto ($)", "Motivo", "Estado"])
+    for m in multas:
+        p = m.prestamo
+        ws.append([
+            m.id,
+            p.usuario.nombre if p and p.usuario else "N/A",
+            p.libro.titulo if p and p.libro else "N/A",
+            p.fecha_salida.strftime("%Y-%m-%d") if p and p.fecha_salida else "",
+            m.tipo or "",
+            float(m.monto or 0),
+            m.descripcion or "",
+            "Pagado" if m.pagado else "Pendiente",
+        ])
+    _autoajustar_hoja(ws)
+
+
+def _llenar_hoja_inventario(ws, libros, rentas_periodo: dict, etiqueta_periodo: str):
+    ws.append([f"Inventario y Movimientos — {etiqueta_periodo}"])
+    ws.append(["ID", "Título", "Autor", "ISBN", "Género", "Cantidad", "Disponibles", "Costo ($)", "Rentas en Periodo", "Rentas Históricas", "Estado"])
+    for l in libros:
+        ws.append([
+            l.id,
+            l.titulo,
+            l.autor,
+            l.isbn or "",
+            l.genero or "",
+            l.cantidad,
+            l.disponibles,
+            float(l.costo or 0),
+            rentas_periodo.get(l.id, 0),
+            l.veces_rentado or 0,
+            l.estado,
+        ])
+    _autoajustar_hoja(ws)
+
+
+def _generar_reporte_excel(tipo: str):
+    try:
+        fecha_inicio = _parse_fecha_arg(request.args.get("fecha_inicio"))
+        fecha_fin = _parse_fecha_arg(request.args.get("fecha_fin"))
+    except ValueError:
+        flash("Formato de fecha inválido. Usa AAAA-MM-DD.", "error")
+        return redirect(url_for("admin.admin_panel"))
+
+    if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
+        flash("La fecha de inicio no puede ser posterior a la fecha final.", "error")
+        return redirect(url_for("admin.admin_panel"))
+
+    if fecha_inicio and fecha_fin:
+        etiqueta_periodo = f"Del {fecha_inicio.strftime('%d/%m/%Y')} al {fecha_fin.strftime('%d/%m/%Y')}"
+        sufijo = f"{fecha_inicio.strftime('%Y-%m-%d')}_a_{fecha_fin.strftime('%Y-%m-%d')}"
+    elif fecha_inicio:
+        etiqueta_periodo = f"Desde el {fecha_inicio.strftime('%d/%m/%Y')}"
+        sufijo = f"desde_{fecha_inicio.strftime('%Y-%m-%d')}"
+    elif fecha_fin:
+        etiqueta_periodo = f"Hasta el {fecha_fin.strftime('%d/%m/%Y')}"
+        sufijo = f"hasta_{fecha_fin.strftime('%Y-%m-%d')}"
+    else:
+        etiqueta_periodo = "Todo el historial"
+        sufijo = "completo"
+
+    q_prestamos = Prestamo.query.order_by(desc(Prestamo.fecha_salida), desc(Prestamo.id))
+    q_multas = Multa.query.join(Prestamo, Multa.prestamo_id == Prestamo.id).order_by(desc(Multa.id))
+    q_conteo = db.session.query(Prestamo.libro_id, func.count(Prestamo.id))
+
+    if fecha_inicio:
+        q_prestamos = q_prestamos.filter(Prestamo.fecha_salida >= fecha_inicio)
+        q_multas = q_multas.filter(Prestamo.fecha_salida >= fecha_inicio)
+        q_conteo = q_conteo.filter(Prestamo.fecha_salida >= fecha_inicio)
+    if fecha_fin:
+        q_prestamos = q_prestamos.filter(Prestamo.fecha_salida <= fecha_fin)
+        q_multas = q_multas.filter(Prestamo.fecha_salida <= fecha_fin)
+        q_conteo = q_conteo.filter(Prestamo.fecha_salida <= fecha_fin)
+
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Inventario"
-    ws.append(["ID", "Título", "Autor", "ISBN", "Género", "Cantidad", "Disponibles", "Costo", "Veces Rentado"])
-    libros = Libro.query.all()
-    for l in libros:
-        ws.append([l.id, l.titulo, l.autor, l.isbn, l.genero, l.cantidad, l.disponibles, l.costo, l.veces_rentado])
+
+    if tipo == "prestamos":
+        ws.title = "Préstamos"
+        _llenar_hoja_prestamos(ws, q_prestamos.all(), etiqueta_periodo)
+        filename = f"prestamos_{sufijo}.xlsx"
+    elif tipo == "multas":
+        ws.title = "Multas"
+        _llenar_hoja_multas(ws, q_multas.all(), etiqueta_periodo)
+        filename = f"multas_{sufijo}.xlsx"
+    elif tipo == "inventario":
+        ws.title = "Inventario"
+        rentas_periodo = {lid: int(cnt) for lid, cnt in q_conteo.group_by(Prestamo.libro_id).all()}
+        _llenar_hoja_inventario(ws, Libro.query.order_by(Libro.titulo).all(), rentas_periodo, etiqueta_periodo)
+        filename = f"inventario_{sufijo}.xlsx"
+    else:
+        prestamos_list = q_prestamos.all()
+        multas_list = q_multas.all()
+        libros_list = Libro.query.order_by(Libro.titulo).all()
+        rentas_periodo = {lid: int(cnt) for lid, cnt in q_conteo.group_by(Prestamo.libro_id).all()}
+
+        ws.title = "Resumen"
+        ws.append([f"Resumen Estadístico — {etiqueta_periodo}"])
+        ws.append(["Indicador", "Valor"])
+        ws.append(["Periodo consultado", etiqueta_periodo])
+        ws.append(["Total de préstamos en periodo", len(prestamos_list)])
+        ws.append(["Préstamos activos del periodo", sum(1 for p in prestamos_list if p.estado == "activo")])
+        ws.append(["Préstamos devueltos del periodo", sum(1 for p in prestamos_list if p.estado == "devuelto")])
+        ws.append(["Multas generadas en periodo", len(multas_list)])
+        ws.append(["Monto total en multas ($)", round(sum(float(m.monto or 0) for m in multas_list), 2)])
+        ws.append(["Ejemplares registrados en catálogo", len(libros_list)])
+        _autoajustar_hoja(ws)
+
+        ws_p = wb.create_sheet("Préstamos")
+        _llenar_hoja_prestamos(ws_p, prestamos_list, etiqueta_periodo)
+
+        ws_m = wb.create_sheet("Multas")
+        _llenar_hoja_multas(ws_m, multas_list, etiqueta_periodo)
+
+        ws_i = wb.create_sheet("Inventario")
+        _llenar_hoja_inventario(ws_i, libros_list, rentas_periodo, etiqueta_periodo)
+        filename = f"reporte_biblioteca_{sufijo}.xlsx"
+
+    registrar_log("Exportar Reporte", f"Reporte '{tipo}' ({etiqueta_periodo})")
+    db.session.commit()
+
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
-    return send_file(output, download_name="inventario.xlsx", as_attachment=True)
+    return send_file(output, download_name=filename, as_attachment=True)
 
 
 @admin_bp.route("/logs")

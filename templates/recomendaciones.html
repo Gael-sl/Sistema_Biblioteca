@@ -49,9 +49,9 @@
                     <span class="stat-label-mono">{{ ultimas|length }} lote(s)</span>
                 </div>
                 {% if ultimas %}
-                <div class="d-flex flex-column gap-2">
+                <div id="listaUltimasRec" class="d-flex flex-column gap-2">
                     {% for rec in ultimas %}
-                    <div class="surface-oat px-3 py-2 d-flex justify-content-between align-items-center">
+                    <div class="rec-hist-item surface-oat px-3 py-2 d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-md" style="font-weight: 600;">{{ rec.usuario.nombre }}</div>
                             <div class="text-xs font-mono">{{ rec.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</div>
@@ -60,6 +60,7 @@
                     </div>
                     {% endfor %}
                 </div>
+                <div id="recPaginacion" class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top: 1px solid #d8d6ce; display: none !important;"></div>
                 {% else %}
                 <div class="empty-state-editorial mt-2">
                     <div class="d-flex align-items-center gap-3">
@@ -186,4 +187,46 @@
         </div>
     </div>
 </main>
+{% endblock %}
+{% block scripts %}
+<script>
+(function() {
+    const items = Array.from(document.querySelectorAll('#listaUltimasRec .rec-hist-item'));
+    const nav = document.getElementById('recPaginacion');
+    if (!items.length || !nav) return;
+
+    const PER_PAGE = 4;
+    let page = 1;
+    const totalPages = Math.max(1, Math.ceil(items.length / PER_PAGE));
+
+    function render() {
+        const start = (page - 1) * PER_PAGE;
+        const end = start + PER_PAGE;
+        items.forEach((el, idx) => {
+            el.style.setProperty('display', (idx >= start && idx < end) ? 'flex' : 'none', 'important');
+        });
+        if (totalPages <= 1) {
+            nav.style.setProperty('display', 'none', 'important');
+            return;
+        }
+        nav.style.setProperty('display', 'flex', 'important');
+        nav.innerHTML = `
+            <button type="button" id="recPrev" class="btn btn-sm btn-light-custom px-3" style="border-radius: 999px;" ${page <= 1 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <span class="text-xs font-mono fw-semibold" style="color: #6b6a65;">Página ${page} de ${totalPages}</span>
+            <button type="button" id="recNext" class="btn btn-sm btn-light-custom px-3" style="border-radius: 999px;" ${page >= totalPages ? 'disabled' : ''}>
+                Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+        `;
+        document.getElementById('recPrev')?.addEventListener('click', () => {
+            if (page > 1) { page--; render(); }
+        });
+        document.getElementById('recNext')?.addEventListener('click', () => {
+            if (page < totalPages) { page++; render(); }
+        });
+    }
+    render();
+})();
+</script>
 {% endblock %}

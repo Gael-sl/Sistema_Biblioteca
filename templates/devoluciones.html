@@ -15,39 +15,22 @@
 </header>
 <main class="container py-2 mb-5 fade-in">
 
-    {# ── Panel Superior Indicativo de Recepción QR ──────────────────────── #}
+    {# ── Panel Superior de Recepción / Búsqueda ──────────────────────── #}
     <div class="glass-container p-4 mb-4">
-        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-box-clay" style="width: 52px; height: 52px; border-radius: 16px;">
-                    <i class="bi bi-qr-code-scan" style="font-size: 24px;"></i>
-                </div>
-                <div>
-                    <h2 class="mb-1 serif-heading" style="font-size: 20px; color: #141413; font-weight: 600;">Recepción Rápida por Escáner QR o Búsqueda</h2>
-                    <p class="text-sm mb-0" style="color: #6b6a65;">Escanea el código QR del ejemplar, del ticket de préstamo o de la credencial del lector para abrir su devolución al instante.</p>
-                </div>
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="icon-box-clay" style="width: 48px; height: 48px; border-radius: 16px;">
+                <i class="bi bi-qr-code-scan" style="font-size: 22px;"></i>
             </div>
-            <span class="badge-emerald font-mono" style="white-space: nowrap;">
-                <i class="bi bi-upc-scan me-1"></i>Lector QR listo
-            </span>
-        </div>
-
-        <div class="surface-oat px-3 py-2 mb-3 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2" style="border-radius: 14px;">
-            <div class="d-flex align-items-center gap-2">
-                <span class="d-inline-flex align-items-center justify-content-center font-mono fw-bold" style="width: 22px; height: 22px; border-radius: 999px; background: #141413; color: #faf9f5; font-size: 11px; flex-shrink: 0;">1</span>
-                <span class="text-xs" style="color: #30302e;">Escanea <strong>libro</strong>, <strong>ticket (BIB-...)</strong> o <strong>credencial</strong> (o escribe nombre / ID).</span>
-            </div>
-            <div class="d-none d-md-block" style="width: 1px; height: 18px; background: #d8d6ce;"></div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="d-inline-flex align-items-center justify-content-center font-mono fw-bold" style="width: 22px; height: 22px; border-radius: 999px; background: #d97757; color: #faf9f5; font-size: 11px; flex-shrink: 0;">2</span>
-                <span class="text-xs" style="color: #30302e;">Al detectar código exacto o pulsar <kbd style="background: #faf9f5; color: #141413; border: 1px solid #d8d6ce; border-radius: 6px; padding: 1px 6px; font-family: var(--font-geist-mono); font-size: 11px; font-weight: 600;">Enter</kbd>, abre la devolución al instante.</span>
+            <div>
+                <h2 class="mb-1 serif-heading" style="font-size: 20px; color: #141413; font-weight: 600;">Recepción de Devoluciones</h2>
+                <p class="text-sm mb-0" style="color: #6b6a65;">Escanea o escribe el código del ejemplar, del ticket o del lector para localizar y procesar la devolución.</p>
             </div>
         </div>
 
         <div class="position-relative">
             <i class="bi bi-upc-scan position-absolute" style="top: 50%; left: 16px; transform: translateY(-50%); color: #c6613f; font-size: 18px; z-index: 2; pointer-events: none;"></i>
             <input type="text" id="buscarDevolucion" class="form-control form-control-custom"
-                   placeholder="Escanea código del libro (QR0001), ticket (BIB-000020) o credencial (USR001)..."
+                   placeholder="Código de libro (ej. QR0001), ticket de préstamo o nombre / ID del lector..."
                    style="height: 48px; font-size: 14px; padding-left: 46px; padding-right: 44px; border-radius: 16px;" autofocus>
             <button type="button" id="btnLimpiarBusquedaDev" class="btn btn-sm position-absolute d-none" style="top: 50%; right: 10px; transform: translateY(-50%); border: none; background: #e3dacc; color: #141413; border-radius: 999px; width: 28px; height: 28px; padding: 0;" title="Limpiar búsqueda">
                 <i class="bi bi-x-lg" style="font-size: 12px;"></i>
@@ -379,31 +362,87 @@
         document.getElementById('btnDevolucionSpinner').style.display = '';
     });
 
-    // 2.3 — Filtros y búsqueda en la tabla de devoluciones
+    // 2.3 — Filtros, búsqueda y paginación (3 préstamos por página)
     let filtroActivo = 'todos';
+    let devPaginaActual = 1;
+    const DEV_POR_PAGINA = 3;
 
-    function aplicarFiltros() {
+    function renderizarPaginacionDev(totalVisibles, totalPaginas) {
+        const wrapper = document.getElementById('tablaWrapper');
+        if (!wrapper) return;
+        let nav = document.getElementById('tablaDevolucion-paginacion');
+        if (!nav) {
+            nav = document.createElement('div');
+            nav.id = 'tablaDevolucion-paginacion';
+            nav.className = 'd-flex justify-content-center align-items-center gap-3 mt-3 fade-in';
+            wrapper.parentNode.insertBefore(nav, wrapper.nextSibling);
+        }
+        if (totalVisibles <= DEV_POR_PAGINA) {
+            nav.innerHTML = '';
+            nav.style.display = 'none';
+            return;
+        }
+        nav.style.display = 'flex';
+        nav.innerHTML = `
+            <button type="button" class="btn btn-light-custom p-0 d-flex align-items-center justify-content-center"
+                style="width: 36px; height: 36px; border-radius: 10px;"
+                onclick="cambiarPaginaDev(${devPaginaActual - 1})" ${devPaginaActual <= 1 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="text-sm fw-bold px-3 py-1 rounded-pill" style="background: rgba(0,0,0,0.05); color: #141413;">
+                Página ${devPaginaActual} de ${totalPaginas}
+            </span>
+            <button type="button" class="btn btn-light-custom p-0 d-flex align-items-center justify-content-center"
+                style="width: 36px; height: 36px; border-radius: 10px;"
+                onclick="cambiarPaginaDev(${devPaginaActual + 1})" ${devPaginaActual >= totalPaginas ? 'disabled' : ''}>
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        `;
+    }
+
+    window.cambiarPaginaDev = function(nueva) {
+        devPaginaActual = Math.max(1, nueva);
+        aplicarFiltros(false);
+    };
+
+    function aplicarFiltros(resetPage = true) {
+        if (resetPage) devPaginaActual = 1;
         const q = (document.getElementById('buscarDevolucion')?.value || '').toLowerCase().trim();
-        const filas = document.querySelectorAll('#tablaDevolucion tbody tr');
-        let visibles = 0;
+        const filas = Array.from(document.querySelectorAll('#tablaDevolucion tbody tr'));
+        const coincidentes = [];
         filas.forEach(fila => {
             const estado = fila.dataset.estado;
             const texto = fila.dataset.search || '';
             const passEstado = filtroActivo === 'todos' || estado === filtroActivo;
             const passBusqueda = !q || texto.includes(q);
-            const mostrar = passEstado && passBusqueda;
-            fila.style.display = mostrar ? '' : 'none';
-            if (mostrar) visibles++;
+            fila.style.display = 'none';
+            if (passEstado && passBusqueda) {
+                coincidentes.push(fila);
+            }
         });
+
+        const total = coincidentes.length;
+        const totalPaginas = Math.max(1, Math.ceil(total / DEV_POR_PAGINA));
+        if (devPaginaActual > totalPaginas) devPaginaActual = totalPaginas;
+
+        const inicio = (devPaginaActual - 1) * DEV_POR_PAGINA;
+        const fin = inicio + DEV_POR_PAGINA;
+        coincidentes.slice(inicio, fin).forEach(fila => {
+            fila.style.display = '';
+        });
+
         const contador = document.getElementById('contadorVisible');
-        if (contador) contador.textContent = visibles;
+        if (contador) contador.textContent = total;
         const sinRes = document.getElementById('sinResultados');
         const tabla = document.getElementById('tablaWrapper');
         if (sinRes && tabla) {
-            sinRes.style.display = visibles === 0 ? '' : 'none';
-            tabla.style.display = visibles === 0 ? 'none' : '';
+            sinRes.style.display = total === 0 ? '' : 'none';
+            tabla.style.display = total === 0 ? 'none' : '';
         }
+        renderizarPaginacionDev(total, totalPaginas);
     }
+
+    aplicarFiltros(true);
 
     document.querySelectorAll('.filtro-btn').forEach(btn => {
         btn.addEventListener('click', function() {

@@ -122,9 +122,10 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Teléfono <span class="text-xs fw-normal">(opcional)</span></label>
-                        <input type="tel" id="telefono" class="form-control form-control-custom" 
+                        <input type="tel" id="telefono" class="form-control form-control-custom font-mono" 
                                style="border-radius: 12px; padding: 8px 12px;"
-                               placeholder="Ej: 667-123-4567">
+                               inputmode="numeric" maxlength="15"
+                               placeholder="Ej: 6681234567">
                     </div>
                     <div class="mb-2">
                         <label class="form-label mb-1" style="font-weight: 600; font-size: 13px; color: #141413;">Tipo de Usuario</label>
@@ -274,6 +275,13 @@ function toggleCuentaField() {
 document.getElementById('tipo_usuario').addEventListener('change', toggleCuentaField);
 toggleCuentaField();
 
+const telefonoInput = document.getElementById('telefono');
+if (telefonoInput) {
+    telefonoInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^\d\-\s()]/g, '').slice(0, 15);
+    });
+}
+
 // Generar ID corto y único (ej. USR48291)
 function generateUniqueId() {
     const num = Math.floor(10000 + Math.random() * 90000);
@@ -291,6 +299,14 @@ document.getElementById('btnPreview').addEventListener('click', function() {
     if (!nombre || !correo) {
         showAlert('Por favor complete al menos el nombre y correo electrónico', 'Aviso', 'warning');
         return;
+    }
+
+    if (telefono) {
+        const soloDigitos = telefono.replace(/\D/g, '');
+        if (/[a-zA-Z]/.test(telefono) || soloDigitos.length < 7 || soloDigitos.length > 15) {
+            showAlert('El teléfono solo permite números (entre 7 y 15 dígitos)', 'Aviso', 'warning');
+            return;
+        }
     }
 
     if (tipoUsuario === 'interno') {

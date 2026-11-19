@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<header class="header-sticky navbar-glass mb-4">
+<header class="header-sticky navbar-glass mb-3">
     <div class="container py-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
@@ -21,14 +21,14 @@
         </div>
     </div>
 </header>
-<main class="container mb-5 fade-in">
+<main class="container mb-4 fade-in">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="mb-4 text-center">
-                <h2 class="mb-2" style="font-size: 32px; color: #141413; font-weight: 600;">¿Qué deseas hacer?</h2>
-                <p class="text-md" style="color: #6b6a65; font-weight: 500;">Selecciona un módulo del sistema</p>
+            <div class="mb-3 text-center">
+                <h2 class="mb-1" style="font-size: 28px; color: #141413; font-weight: 600;">¿Qué deseas hacer?</h2>
+                <p class="text-md mb-0" style="color: #6b6a65; font-weight: 500;">Selecciona un módulo del sistema</p>
             </div>
-            <div class="row g-4">
+            <div class="row g-3">
                 <div class="col-md-6">
                     <a href="{{ url_for('inventario') }}" class="card-menu-item text-decoration-none">
                         <div class="card-custom p-4">

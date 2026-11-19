@@ -17,39 +17,39 @@
 <main class="container py-2 mb-5 fade-in">
     <!-- Información del Usuario -->
     <div class="glass-container p-4 mb-4">
-        <div class="row align-items-center">
+        <div class="row g-3 align-items-center">
             <div class="col-auto">
-                <div class="icon-box-clay" style="width: 70px; height: 70px; border-radius: 20px;">
-                    <i class="bi bi-person-fill" style="font-size: 32px;"></i>
+                <div class="icon-box-clay" style="width: 64px; height: 64px; border-radius: 18px;">
+                    <i class="bi bi-person-fill" style="font-size: 28px;"></i>
                 </div>
             </div>
-            <div class="col">
-                <h2 class="mb-1" style="font-size: 24px; font-weight: 600; color: #141413;">{{ usuario.nombre }}</h2>
+            <div class="col" style="min-width: 220px;">
+                <h2 class="mb-1" style="font-size: 22px; font-weight: 600; color: #141413;">{{ usuario.nombre }}</h2>
                 <div class="d-flex gap-3 flex-wrap">
                     <span class="text-sm fw-semibold font-mono" style="color: #6b6a65;"><i class="bi bi-card-text me-1"></i>ID: {{ usuario.id }}</span>
                     <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-person-badge me-1"></i>{{ ('Interno · Mat. ' ~ usuario.numero_cuenta) if usuario.tipo_usuario != 'externo' and usuario.numero_cuenta else ('Lector externo' if usuario.tipo_usuario == 'externo' else 'Lector interno') }}</span>
                     <span class="text-sm fw-semibold" style="color: #6b6a65;"><i class="bi bi-telephone me-1"></i>{{ usuario.telefono or usuario.correo or 'Sin contacto' }}</span>
                 </div>
             </div>
-            <div class="col-md-auto mt-3 mt-md-0">
-                <div class="d-flex gap-2">
-                    <div class="text-center px-3 py-2 rounded-4" style="background: rgba(0,0,0,0.03);">
-                        <div class="text-xs text-uppercase fw-bold" style="color: #86868b; letter-spacing: 0.5px;">Préstamos</div>
-                        <div class="text-xl fw-bold" style="color: #1d1d1f;">{{ prestamos|length }}</div>
+            <div class="col-md-auto">
+                <div class="d-flex gap-2 flex-wrap">
+                    <div class="surface-oat text-center px-3 py-2" style="border-radius: 14px; min-width: 96px;">
+                        <div class="stat-label-mono" style="font-size: 10px;">Préstamos</div>
+                        <div class="font-mono fw-bold" style="font-size: 22px; color: #141413;">{{ prestamos|length }}</div>
                     </div>
                     {% set multas_pendientes = 0 %}
                     {% for p_id, multas in multas_map.items() %}
                         {% for m in multas %}{% if not m.pagado %}{% set multas_pendientes = multas_pendientes + 1 %}{% endif %}{% endfor %}
                     {% endfor %}
                     {% if multas_pendientes > 0 %}
-                    <div class="text-center px-3 py-2 rounded-4" style="background: rgba(239, 68, 68, 0.08);">
-                        <div class="text-xs text-uppercase fw-bold" style="color: #dc2626; letter-spacing: 0.5px;">Multas Pend.</div>
-                        <div class="text-xl fw-bold" style="color: #dc2626;">{{ multas_pendientes }}</div>
+                    <div class="text-center px-3 py-2" style="background: rgba(201, 59, 43, 0.10); border: 1px solid rgba(201, 59, 43, 0.25); border-radius: 14px; min-width: 96px;">
+                        <div class="stat-label-mono" style="font-size: 10px; color: #c93b2b;">Multas Pend.</div>
+                        <div class="font-mono fw-bold" style="font-size: 22px; color: #c93b2b;">{{ multas_pendientes }}</div>
                     </div>
                     {% else %}
-                    <div class="text-center px-3 py-2 rounded-4" style="background: rgba(16, 185, 129, 0.08);">
-                        <div class="text-xs text-uppercase fw-bold" style="color: #059669; letter-spacing: 0.5px;">Multas Pend.</div>
-                        <div class="text-xl fw-bold" style="color: #059669;">{{ multas_pendientes }}</div>
+                    <div class="text-center px-3 py-2" style="background: rgba(5, 150, 105, 0.10); border: 1px solid rgba(5, 150, 105, 0.24); border-radius: 14px; min-width: 96px;">
+                        <div class="stat-label-mono" style="font-size: 10px; color: #059669;">Multas Pend.</div>
+                        <div class="font-mono fw-bold" style="font-size: 22px; color: #059669;">{{ multas_pendientes }}</div>
                     </div>
                     {% endif %}
                 </div>
@@ -58,35 +58,36 @@
     </div>
 
     <!-- Tabla de Historial -->
-    <div class="glass-container p-0 overflow-hidden">
-        <div class="p-4 border-bottom" style="background: rgba(0,0,0,0.02);">
-            <h3 class="mb-0" style="font-size: 18px; font-weight: 700; color: #1d1d1f;">Actividad de Préstamos</h3>
+    <div class="glass-container p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #d8d6ce;">
+            <h3 class="mb-0" style="font-size: 18px; font-weight: 600; color: #141413;">Actividad de Préstamos</h3>
+            <span class="stat-label-mono">{{ prestamos|length }} movimiento(s)</span>
         </div>
         <div class="table-responsive">
-            <table class="table-custom mb-0">
+            <table class="table table-custom mb-0">
                 <thead>
                     <tr>
-                        <th class="ps-4">Libro</th>
+                        <th>Libro</th>
                         <th class="text-center">Fecha Salida</th>
                         <th class="text-center">Devolución</th>
                         <th class="text-center">Estado</th>
-                        <th class="text-end pe-4">Multas / Acciones</th>
+                        <th class="text-end">Multas / Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for prestamo, libro in prestamos %}
                     <tr>
-                        <td class="ps-4">
-                            <div class="text-md fw-bold" style="color: #1d1d1f;">{{ libro.titulo }}</div>
-                            <div class="text-xs text-muted">ID Libro: {{ libro.id }}</div>
+                        <td>
+                            <div class="text-md serif-heading" style="font-weight: 600; color: #141413;">{{ libro.titulo }}</div>
+                            <span class="badge-custom font-mono mt-1" style="font-size: 11px; padding: 2px 8px;">{{ libro.id }}</span>
                         </td>
                         <td class="text-center">
-                            <div class="text-sm fw-semibold">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-sm font-mono fw-semibold">{{ prestamo.fecha_salida.strftime('%d/%m/%Y') }}</div>
                         </td>
                         <td class="text-center">
-                            <div class="text-sm fw-semibold">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-sm font-mono fw-semibold">{{ prestamo.fecha_devolucion_esperada.strftime('%d/%m/%Y') }}</div>
                             {% if prestamo.fecha_devolucion_real %}
-                                <div class="text-xs text-success">Devuelto: {{ prestamo.fecha_devolucion_real.strftime('%d/%m/%Y') }}</div>
+                                <div class="text-xs font-mono mt-1" style="color: #059669;">Devuelto: {{ prestamo.fecha_devolucion_real.strftime('%d/%m/%Y') }}</div>
                             {% endif %}
                         </td>
                         <td class="text-center">
@@ -98,40 +99,40 @@
                                 <span class="badge-custom">{{ prestamo.estado }}</span>
                             {% endif %}
                         </td>
-                        <td class="text-end pe-4">
-                            {% if prestamo.estado == 'activo' %}
-                                <form action="{{ url_for('renovar_prestamo', prestamo_id=prestamo.id) }}" method="POST" class="d-inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="btn btn-sm btn-light-custom mb-2 w-100" title="Renovar">
-                                        <i class="bi bi-calendar-plus me-1" style="color: #c6613f;"></i>Renovar
-                                    </button>
-                                </form>
-                            {% endif %}
-                            {% if multas_map.get(prestamo.id) %}
-                                {% for multa in multas_map[prestamo.id] %}
-                                    <div class="d-flex align-items-center justify-content-end gap-2 mb-1">
-                                        {% if multa.pagado %}
-                                            <span class="text-xs fw-bold" style="color: #059669;">
-                                                Pagada (${{ '%.2f'|format(multa.monto) }})
-                                            </span>
-                                        {% else %}
-                                            <span class="text-xs fw-bold" style="color: #dc2626;">
-                                                Pendiente (${{ '%.2f'|format(multa.monto) }})
-                                            </span>
-                                        {% endif %}
-                                        {% if not multa.pagado %}
-                                            <form action="{{ url_for('pagar_multa', multa_id=multa.id) }}" method="POST" class="d-inline">
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                <button type="submit" class="btn btn-sm btn-success p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; border-radius: 8px;" title="Registrar Pago">
-                                                    <i class="bi bi-cash-stack"></i>
-                                                </button>
-                                            </form>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <span class="text-xs text-muted">Sin cargos</span>
-                            {% endif %}
+                        <td class="text-end">
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                {% if prestamo.estado == 'activo' %}
+                                    <form action="{{ url_for('renovar_prestamo', prestamo_id=prestamo.id) }}" method="POST" class="m-0">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-light-custom" title="Renovar">
+                                            <i class="bi bi-calendar-plus me-1" style="color: #c6613f;"></i>Renovar
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                {% if multas_map.get(prestamo.id) %}
+                                    {% for multa in multas_map[prestamo.id] %}
+                                        <div class="d-flex align-items-center justify-content-end gap-2">
+                                            {% if multa.pagado %}
+                                                <span class="badge-emerald font-mono" style="font-size: 11px;">
+                                                    Pagada (${{ '%.2f'|format(multa.monto) }})
+                                                </span>
+                                            {% else %}
+                                                <span class="badge-clay-danger font-mono" style="font-size: 11px;">
+                                                    Pendiente (${{ '%.2f'|format(multa.monto) }})
+                                                </span>
+                                                <form action="{{ url_for('pagar_multa', multa_id=multa.id) }}" method="POST" class="m-0">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button type="submit" class="btn btn-sm btn-success d-inline-flex align-items-center gap-1" style="border-radius: 10px; font-size: 11px; padding: 4px 10px;" title="Registrar Pago">
+                                                        <i class="bi bi-cash-stack"></i> Pagar
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% elif prestamo.estado != 'activo' %}
+                                    <span class="text-xs text-muted">Sin cargos</span>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% else %}

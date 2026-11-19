@@ -137,50 +137,24 @@
         <h2 class="mb-0" style="font-size: 19px; color: #141413; font-weight: 600;">Reportes y Exportación</h2>
     </div>
     <div class="row g-3 mb-5">
-        <div class="col-md-4">
-            <a href="{{ url_for('exportar_prestamos') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
-                <div class="d-flex gap-3 align-items-center">
-                    <div class="icon-box-editorial" style="background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.24);">
-                        <i class="bi bi-file-earmark-spreadsheet" style="font-size: 20px; color: #059669;"></i>
+        <div class="col-12">
+            <button type="button" class="card-custom p-4 w-100 border-0 text-start shadow-custom-hover"
+                    data-bs-toggle="modal" data-bs-target="#modalExportarReportes" style="cursor: pointer;">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="icon-box-editorial" style="width: 52px; height: 52px; background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.24);">
+                        <i class="bi bi-file-earmark-spreadsheet" style="font-size: 24px; color: #059669;"></i>
                     </div>
-                    <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
-                            Exportar Préstamos
+                    <div class="flex-fill">
+                        <h3 class="mb-1" style="font-size: 16px; color: #141413; font-weight: 600;">
+                            Exportar Reportes en Excel por Rango de Fechas
                         </h3>
-                        <p class="text-sm mb-0">Descargar historial completo en Excel</p>
+                        <p class="text-sm mb-0">Descarga Préstamos, Multas, Inventario o el Reporte Completo filtrando exactamente por día, mes y año.</p>
                     </div>
+                    <span class="btn btn-dark-custom px-3 py-2 d-inline-flex align-items-center gap-2" style="border-radius: 9999px; font-size: 13px;">
+                        <i class="bi bi-calendar-range"></i> Elegir fechas y exportar
+                    </span>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ url_for('exportar_multas') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
-                <div class="d-flex gap-3 align-items-center">
-                    <div class="icon-box-clay">
-                        <i class="bi bi-cash-coin" style="font-size: 20px;"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
-                            Exportar Multas
-                        </h3>
-                        <p class="text-sm mb-0">Listado de cobros y deudas en Excel</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ url_for('exportar_inventario') }}" class="card-custom p-4 w-100 text-decoration-none d-block shadow-custom-hover">
-                <div class="d-flex gap-3 align-items-center">
-                    <div class="icon-box-dark">
-                        <i class="bi bi-box-seam" style="font-size: 20px;"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-1" style="font-size: 15px; color: #141413; font-weight: 600;">
-                            Exportar Inventario
-                        </h3>
-                        <p class="text-sm mb-0">Descargar catálogo completo en Excel</p>
-                    </div>
-                </div>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -387,26 +361,43 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2 flex-fill">
+                        <div class="position-relative flex-fill" style="min-width: 200px; max-width: 320px;">
+                            <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #6b6a65;"></i>
+                            <input type="text" id="buscarModalUsuario" class="form-control form-control-custom ps-5 w-100" placeholder="Buscar por nombre, ID, correo, cel...">
+                        </div>
+                        <select id="filtroModalUsuario" class="form-select form-control-custom" style="width: auto; cursor: pointer;">
+                            <option value="todos">Todos</option>
+                            <option value="interno">Internos</option>
+                            <option value="externo">Externos</option>
+                            <option value="activo">Activos</option>
+                            <option value="suspendido">Suspendidos</option>
+                        </select>
+                    </div>
+                    <span class="stat-label-mono" id="contadorModalUsuarios">{{ usuarios_biblioteca|length }} lector(es)</span>
+                </div>
                 <div class="table-responsive">
-                    <table class="table table-custom mb-0">
+                    <table class="table table-custom mb-0" id="tablaModalUsuarios">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Usuario</th>
                                 <th>Teléfono</th>
                                 <th>Tipo / Matrícula</th>
+                                <th class="text-center">Estado</th>
                                 <th class="text-center">Registro</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for usuario in usuarios_biblioteca %}
-                            <tr>
+                            <tr data-tipo="{{ usuario.tipo_usuario or 'interno' }}" data-estado="{{ usuario.estado or 'activo' }}" data-search="{{ usuario.id|lower }} {{ usuario.nombre|lower }} {{ (usuario.correo or '')|lower }} {{ (usuario.telefono or '')|lower }} {{ (usuario.numero_cuenta or '')|lower }}">
                                 <td><span class="badge-custom font-mono">{{ usuario.id }}</span></td>
                                 <td>
                                     <div class="text-md" style="font-weight: 500;">{{ usuario.nombre }}</div>
                                     <div class="text-sm">{{ usuario.correo or '—' }}</div>
                                 </td>
-                                <td><span class="text-sm">{{ usuario.telefono or '—' }}</span></td>
+                                <td><span class="text-sm font-mono">{{ usuario.telefono or '—' }}</span></td>
                                 <td>
                                     {% if usuario.tipo_usuario == 'externo' %}
                                         <span class="badge-custom font-mono" style="font-size: 11px;">Externo</span>
@@ -416,13 +407,21 @@
                                     {% endif %}
                                 </td>
                                 <td class="text-center">
-                                    <span class="text-xs">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</span>
+                                    {% if usuario.estado == 'suspendido' %}
+                                        <span class="badge-clay-danger" style="font-size: 11px;">Suspendido</span>
+                                    {% else %}
+                                        <span class="badge-emerald" style="font-size: 11px;">Activo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-xs font-mono">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '' }}</span>
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                <div id="paginacionModalUsuarios" class="d-flex justify-content-center align-items-center gap-3 mt-3"></div>
             </div>
         </div>
     </div>
@@ -772,13 +771,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="d-flex justify-content-end mb-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div class="position-relative flex-fill" style="min-width: 180px; max-width: 280px;">
+                        <i class="bi bi-search position-absolute" style="top: 50%; left: 12px; transform: translateY(-50%); color: #6b6a65;"></i>
+                        <input type="text" id="buscarModalSysUsuario" class="form-control form-control-custom ps-5 w-100" placeholder="Buscar usuario o rol...">
+                    </div>
                     <button class="btn btn-dark-custom" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuarioSistema">
                         <i class="bi bi-plus-lg me-2"></i>Nuevo usuario
                     </button>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-custom mb-0">
+                    <table class="table table-custom mb-0" id="tablaUsuariosSistema">
                         <thead>
                             <tr>
                                 <th>Usuario</th>
@@ -789,7 +792,7 @@
                         </thead>
                         <tbody>
                             {% for usuario in usuarios_sistema %}
-                            <tr>
+                            <tr data-search="{{ usuario.username|lower }} {{ usuario.role|lower }}">
                                 <td><div class="text-md" style="font-weight: 500;">{{ usuario.username }}</div></td>
                                 <td class="text-center">
                                     <span class="badge-custom">{{ usuario.role }}</span>
@@ -905,6 +908,63 @@
     </div>
 </div>
 
+<!-- MODAL: Exportar Reportes por Rango de Fechas -->
+<div class="modal fade" id="modalExportarReportes" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Exportar Reporte en Excel</h5>
+                    <p class="text-sm mb-0">Filtra por tipo y rango exacto de fechas (día, mes y año)</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="GET" action="{{ url_for('admin.exportar_reporte') }}" id="formExportarReporte">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Tipo de reporte</label>
+                        <select name="tipo" class="form-select form-control-custom" required>
+                            <option value="completo">Reporte Completo (Resumen, Préstamos, Multas e Inventario)</option>
+                            <option value="prestamos">Solo Préstamos</option>
+                            <option value="multas">Solo Multas y Adeudos</option>
+                            <option value="inventario">Solo Inventario y Movimientos</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label-custom d-block">Atajos rápidos de periodo</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm btn-light-custom preset-rango" data-rango="hoy">Hoy</button>
+                            <button type="button" class="btn btn-sm btn-light-custom preset-rango" data-rango="semana">Últimos 7 días</button>
+                            <button type="button" class="btn btn-sm btn-light-custom preset-rango" data-rango="mes">Este mes</button>
+                            <button type="button" class="btn btn-sm btn-light-custom preset-rango" data-rango="anio">Este año</button>
+                            <button type="button" class="btn btn-sm btn-light-custom preset-rango" data-rango="todo">Todo el historial</button>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-1">
+                        <div class="col-sm-6">
+                            <label class="form-label-custom">Fecha de inicio</label>
+                            <input type="date" name="fecha_inicio" id="rep_fecha_inicio" class="form-control form-control-custom font-mono">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label-custom">Fecha final</label>
+                            <input type="date" name="fecha_fin" id="rep_fecha_fin" class="form-control form-control-custom font-mono">
+                        </div>
+                    </div>
+                    <p class="text-xs mt-2 mb-0" style="color: #6b6a65;">
+                        Puedes dejar ambas fechas vacías para exportar todo el historial, o elegir cualquier día, mes y año específico (incluso años anteriores).
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-custom flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn flex-fill text-white" style="border-radius: 18px; font-weight: 600; background: linear-gradient(135deg, #d97757 0%, #c6613f 100%); border: none;">
+                        <i class="bi bi-file-earmark-excel me-2"></i>Descargar Excel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Datos para los gráficos en formato JSON -->
 <script id="chart-data" type="application/json">
 {{ chart_data|tojson }}
@@ -913,4 +973,124 @@
 <!-- Librerías externas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/admin-charts.js') }}?v=design4"></script>
+<script>
+(function() {
+    // 1) Búsqueda, filtros y paginación en modal Gestionar Usuarios Biblioteca
+    const inputModalUsr = document.getElementById('buscarModalUsuario');
+    const filtroModalUsr = document.getElementById('filtroModalUsuario');
+    const contadorModalUsr = document.getElementById('contadorModalUsuarios');
+    const navModalUsr = document.getElementById('paginacionModalUsuarios');
+    const filasModalUsr = Array.from(document.querySelectorAll('#tablaModalUsuarios tbody tr'));
+    const POR_PAGINA_USR = 8;
+    let paginaUsr = 1;
+
+    function renderModalUsuarios(resetPage = true) {
+        if (!filasModalUsr.length) return;
+        if (resetPage) paginaUsr = 1;
+        const q = (inputModalUsr?.value || '').toLowerCase().trim();
+        const filtro = filtroModalUsr?.value || 'todos';
+        const coinciden = filasModalUsr.filter(row => {
+            const texto = row.dataset.search || '';
+            const tipo = row.dataset.tipo || '';
+            const estado = row.dataset.estado || '';
+            const matchTexto = !q || texto.includes(q);
+            let matchFiltro = true;
+            if (filtro === 'interno' || filtro === 'externo') matchFiltro = (tipo === filtro);
+            else if (filtro === 'activo' || filtro === 'suspendido') matchFiltro = (estado === filtro);
+            row.style.display = 'none';
+            return matchTexto && matchFiltro;
+        });
+
+        if (contadorModalUsr) {
+            contadorModalUsr.textContent = `${coinciden.length} lector(es)`;
+        }
+        const totalPaginas = Math.max(1, Math.ceil(coinciden.length / POR_PAGINA_USR));
+        if (paginaUsr > totalPaginas) paginaUsr = totalPaginas;
+        const start = (paginaUsr - 1) * POR_PAGINA_USR;
+        coinciden.slice(start, start + POR_PAGINA_USR).forEach(r => r.style.display = '');
+
+        if (!navModalUsr) return;
+        if (coinciden.length <= POR_PAGINA_USR) {
+            navModalUsr.innerHTML = '';
+            return;
+        }
+        navModalUsr.innerHTML = `
+            <button type="button" id="usrModalPrev" class="btn btn-sm btn-light-custom px-3" ${paginaUsr <= 1 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="text-xs font-mono fw-semibold">Página ${paginaUsr} de ${totalPaginas}</span>
+            <button type="button" id="usrModalNext" class="btn btn-sm btn-light-custom px-3" ${paginaUsr >= totalPaginas ? 'disabled' : ''}>
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        `;
+        document.getElementById('usrModalPrev')?.addEventListener('click', () => {
+            if (paginaUsr > 1) { paginaUsr--; renderModalUsuarios(false); }
+        });
+        document.getElementById('usrModalNext')?.addEventListener('click', () => {
+            if (paginaUsr < totalPaginas) { paginaUsr++; renderModalUsuarios(false); }
+        });
+    }
+
+    inputModalUsr?.addEventListener('input', () => renderModalUsuarios(true));
+    filtroModalUsr?.addEventListener('change', () => renderModalUsuarios(true));
+    renderModalUsuarios(true);
+
+    // 2) Búsqueda en modal Usuarios del Sistema
+    const inputSysUsr = document.getElementById('buscarModalSysUsuario');
+    const filasSysUsr = Array.from(document.querySelectorAll('#tablaUsuariosSistema tbody tr'));
+    inputSysUsr?.addEventListener('input', () => {
+        const q = inputSysUsr.value.toLowerCase().trim();
+        filasSysUsr.forEach(row => {
+            const texto = row.dataset.search || row.textContent.toLowerCase();
+            row.style.display = (!q || texto.includes(q)) ? '' : 'none';
+        });
+    });
+
+    // 3) Atajos de fechas y validación en modal Exportar Reportes
+    const fInicio = document.getElementById('rep_fecha_inicio');
+    const fFin = document.getElementById('rep_fecha_fin');
+    const fmt = d => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
+
+    document.querySelectorAll('.preset-rango').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const hoy = new Date();
+            const tipo = btn.dataset.rango;
+            if (tipo === 'todo') {
+                fInicio.value = '';
+                fFin.value = '';
+            } else if (tipo === 'hoy') {
+                fInicio.value = fmt(hoy);
+                fFin.value = fmt(hoy);
+            } else if (tipo === 'semana') {
+                const ini = new Date(hoy);
+                ini.setDate(ini.getDate() - 6);
+                fInicio.value = fmt(ini);
+                fFin.value = fmt(hoy);
+            } else if (tipo === 'mes') {
+                const ini = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+                fInicio.value = fmt(ini);
+                fFin.value = fmt(hoy);
+            } else if (tipo === 'anio') {
+                const ini = new Date(hoy.getFullYear(), 0, 1);
+                fInicio.value = fmt(ini);
+                fFin.value = fmt(hoy);
+            }
+        });
+    });
+
+    document.getElementById('formExportarReporte')?.addEventListener('submit', function(e) {
+        if (fInicio.value && fFin.value && fInicio.value > fFin.value) {
+            e.preventDefault();
+            if (typeof showAlert === 'function') {
+                showAlert('La fecha de inicio no puede ser mayor que la fecha final.', 'Rango inválido', 'warning');
+            }
+        }
+    });
+})();
+</script>
 {% endblock %}

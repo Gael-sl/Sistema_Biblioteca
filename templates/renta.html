@@ -462,7 +462,7 @@
                         }
                     }
                 } catch (err) {
-                    console.error('Error al buscar usuario por escáner:', err);
+                    // Silencioso en consola del cliente
                 }
             }
         });
@@ -551,7 +551,7 @@
                         seleccionarUsuario(exact);
                     }
                 } catch (err) {
-                    console.error('Error al auto-completar ID de usuario:', err);
+                    // Silencioso en consola del cliente
                 }
             }, 180);
         });
@@ -631,7 +631,7 @@
                 }
             }
         } catch (err) {
-            console.error('Error al consultar libro:', err);
+            // Silencioso en consola del cliente
         }
         if (libroInfoCard) libroInfoCard.style.display = 'none';
         toggleSubmitRenta(true);

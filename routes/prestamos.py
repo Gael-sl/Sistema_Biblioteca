@@ -207,7 +207,7 @@ def admin_recomendaciones():
         .order_by(UsuarioBiblioteca.nombre)
         .all()
     )
-    ultimas = Recomendacion.query.order_by(desc(Recomendacion.fecha_creacion)).limit(10).all()
+    ultimas = Recomendacion.query.order_by(desc(Recomendacion.fecha_creacion)).limit(50).all()
     for rec in ultimas:
         try:
             rec.count = len(json.loads(rec.libros_recomendados or "[]"))

@@ -86,10 +86,12 @@
                                 data-activo="{{ '1' if usuario.activo else '0' }}" data-estado="{{ usuario.estado }}" style="height: 32px; display: flex; align-items: center;">
                                 <i class="bi bi-pencil me-1"></i>Editar
                             </button>
+                            {% if es_admin() %}
                             <form method="POST" action="{{ url_for('eliminar_usuario_biblioteca', usuario_id=usuario.id) }}" onsubmit="event.preventDefault(); const form = this; showConfirm('¿Dar de baja al usuario?', 'Confirmar Baja', () => form.submit());" class="m-0 d-inline-block" style="height: 32px;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-danger-custom" style="height: 100%; display: flex; align-items: center;"><i class="bi bi-trash me-1"></i>Baja</button>
                             </form>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -136,7 +138,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label-custom">Teléfono</label>
-                            <input type="text" name="telefono" id="edit_telefono" class="form-control form-control-custom">
+                            <input type="tel" name="telefono" id="edit_telefono" inputmode="numeric" maxlength="15" oninput="this.value = this.value.replace(/[^0-9\-\s()]/g, '')" class="form-control form-control-custom">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label-custom">Estado Cuenta</label>

@@ -8,7 +8,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy import func
 from extensions import db, csrf
 from models import UsuarioBiblioteca, registrar_log
-from utils import login_required
+from utils import login_required, admin_required
 
 usuarios_bp = Blueprint("usuarios", __name__)
 
@@ -20,6 +20,19 @@ def _normalizar_telefono(telefono: str | None) -> str:
         return ""
     digitos = re.sub(r"\D", "", limpio)
     return digitos if len(digitos) >= 6 else limpio.lower()
+
+
+def _validar_telefono(telefono: str | None) -> tuple[str | None, str | None]:
+    """Valida que el teléfono opcional no contenga letras y tenga entre 7 y 15 dígitos."""
+    limpio = (telefono or "").strip()[:40]
+    if not limpio:
+        return None, None
+    if re.search(r"[a-zA-ZáéíóúÁÉÍÓÚñÑ]", limpio) or not re.fullmatch(r"[\d\s+\-()]+", limpio):
+        return None, "El teléfono solo debe contener números (sin letras)"
+    digitos = re.sub(r"\D", "", limpio)
+    if len(digitos) < 7 or len(digitos) > 15:
+        return None, "El teléfono debe tener entre 7 y 15 dígitos"
+    return limpio, None
 
 
 def _buscar_duplicado_lector(
@@ -235,7 +248,9 @@ def crear_usuario_biblioteca():
         else:
             numero_cuenta = None
 
-        telefono = (data.get("telefono") or "").strip()[:40] or None
+        telefono, error_tel = _validar_telefono(data.get("telefono"))
+        if error_tel:
+            return jsonify({"success": False, "message": error_tel}), 400
         error_duplicado = _buscar_duplicado_lector(correo, telefono, tipo_usuario, numero_cuenta)
         if error_duplicado:
             return jsonify({"success": False, "message": error_duplicado}), 400
@@ -288,7 +303,11 @@ def editar_usuario_biblioteca(usuario_id: str):
 
     nuevo_nombre = (data.get("nombre") or usuario.nombre).strip()[:120]
     correo_final = nuevo_correo or usuario.correo
-    telefono_final = (data.get("telefono") if "telefono" in data else (usuario.telefono or "")).strip()[:40] or None
+    raw_tel = data.get("telefono") if "telefono" in data else (usuario.telefono or "")
+    telefono_final, error_tel = _validar_telefono(raw_tel)
+    if error_tel:
+        flash(error_tel, "error")
+        return redirect(url_for("usuarios.listar_usuarios_biblioteca"))
     activo_final = data.get("activo") == "1"
 
     if activo_final:
@@ -316,7 +335,7 @@ def editar_usuario_biblioteca(usuario_id: str):
     return redirect(url_for("usuarios.listar_usuarios_biblioteca"))
 
 @usuarios_bp.route("/usuarios-biblioteca/<usuario_id>/eliminar", methods=["POST"])
-@login_required
+@admin_required
 def eliminar_usuario_biblioteca(usuario_id: str):
     usuario = UsuarioBiblioteca.query.get(usuario_id)
     if not usuario:
